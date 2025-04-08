@@ -25,3 +25,6 @@ def registrarse(request):
 
 def crud(request):
     return render (request,'paginas/crud.html')
+
+def contactenos(request):
+    return render (request,'paginas/contactenos.html')

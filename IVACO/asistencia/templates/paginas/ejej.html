@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Cósmico</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <!-- Añadir Meta para Google Sign-In -->
+    <meta name="google-signin-client_id" content="TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com">
+    <style>
+        /* ... (Estilos anteriores) ... */
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #a0a0c0;
+    margin: 25px 0;
+    font-size: 0.9em;
+}
+
+.separator::before,
+.separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid rgba(100, 100, 220, 0.3);
+}
+
+.separator:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.separator:not(:empty)::after {
+    margin-left: .5em;
+}
+
+.social-login-buttons {
+    display: flex;
+    flex-direction: column; /* O 'row' si prefieres lado a lado */
+    gap: 15px; /* Espacio entre botones */
+    margin-bottom: 20px;
+}
+
+.social-button {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-size: 0.95em;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+    font-family: 'Roboto', sans-serif; /* O la fuente que prefieras */
+}
+
+.social-button:hover {
+    transform: translateY(-2px);
+}
+
+/* Estilo específico para Apple */
+.social-button.apple {
+    background-color: #000000; /* Negro o blanco según tu tema */
+    color: #ffffff;
+    border-color: #555;
+}
+
+.social-button.apple:hover {
+    background-color: #1a1a1a;
+}
+
+/* Contenedor para el botón de Google (el JS lo renderizará dentro) */
+#google-signin-button {
+    display: flex; /* Centra el botón renderizado por Google */
+    justify-content: center;
+     /* Ajusta el ancho/alto si es necesario o deja que Google lo maneje */
+}
+/* Puedes añadir estilos más específicos al botón de Google si lo renderizas
+   manualmente en lugar de usar gapi.signin2.render */
+
+
+/* ... (Resto de los estilos) ... */
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form id="login-form" class="login-form">
+            <h2>Puerta Cósmica</h2>
+            <p class="subtitle">Introduce tus credenciales o usa un portal social</p>
+
+            <div class="input-group">
+                <label for="username"><i class="fas fa-user-astronaut"></i> Usuario o Email</label>
+                <input type="text" id="username" name="username" placeholder="Tu nombre de viajero o email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password"><i class="fas fa-key"></i> Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Código secreto del portal" required>
+            </div>
+
+            <button type="submit" id="login-button" class="portal-button">
+                <span class="button-text">Entrar al Portal</span>
+                <span class="button-icon"><i class="fas fa-rocket"></i></span>
+            </button>
+
+            <p id="error-message" class="error-message"></p>
+            <p id="success-message" class="success-message"></p>
+
+            <!-- Separador Opcional -->
+            <div class="separator">
+                <span>O continúa con</span>
+            </div>
+
+            <!-- Botones de Social Login -->
+            <div class="social-login-buttons">
+                <!-- Botón de Google (Renderizado por JS) -->
+                <div id="google-signin-button"></div>
+
+                <!-- Botón de Apple (Estilo personalizado) -->
+                <button type="button" id="apple-signin-button" class="social-button apple">
+                    <i class="fab fa-apple"></i> Continuar con Apple
+                </button>
+            </div>
+
+
+            <div class="extra-links">
+                <a href="#">¿Olvidaste tu código?</a>
+                <a href="register.html">Registrar Nave</a> <!-- Enlace a registro -->
+            </div>
+        </form>
+    </div>
+
+    <!-- Script de Google Platform Library -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <!-- Script de Sign in with Apple JS (Cargarlo condicionalmente o siempre) -->
+    <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+
+    <!-- Tu Script (asegúrate que se carga después de los otros) -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('login-form');
+        // ... (otras variables existentes: usernameInput, passwordInput, etc.)
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        const loginButton = document.getElementById('login-button');
+    
+        // --- INICIO: Lógica de Login con Email/Password (Existente) ---
+        loginForm.addEventListener('submit', (event) => {
+            // Prevenir envío si se hizo clic en botón de submit normal
+            if (document.activeElement === loginButton) {
+                 event.preventDefault();
+                 // ... (resto de tu lógica de validación y simulación de login normal)
+                 // Simulación de autenticación normal
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+    
+                if (username === '' || password === '') {
+                    showError('Ambos campos son requeridos para el login normal.');
+                    return;
+                }
+                if (username === 'cosmo' && password === 'portal123') {
+                     showSuccess('¡Acceso concedido por portal! Iniciando viaje...');
+                     // ... (simular redirección, etc.)
+                     disableForm();
+                     setTimeout(() => {
+                        alert('¡Bienvenido, Viajero Cósmico! (Redirección simulada)');
+                        enableForm();
+                        clearMessages();
+                     }, 1500);
+                } else {
+                    showError('Credenciales incorrectas. Verifica tu código de portal.');
+                    shakeForm();
+                }
+            }
+            // Si el submit fue por otra causa (ej. Enter en un campo), podría necesitar manejo diferente
+            // o simplemente dejar que la validación HTML5 actúe si no se hizo clic en submit.
+        });
+        // --- FIN: Lógica de Login con Email/Password (Existente) ---
+    
+    
+        // --- INICIO: Lógica Google Sign-In ---
+        function onGoogleSignInSuccess(googleUser) {
+            console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+            const id_token = googleUser.getAuthResponse().id_token;
+    
+            // !!! IMPORTANTE: Envía este id_token a tu BACKEND para verificación !!!
+            console.log("Google ID Token:", id_token);
+            showProcessing('Verificando con Google...');
+            disableForm(); // Deshabilita mientras procesa
+    
+            fetch('/auth/google', { // <-- RUTA DE TU API BACKEND
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: id_token }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // El backend verificó y creó/encontró al usuario
+                    // El backend debería devolver información o un token de sesión propio
+                    showSuccess('¡Autenticado con Google! Redirigiendo...');
+                    // Aquí redirigirías basado en la respuesta del backend
+                    // Por ejemplo: window.location.href = data.redirectUrl || '/dashboard';
+                    setTimeout(() => {
+                       alert('Redirección simulada post-Google Login');
+                       enableForm(); // Habilitar de nuevo si la redirección falla o es simulada
+                       clearMessages();
+                    }, 1500);
+                } else {
+                    // El backend devolvió un error
+                    showError(data.message || 'Error al verificar con Google.');
+                    enableForm();
+                }
+            })
+            .catch(error => {
+                console.error('Error sending token to backend:', error);
+                showError('Error de conexión con el servidor.');
+                enableForm();
+            });
+        }
+    
+        function onGoogleSignInFailure(error) {
+            console.error('Google Sign-In failed:', error);
+            showError('Fallo al iniciar sesión con Google.');
+        }
+    
+        // Renderizar el botón de Google
+        // Asegúrate que la librería 'platform.js' se haya cargado
+        window.renderGoogleButton = function() {
+            if (typeof gapi !== 'undefined' && gapi.signin2) {
+                gapi.signin2.render('google-signin-button', {
+                    'scope': 'profile email', // Pide email y perfil básico
+                    'width': 240, // Ajusta el ancho según tu diseño
+                    'height': 40, // Ajusta la altura
+                    'longtitle': true, // 'Sign in with Google'
+                    'theme': 'dark', // 'dark' o 'light'
+                    'onsuccess': onGoogleSignInSuccess,
+                    'onfailure': onGoogleSignInFailure
+                });
+            } else {
+                 // Reintentar si gapi no estaba listo
+                 //console.log("gapi not ready, retrying...");
+                 //setTimeout(renderGoogleButton, 100); // Cuidado con bucles infinitos
+            }
+        }
+    
+        // Llama a la función para renderizar. Google recomienda usar gapi.load
+        if (typeof gapi !== 'undefined') {
+            gapi.load('auth2', function() {
+                // Inicializa GoogleAuth (opcional si solo usas gapi.signin2.render)
+                 /*gapi.auth2.init({
+                     client_id: 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com'
+                 });*/
+                renderGoogleButton(); // Renderiza el botón una vez cargado auth2
+            });
+        } else {
+            // Si platform.js aún no ha cargado gapi globalmente
+            // Necesitas una forma más robusta de esperar a que gapi esté disponible
+            console.warn("Google API platform.js not loaded yet.");
+            // Podrías poner el renderGoogleButton() dentro de la función `onload` de la etiqueta script
+            // o usar un callback explícito si `platform.js` lo soporta.
+            // Por ahora, asumimos que se carga rápido o usar el setTimeout con precaución.
+             setTimeout(renderGoogleButton, 500); // Intenta renderizar tras un breve retraso
+        }
+    
+    
+        // --- FIN: Lógica Google Sign-In ---
+    
+    
+        // --- INICIO: Lógica Apple Sign-In ---
+        const appleButton = document.getElementById('apple-signin-button');
+    
+        if (appleButton) {
+            // Configura Apple Sign In (Haz esto ANTES del evento click)
+            try {
+                 AppleID.auth.init({
+                    clientId: 'TU_APPLE_SERVICE_ID', // Service ID de Apple Developer
+                    scope: 'name email', // Pide nombre y email
+                    redirectURI: 'URL_DE_REDIRECCION_EN_TU_BACKEND', // URL donde Apple enviará la respuesta POST
+                    state: 'opcional_valor_anti_csrf', // Valor opcional para seguridad
+                    usePopup: true // true para popup, false para redirección completa
+                 });
+            } catch (error) {
+                 console.error("Error initializing Apple ID:", error);
+                 // Podrías ocultar el botón de Apple si la inicialización falla
+                 // appleButton.style.display = 'none';
+            }
+    
+    
+            appleButton.addEventListener('click', async () => {
+                console.log("Attempting Sign in with Apple...");
+                showProcessing("Iniciando sesión con Apple...");
+                disableForm();
+                try {
+                    const response = await AppleID.auth.signIn();
+                    // IMPORTANTE: Con Apple, la verificación principal ocurre en el backend.
+                    // Si usas redirectURI (usePopup: false), el navegador será redirigido
+                    // a tu backend con un código.
+                    // Si usas popup (usePopup: true), la respuesta 'response' aquí contendrá
+                    // datos si el usuario es nuevo (user: {name, email}) y siempre
+                    // una autorización (authorization: {code, id_token}).
+                    // DEBES enviar el 'code' o 'id_token' a tu backend para verificación segura.
+    
+                    console.log("Apple Sign-In Response:", response);
+    
+                    // Ejemplo si usas popup y envías el código al backend:
+                    if (response.authorization && response.authorization.code) {
+                        fetch('/auth/apple', { // <-- RUTA DE TU API BACKEND
+                             method: 'POST',
+                             headers: { 'Content-Type': 'application/json' },
+                             body: JSON.stringify({
+                                 code: response.authorization.code,
+                                 // Opcionalmente, si recibes id_token y quieres pasarlo también:
+                                 // id_token: response.authorization.id_token,
+                                 // Opcionalmente, si recibes datos de usuario nuevo:
+                                 // user: response.user
+                                 }),
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                showSuccess('¡Autenticado con Apple! Redirigiendo...');
+                                // Redirigir: window.location.href = data.redirectUrl || '/dashboard';
+                                 setTimeout(() => {
+                                    alert('Redirección simulada post-Apple Login');
+                                    enableForm();
+                                    clearMessages();
+                                 }, 1500);
+                            } else {
+                                showError(data.message || 'Error al verificar con Apple.');
+                                enableForm();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error sending Apple code to backend:', error);
+                            showError('Error de conexión con el servidor.');
+                            enableForm();
+                        });
+                    } else {
+                         // El usuario cerró el popup o hubo otro problema
+                         showError('Inicio de sesión con Apple cancelado o fallido.');
+                         enableForm();
+                    }
+    
+                } catch (error) {
+                    console.error("Apple Sign-In Error:", error);
+                    showError('Error al intentar iniciar sesión con Apple.');
+                    enableForm();
+                }
+            });
+        }
+        // --- FIN: Lógica Apple Sign-In ---
+    
+        // --- Helper Functions (Adaptadas) ---
+        function showError(message) {
+            clearMessages();
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+    
+        function showSuccess(message) {
+            clearMessages();
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+    
+         function showProcessing(message) {
+            clearMessages();
+            // Podrías tener un elemento específico para "procesando"
+            // Por ahora, usamos el de éxito con un mensaje adecuado
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+    
+        function clearMessages() {
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            successMessage.textContent = '';
+            successMessage.style.display = 'none';
+            loginForm.classList.remove('form-error');
+        }
+    
+        function shakeForm() {
+            loginForm.classList.add('form-error');
+            setTimeout(() => {
+                loginForm.classList.remove('form-error');
+            }, 400);
+        }
+    
+        function disableForm() {
+            // Deshabilitar todos los campos y botones interactivos
+            const inputs = loginForm.querySelectorAll('input, button');
+            inputs.forEach(el => el.disabled = true);
+            loginForm.style.opacity = '0.7'; // Indicador visual
+        }
+    
+        function enableForm() {
+             const inputs = loginForm.querySelectorAll('input, button');
+             inputs.forEach(el => el.disabled = false);
+             loginForm.style.opacity = '1';
+        }
+    
+    }); // Fin de DOMContentLoaded
+</script>
+</body>
+</html>

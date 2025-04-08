@@ -1,132 +1,688 @@
-
 {% extends "plantilla.html" %}
 
 {% block contenido %}
 {% load static %}
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-    <head>
-        <title>{% block titulo %} Registro {% endblock  %}</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <link rel="stylesheet" href="{% static 'css/plantilla.css' %}">
-        <style>
-            .registro-container { 
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 50px;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Registro {% endblock %}</title>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset básico y fuentes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif; /* Fuente más suave */
+            min-height: 100vh; /* Asegura altura mínima */
+            padding: 40px 20px; /* Espacio por si el form es muy alto */
+            display: grid;
+            justify-content: center;
+            align-items: center;
+            background-color: #0f0f1a; /* Azul muy oscuro base */
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(100, 100, 200, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(150, 100, 200, 0.1) 0%, transparent 40%),
+                /* Pequeños puntos como estrellas */
+                radial-gradient(circle at 10% 10%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 50% 50%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 90% 20%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 30% 80%, white 0.5px, transparent 1px),
+                radial-gradient(circle at 70% 40%, white 0.5px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 50px 50px, 70px 70px, 60px 60px, 80px 80px, 90px 90px; /* Tamaños para las estrellas */
+            background-repeat: repeat;
+            color: #d0d0e0; /* Color de texto base gris claro */
+            overflow-x: hidden; /* Evitar scroll horizontal */
+            animation: twinkle 15s linear infinite alternate; /* Animación sutil de fondo */
+        }
+
+        @keyframes twinkle {
+          from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+          to { background-position: 10px 5px, -10px -5px, 5px 5px, -5px -5px, 10px -5px, -10px 5px, 5px -10px; }
+        }
+
+
+        .register-container {
+            width: 100%;
+            max-width: 550px; /* Ancho máximo del formulario */
+            display: flex;
+            justify-content: center;
+            margin-top: 60px; /* Añadido espacio para navbar fija */
+            margin-bottom: 20px; /* Espacio inferior */
+        }
+
+        .register-form {
+            background: rgba(26, 26, 46, 0.8); /* Fondo oscuro semi-transparente */
+            padding: 35px 45px;
+            border-radius: 12px;
+            border: 1px solid rgba(120, 120, 220, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            text-align: center;
+            width: 100%;
+        }
+
+        .register-form h2 {
+            color: #c0d8ff; /* Azul pálido */
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 2em;
+        }
+
+        .register-form .subtitle {
+            color: #a0a0c0;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+            position: relative; /* Para icono de validación */
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 7px;
+            color: #b0c0e0;
+            font-size: 0.85em;
+            font-weight: 400;
+        }
+
+        .input-group label i {
+            margin-right: 8px;
+            color: #8a9fd0;
+            width: 16px;
+            text-align: center;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 11px 15px;
+            padding-right: 40px; /* Espacio para el icono de validación */
+            border: 1px solid rgba(100, 100, 180, 0.3);
+            background-color: rgba(15, 15, 30, 0.6);
+            border-radius: 7px;
+            color: #e0e0e0;
+            font-size: 0.95em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: #778;
+            font-weight: 300;
+        }
+
+        .input-group input:focus {
+            border-color: #a0b8ff;
+            box-shadow: 0 0 8px rgba(160, 184, 255, 0.4);
+        }
+
+        /* Icono de Validación */
+        .validation-icon {
+            position: absolute;
+            right: 12px;
+            top: 38px; /* Ajustar según altura del input y label */
+            font-size: 1.1em;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* Para no interferir con el click en el input */
+        }
+        /* Ajuste para icono en campo de contraseña (debajo de la barra) */
+        #password + .password-strength + .validation-icon {
+             top: 38px; /* Mantenemos la posición relativa al input original */
+        }
+
+
+        .validation-icon.valid {
+            color: #77cc77; /* Verde suave */
+            opacity: 1;
+        }
+        .validation-icon.invalid {
+            color: #ff8888; /* Rojo suave */
+            opacity: 1;
+        }
+
+        /* Password Strength Meter */
+        .password-strength {
+            height: 8px;
+            background-color: rgba(0, 0, 10, 0.5);
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0; /* Oculto por defecto, JS lo mostrará */
+             transition: opacity 0.3s ease;
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%; /* Inicialmente vacío */
+            background-color: #ff6b6b; /* Débil */
+            border-radius: 4px;
+            transition: width 0.4s ease, background-color 0.4s ease;
+        }
+        .strength-text {
+            position: absolute;
+            left: 10px;
+            top: 50%; /* Centrado vertical */
+            transform: translateY(-50%); /* Ajuste fino vertical */
+            font-size: 0.7em;
+            color: #ccc;
+            line-height: 1;
+            opacity: 0; /* Oculto por defecto, JS lo mostrará */
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* Evitar que interfiera */
+        }
+         /* Ya no depende del focus del input, JS controla la opacidad */
+        /* .input-group input:focus + .password-strength .strength-text { */
+            /* opacity: 1; */ /* JS lo hará */
+        /* } */
+
+
+        .submit-button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: linear-gradient(45deg, #5f76e8, #a0b8ff); /* Gradiente suave azul */
+            color: #0a0a1a; /* Texto oscuro para contraste */
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px; /* Espacio antes del botón */
+        }
+
+        .submit-button:hover {
+            background: linear-gradient(45deg, #6a82f0, #b0c8ff);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(95, 118, 232, 0.4);
+        }
+
+        .submit-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(95, 118, 232, 0.3);
+        }
+         .submit-button:disabled {
+            opacity: 0.7;
+            cursor: default;
+            transform: none;
+            box-shadow: none;
+         }
+
+        .submit-button i {
+            transition: transform 0.5s ease;
+        }
+        .submit-button:hover i {
+            transform: rotate(360deg);
+        }
+
+        /* Mensajes generales del formulario */
+        .form-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            display: none; /* Oculto por defecto */
+            text-align: center;
+        }
+        .form-message.success {
+            background-color: rgba(80, 200, 80, 0.2);
+            color: #aaffaa;
+            border: 1px solid rgba(80, 200, 80, 0.4);
+            display: block;
+        }
+        .form-message.error {
+            background-color: rgba(200, 80, 80, 0.2);
+            color: #ffaaaa;
+            border: 1px solid rgba(200, 80, 80, 0.4);
+            display: block;
+        }
+
+
+        .extra-links {
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #a0a0c0;
+        }
+
+        .extra-links a {
+            color: #a0b8ff;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .extra-links a:hover {
+            color: #c0d8ff;
+            text-shadow: 0 0 4px rgba(160, 184, 255, 0.5);
+        }
+
+        /* Estilos para inputs inválidos */
+        .input-group input.invalid {
+            border-color: #ff8888;
+            box-shadow: 0 0 8px rgba(255, 100, 100, 0.4);
+        }
+        /* Mensaje de error contraseña */
+         .password-error-message {
+             color: #ffaaaa;
+             font-size: 0.8em;
+             text-align: left;
+             margin-top: 5px;
+             display: none; /* Oculto por defecto */
+         }
+
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px;
+                align-items: flex-start; /* Alinear arriba en pantallas pequeñas */
             }
-            .formulario {
-                width: 100%;
-                max-width: 600px;
-                padding: 20px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                background-color: #f9f9f9;
-                margin-bottom: 2rem;
+             .register-container {
+                 margin-top: 70px; /* Más espacio para navbar en móvil */
+             }
+            .register-form {
+                padding: 25px 20px;
             }
-            .carousel-inner img {
-                width: 100%;
-                height: auto;
-                object-fit: cover;
+            .register-form h2 {
+                font-size: 1.8em;
             }
-            #myCarousel {
-                width: 100%;
-                max-width: 800px;
-                margin: 2rem auto;
+            .input-group input {
+                padding: 10px 12px;
+                 padding-right: 35px;
             }
-        </style>
-    </head>
-    <body>
-        <div id="myCarousel" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+             .validation-icon {
+                top: 35px; /* Ajuste para móvil */
+            }
+             #password + .password-strength + .validation-icon {
+                 top: 35px; /* Ajuste para móvil */
+             }
+        }
+
+        /* Navbar Fija */
+        header { /* O el contenedor de tu navbar si es diferente */
+            position: fixed; /* Fija la barra */
+            top: 0;          /* Pégala arriba */
+            left: 0;
+            width: 100%;     /* Ancho completo */
+            z-index: 1000;   /* Por encima de otros elementos */
+            /* Asegúrate de que tenga un fondo para que no sea transparente */
+             background-color: rgba(15, 15, 26, 0.9); /* Ejemplo de fondo oscuro semi-transparente */
+             backdrop-filter: blur(5px);
+             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        {% block 'navBar' %} 
+    </header>
+
+    <div class="register-container">
+        <form id="register-form" class="register-form" method="post">
+            {% csrf_token %}
+            <h2>Registrar Usuario</h2>
+            <p class="subtitle">Crea tu cuenta para estar al día con tu declaración</p>
+
+            <!-- Mensajes de Django (si los usas) -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="form-message {% if message.tags %}{{ message.tags }}{% endif %}" style="display: block;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <!-- Mensaje de error/éxito general de JS -->
+            <p id="form-message" class="form-message"></p>
+
+            <div class="input-group">
+                <label for="fullname"><i class="fas fa-user"></i> Nombre Completo</label>
+                <input type="text" id="fullname" name="fullname" placeholder="Ej: Juan Manuel Rodriguez" required>
+                <span class="validation-icon fas"></span>
             </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="{% static 'images/ELIVA.png' %}" class="d-block w-100" alt="Imagen 1">
-                    <div class="container">
-                        <div class="carousel-caption text-start">
-                            <h1>Example headline.</h1>
-                            <p class="opacity-75">Some representative placeholder content for the first slide of the carousel.</p>
-                            <p><a class="btn btn-lg btn-primary" href="#">Sign up today</a></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{% static 'images/ivamoneda.jpg' %}" class="d-block w-100" alt="Imagen 2">
-                    <div class="container">
-                        <div class="carousel-caption">
-                            <h1>Another example headline.</h1>
-                            <p>Some representative placeholder content for the second slide of the carousel.</p>
-                            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="{% static 'images/canvaIVA.png' %}" class="d-block w-100" alt="Imagen 3">
-                    <div class="container">
-                        <div class="carousel-caption text-end">
-                            <h1>One more for good measure.</h1>
-                            <p>Some representative placeholder content for the third slide of this carousel.</p>
-                            <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="input-group">
+                <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                <input type="email" id="email" name="email" placeholder="tu.correo@gmail.com" required>
+                <span class="validation-icon fas"></span>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
+
+            <div class="input-group">
+                <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Crea una clave segura" required>
+                <div class="password-strength">
+                    <div class="strength-bar"></div>
+                    <span class="strength-text"></span>
+                </div>
+                <span class="validation-icon fas"></span> {# Icono de validación para el campo contraseña #}
+            </div>
+
+            <div class="input-group">
+                <label for="confirm_password"><i class="fas fa-lock"></i> Confirmar Contraseña</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Usa la misma contraseña aquí" required>
+                <span class="validation-icon fas"></span> {# Icono de validación para confirmación #}
+                <div id="password_error" class="password-error-message">Las contraseñas no coinciden</div>
+            </div>
+
+             <div class="input-group">
+                <label for="phone"><i class="fas fa-phone"></i> Número de Teléfono (Opcional)</label>
+                <input type="tel" id="phone" name="phone" placeholder="3456781890">
+                <span class="validation-icon fas"></span>
+            </div>
+
+            <div class="input-group">
+                <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección (Opcional)</label>
+                <input type="text" id="address" name="address" placeholder="Calle 85c 70-5">
+                <span class="validation-icon fas"></span>
+            </div>
+
+             <div class="input-group">
+                <label for="city"><i class="fas fa-city"></i> Ciudad (Opcional)</label>
+                <input type="text" id="city" name="city" placeholder="Bogotá">
+                <span class="validation-icon fas"></span>
+            </div>
+
+            <button type="submit" id="register-button" class="submit-button">
+                Completar Registro <i class="fas fa-user"></i> <!-- Icono cambiado -->
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
-        </div>
-        <main class="container registro-container">
-            <div class="formulario">
-                <h2>Registro</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Nombre Completo</label>
-                        <input type="text" class="form-control" id="username" name="username" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Número de Teléfono</label>
-                        <input type="text" class="form-control" id="phone" name="phone" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Dirección</label>
-                        <input type="text" class="form-control" id="address" name="address" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="city" class="form-label">Ciudad</label>
-                        <input type="text" class="form-control" id="city" name="city" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Registrarse</button>
-                </form>
+
+            <div class="extra-links">
+                <span>¿Ya tienes una cuenta?</span><a href="{% url "login" %}">Inicia Sesión</a>
             </div>
-        </main>
-        <br>
-        <div class="ingreso"><p>¿Ya tiene una cuenta?</p><a href="{% url "login" %}">Haga clic aquí</a></div>
-        <br><br>
-        {% endblock  %}
-        
-        {% block piePagina %}{% endblock  %}
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-    </body>
+            <div class="extra-links">
+                <a href="#">Olvidé mi contraseña</a>
+            </div>
+        </form>
+    </div>
+        {% endblock %}
+        {% block "piePagina" %}{% endblock "piePagina" %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('register-form');
+    const fullnameInput = document.getElementById('fullname');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirm_password');
+    const phoneInput = document.getElementById('phone');
+    const addressInput = document.getElementById('address');
+    const cityInput = document.getElementById('city');
+    const registerButton = document.getElementById('register-button');
+    const formMessage = document.getElementById('form-message'); // Mensaje general JS
+    const passwordError = document.getElementById('password_error'); // Mensaje contraseñas no coinciden
+
+    // Elementos para fortaleza de contraseña
+    const strengthMeter = registerForm.querySelector('.password-strength');
+    const strengthBar = strengthMeter.querySelector('.strength-bar');
+    const strengthText = strengthMeter.querySelector('.strength-text');
+
+    // --- Validación en tiempo real ---
+
+    function validateField(input) {
+        const group = input.closest('.input-group');
+        if (!group) return true; // Si no está en un grupo, no validar aquí
+
+        const icon = group.querySelector('.validation-icon');
+        if (!icon) return true; // Si no hay icono, salir
+
+        let isValid = true; // Asumir validez inicial
+        const value = input.value.trim();
+
+        // 1. Check Required
+        if (input.required && value === '') {
+            isValid = false;
+        }
+
+        // 2. Check Specific Types (only if not empty or required)
+        if (isValid && value !== '') {
+            if (input.type === 'email') {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = emailRegex.test(value);
+            } else if (input.type === 'tel') {
+                // Teléfono: permitir números, espacios, +, - (simple)
+                const phoneRegex = /^[+\d\s-]+$/;
+                isValid = phoneRegex.test(value);
+            } else if (input.id === 'password') {
+                 // Podrías añadir una validación mínima aquí (ej. longitud)
+                 // pero la barra de fortaleza ya da feedback.
+                 // Asegurarse de que no está vacío si es required ya se hizo.
+                 // isValid = value.length >= 8; // Ejemplo: mínimo 8 caracteres
+            } else if (input.id === 'confirm_password') {
+                // La validación de coincidencia se hará al perder foco o al enviar
+                 isValid = passwordInput.value === value;
+                 passwordError.style.display = isValid ? 'none' : 'block';
+            }
+        }
+
+        // Actualizar icono y clase del input
+        input.classList.remove('invalid', 'valid'); // Limpiar clases
+        icon.classList.remove('fa-check-circle', 'fa-times-circle', 'valid', 'invalid'); // Limpiar clases icono
+
+        if (value === '' && !input.required) {
+            // Campo opcional vacío: sin icono, válido
+             icon.style.opacity = '0';
+        } else if (value === '' && input.required) {
+            // Campo requerido vacío: icono de error
+             input.classList.add('invalid');
+             icon.classList.add('fa-times-circle', 'invalid');
+             icon.style.opacity = '1';
+        } else if (isValid) {
+            input.classList.add('valid');
+            icon.classList.add('fa-check-circle', 'valid');
+             icon.style.opacity = '1';
+        } else {
+            input.classList.add('invalid');
+            icon.classList.add('fa-times-circle', 'invalid');
+             icon.style.opacity = '1';
+        }
+
+        return isValid || (value === '' && !input.required); // Válido si cumple o es opcional vacío
+    }
+
+    // Añadir listeners para validación al escribir o perder foco
+    const fieldsToValidate = [fullnameInput, emailInput, passwordInput, confirmPasswordInput, phoneInput, addressInput, cityInput];
+    fieldsToValidate.forEach(input => {
+        input.addEventListener('input', () => validateField(input));
+        input.addEventListener('blur', () => validateField(input)); // Revalidar al perder foco
+    });
+
+     // --- Indicador de Fortaleza de Contraseña ---
+    passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        let strength = 0;
+        let text = '';
+        let color = '#444'; // Color base si está vacío
+
+        if (password.length === 0) {
+            strengthMeter.style.opacity = '0'; // Ocultar barra y texto
+            strengthText.style.opacity = '0';
+            strengthBar.style.width = '0%';
+             validateField(passwordInput); // Revalidar (mostrará error si es requerido y vacío)
+            return; // Salir si no hay contraseña
+        }
+
+        // Calcular fortaleza
+        if (password.length >= 8) strength++;       // Longitud
+        if (password.match(/[A-Z]/)) strength++;    // Mayúscula
+        if (password.match(/[a-z]/)) strength++;    // Minúscula
+        if (password.match(/[0-9]/)) strength++;    // Número
+        if (password.match(/[^A-Za-z0-9\s]/)) strength++; // Símbolo (excluye espacios)
+
+        const percentage = Math.max(10, (strength / 5) * 100); // Mínimo 10% si hay algo escrito
+        strengthBar.style.width = `${percentage}%`;
+        strengthMeter.style.opacity = '1'; // Mostrar contenedor de la barra
+        strengthText.style.opacity = '1'; // Mostrar texto
+
+        // Determinar texto y color
+        if (strength <= 1) {
+            text = 'Muy Débil';
+            color = '#ff4d4d'; // Rojo más fuerte
+        } else if (strength === 2) {
+            text = 'Débil';
+            color = '#ff8c66'; // Naranja-Rojo
+        } else if (strength === 3) {
+            text = 'Media';
+            color = '#ffd24d'; // Amarillo/Naranja
+        } else if (strength === 4) {
+            text = 'Fuerte';
+            color = '#a6ff4d'; // Verde lima
+        } else {
+            text = 'Muy Fuerte';
+            color = '#53d953'; // Verde más intenso
+        }
+
+        strengthBar.style.backgroundColor = color;
+        strengthText.textContent = text;
+
+        // Revalidar campo de contraseña y confirmación
+        validateField(passwordInput);
+        validateField(confirmPasswordInput); // Actualizar icono de confirmación también
+    });
+
+     // --- Validación de Confirmación de Contraseña (también al escribir en confirmación) ---
+     confirmPasswordInput.addEventListener('input', () => {
+         validateField(confirmPasswordInput); // Llama a la función que ya incluye la comparación
+     });
+
+
+    // --- Manejo del Envío del Formulario ---
+    registerForm.addEventListener('submit', (event) => {
+        // Prevenir envío por defecto para hacer validación JS completa
+        event.preventDefault();
+
+        // Limpiar mensaje global
+        formMessage.textContent = '';
+        formMessage.className = 'form-message'; // Reset clase
+
+        // Validar todos los campos al intentar enviar
+        let isFormValid = true;
+        fieldsToValidate.forEach(input => {
+            if (!validateField(input)) {
+                isFormValid = false;
+                console.log("Campo inválido:", input.id); // Para depuración
+            }
+        });
+
+        // Comprobar específicamente que las contraseñas coincidan (ya debería estar reflejado por validateField)
+        if (passwordInput.value !== confirmPasswordInput.value && confirmPasswordInput.required) {
+            isFormValid = false;
+             passwordError.style.display = 'block'; // Asegurarse de que el mensaje de error es visible
+             console.log("Las contraseñas no coinciden"); // Para depuración
+        } else {
+             passwordError.style.display = 'none';
+        }
+
+        // Comprobar fortaleza mínima (ejemplo: al menos 'Media')
+         const currentPasswordStrength = passwordInput.value.length > 0 ? (strengthBar.style.width.replace('%','') / 20) : 0; // Aproximación de 0 a 5
+         if (passwordInput.required && currentPasswordStrength < 2) { // Si es requerida y menos que "Débil" (fuerza 2)
+             // isFormValid = false; // Descomenta si quieres forzar una fortaleza mínima
+             // showMessage('La contraseña es demasiado débil.', 'error');
+             // console.log("Contraseña débil");
+             // Podrías añadir un mensaje específico para esto
+         }
+
+
+        if (isFormValid) {
+            showMessage('Enviando registro...', 'info'); // Mensaje informativo (temporal)
+            registerButton.disabled = true;
+            registerButton.innerHTML = 'Procesando... <i class="fas fa-spinner fa-spin"></i>'; // Feedback visual
+
+            // **AQUÍ es donde el formulario se enviaría REALMENTE al servidor**
+            // Como tenemos preventDefault(), necesitamos enviarlo explícitamente si todo está OK.
+            // Eliminamos el preventDefault y dejamos que el navegador envíe,
+            // o usamos fetch() para enviarlo asíncronamente.
+
+            // Opción 1: Permitir el envío normal del navegador
+             // event.target.submit(); // Esto reenviaría el formulario de forma tradicional
+
+            // Opción 2: (Más moderna, si manejas la respuesta con JS) Usar Fetch API
+             /*
+             const formData = new FormData(registerForm);
+             fetch(registerForm.action, { // Usa la URL del action del form
+                 method: 'POST',
+                 body: formData,
+                 headers: {
+                     // Necesario si usas CSRF token de Django y fetch
+                     'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                 }
+             })
+             .then(response => response.json()) // O response.text() según lo que devuelva tu backend
+             .then(data => {
+                 console.log('Respuesta del servidor:', data);
+                 if (data.success) { // Asumiendo que tu backend devuelve un JSON con {success: true/false}
+                     showMessage('¡Registro completado con éxito!', 'success');
+                     // Opcional: redirigir o limpiar form
+                     // window.location.href = "{% url 'login' %}"; // Redirige a login
+                     registerForm.reset(); // Limpia el formulario
+                     // Resetear iconos y barra
+                     fieldsToValidate.forEach(input => {
+                         const group = input.closest('.input-group');
+                         if(group) {
+                            const icon = group.querySelector('.validation-icon');
+                            if(icon) icon.className = 'validation-icon fas'; // Reset
+                         }
+                         input.classList.remove('valid', 'invalid');
+                     });
+                     strengthMeter.style.opacity = '0';
+                     strengthBar.style.width = '0%';
+                     strengthText.textContent = '';
+
+                 } else {
+                     showMessage(data.message || 'Error en el registro. Revisa los datos.', 'error');
+                 }
+             })
+             .catch(error => {
+                 console.error('Error en fetch:', error);
+                 showMessage('Error de conexión al intentar registrar.', 'error');
+             })
+             .finally(() => {
+                 // Reactivar botón independientemente del resultado (si no hay redirección)
+                 registerButton.disabled = false;
+                 registerButton.innerHTML = 'Completar Registro <i class="fas fa-paper-plane"></i>';
+             });
+             */
+
+            // *** PARA QUE FUNCIONE CON TU CÓDIGO DJANGO ACTUAL ***
+            // La forma más simple es quitar el preventDefault() SI Y SOLO SI
+            // todas las validaciones JS pasan. O mejor, llamar a form.submit()
+
+            console.log("Formulario válido, enviando...");
+            registerForm.submit(); // Envía el formulario de la manera tradicional
+
+        } else {
+            showMessage('Por favor, corrige los campos marcados en rojo.', 'error');
+            // Asegurar que el botón esté habilitado si la validación falla
+            registerButton.disabled = false;
+            registerButton.innerHTML = 'Completar Registro <i class="fas fa-paper-plane"></i>';
+        }
+    });
+
+    function showMessage(message, type) {
+        formMessage.textContent = message;
+        // Asegúrate de que type sea 'success', 'error' o 'info' (o añade estilos para 'info')
+        formMessage.className = `form-message ${type}`;
+        formMessage.style.display = 'block'; // Asegurar que sea visible
+    }
+});
+</script>
+{% endblock  %}c
+</body>
 </html>

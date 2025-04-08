@@ -19,7 +19,7 @@
 
         </style>
     </head> 
-
+   
     <body>
         {% block navBar %} 
         <header>
@@ -36,9 +36,6 @@
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="{% url 'login' %}">Ingresar</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Conócenos *</a>
-                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Información *
@@ -54,7 +51,7 @@
                             <a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'nosotros' %}">Contactenos *</a>                    
+                            <a class="nav-link" href="{% url 'contactenos' %}">Contactenos</a>                    
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'crud' %}">ADMIN</a>                    
@@ -106,7 +103,7 @@
         {% block piePagina %}
         <footer class="piePag">
             <!-- place footer here -->
-            <h6 style="text-align: center;">© Derechos Reservados 2025. &nbsp;&nbsp;&nbsp;&nbsp; IVACOL, Tu app para gestionar el Iva.</h6>
+            <h6 style="text-align: center;">© 2025 Derechos Reservados. &nbsp;&nbsp;&nbsp;&nbsp; IVACOL, Tu app para gestionar el Iva.</h6>
         </footer>
         {% endblock %}
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
