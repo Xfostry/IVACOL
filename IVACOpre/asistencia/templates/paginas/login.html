@@ -1,0 +1,413 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Acceder a tu cuenta {% endblock  %}</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Font Awesome para iconos (Opcional) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        /* Reset básico y fuentes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html {
+    height: 100%;
+    margin: 0;
+    padding-top: 60px; /* Asegura espacio para la navbar */
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    /* Cambia la altura a auto para permitir el desplazamiento */
+    height: auto; 
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Cambia a flex-start para que el contenido se alinee al inicio */
+    color: #e0e0e0;
+    background: linear-gradient(-45deg, #0b001a, #1a0033, #0d0d2e, #001f3f);
+    background-size: 400% 400%;
+    animation: cosmicGradient 25s ease infinite;
+    padding-top: 60px; /* Mantén el padding para la navbar */
+    overflow: auto; /* Permite el desplazamiento */
+}
+
+/* Animación para el gradiente */
+@keyframes cosmicGradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animación sutil para imagen de fondo (Opcional) */
+@keyframes subtleMovement {
+    from { background-position: 0% 0%; }
+    to { background-position: 10% 5%; }
+}
+
+.login-container {
+    perspective: 1000px; /* Para efectos 3D si se añaden después */
+}
+
+.login-form {
+    background: rgba(10, 10, 30, 0.75); /* Fondo semi-transparente oscuro */
+    padding: 40px 50px;
+    border-radius: 15px;
+    border: 1px solid rgba(100, 100, 220, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 15px rgba(100, 150, 255, 0.1); /* Sombra y brillo interno sutil */
+    text-align: center;
+    width: 450px;
+    max-width: 90%;
+    backdrop-filter: blur(5px); /* Efecto cristal esmerilado */
+    animation: floatForm 6s ease-in-out infinite alternate; /* Animación flotante sutil */
+}
+
+@keyframes floatForm {
+    from { transform: translateY(-5px); }
+    to { transform: translateY(5px); }
+}
+
+
+.login-form h2 {
+    font-family: 'Orbitron', sans-serif; /* Fuente más futurista/cósmica */
+    color: #9dceff; /* Azul claro neón */
+    margin-bottom: 10px;
+    font-size: 2.2em;
+    text-shadow: 0 0 8px rgba(157, 206, 255, 0.7);
+}
+
+.login-form .subtitle {
+    color: #a0a0c0;
+    margin-bottom: 30px;
+    font-size: 0.9em;
+    font-weight: 300;
+}
+
+.input-group {
+    margin-bottom: 25px;
+    text-align: left;
+    position: relative; /* Para posicionar el icono */
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b0c4de; /* Azul acero claro */
+    font-size: 0.9em;
+    font-weight: 400;
+}
+
+.input-group label i {
+    margin-right: 8px;
+    color: #7f9ae0; /* Icono un poco más brillante */
+    width: 15px; /* Alineación */
+    text-align: center;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(100, 100, 220, 0.4);
+    background-color: rgba(0, 0, 10, 0.5); /* Fondo del input muy oscuro */
+    border-radius: 8px;
+    color: #e0e0e0;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none; /* Quitar borde de focus por defecto */
+}
+
+.input-group input::placeholder {
+    color: #777;
+    font-style: italic;
+    font-weight: 300;
+}
+
+.input-group input:focus {
+    border-color: #9dceff; /* Borde azul brillante al enfocar */
+    box-shadow: 0 0 10px rgba(157, 206, 255, 0.5); /* Resplandor al enfocar */
+}
+
+.portal-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #4a00e0, #8e2de2); /* Gradiente violeta/azul */
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden; /* Para contener el brillo */
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    display: flex; /* Para alinear texto e icono */
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Espacio entre texto e icono */
+    animation: pulseButton 2s infinite ease-in-out; /* Animación pulsante */
+}
+
+.portal-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(142, 45, 226, 0.6);
+}
+
+.portal-button:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(142, 45, 226, 0.5);
+}
+
+/* Animación pulsante para el botón */
+@keyframes pulseButton {
+    0% { box-shadow: 0 0 5px rgba(142, 45, 226, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(157, 206, 255, 0.8); } /* Brillo más azulado en el pulso */
+    100% { box-shadow: 0 0 5px rgba(142, 45, 226, 0.5); }
+}
+
+.button-icon {
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.portal-button:hover .button-icon {
+    transform: rotate(15deg) scale(1.1); /* El cohete se inclina un poco al pasar el ratón */
+}
+
+.error-message, .success-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    display: none; /* Oculto por defecto */
+}
+
+.error-message {
+    background-color: rgba(255, 50, 50, 0.2);
+    color: #ffaaaa;
+    border: 1px solid rgba(255, 50, 50, 0.5);
+}
+
+.success-message {
+    background-color: rgba(50, 255, 50, 0.2);
+    color: #aaffaa;
+    border: 1px solid rgba(50, 255, 50, 0.5);
+}
+
+.extra-links {
+    margin-top: 25px;
+    font-size: 0.85em;
+}
+
+.extra-links a {
+    color: #9dceff;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.extra-links a:hover {
+    color: #fff;
+    text-shadow: 0 0 5px rgba(157, 206, 255, 0.7);
+}
+
+/* Clases para JS */
+.form-error .input-group input {
+    border-color: #ff5555;
+    animation: shake 0.3s ease-in-out;
+}
+.form-error .portal-button {
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Responsive (ajuste básico) */
+@media (max-width: 450px) {
+    .login-form {
+        padding: 30px 25px;
+    }
+    .login-form h2 {
+        font-size: 1.8em;
+    }
+}
+.navbar {
+    position: absolute;  /* Fija la barra en la parte superior */
+    top: 0;             /* Se asegura de que esté pegada arriba */
+    left: 0;
+    width: 100%;        /* Ocupa todo el ancho */
+    z-index: 1000;      /* Evita que otros elementos la cubran */
+}
+
+.column-right h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+@media (max-width: 768px) {
+    .login-container {
+        padding-top: 100px; /* Más espacio en pantallas pequeñas si la navbar es más alta */
+    }
+}
+
+.column-right {
+    min-width: 300px;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+            <form id="login-form" class="login-form" method="post">
+                {% csrf_token %}
+                <h2>Iniciar Sesión</h2>
+                <p class="subtitle">Introduce tus datos de usuario</p>
+    
+                <div class="input-group">
+                    <label for="username"><i class="fas fa-user-astronaut"></i> Usuario</label>
+                    <input type="text" id="username" name="username" placeholder="Nombre" required>
+                </div>
+    
+                <div class="input-group">
+                    <label for="password"><i class="fas fa-key"></i> Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="abcd1234" required>
+                </div>
+    
+                <button type="submit" id="login-button" class="portal-button">
+                    <span class="button-text">Confirmar</span>
+                    <span class="button-icon"><i class="fas fa-rocket"></i></span>
+                </button>
+    
+                <p id="error-message" class="error-message"></p>
+                <p id="success-message" class="success-message"></p>
+    
+                <div class="extra-links">
+                    <a href="#">¿Olvidaste tu contraseña?</a><br><br>
+                    <a href="{% url "registrarse" %}">Registrarse</a>
+                </div>
+            </form>
+        
+        <div class="column-right">
+            <h2>¡Estás a un solo paso de tomar control de tu vida financiera!</h2><br>
+            <ul class="info-list">
+                <li>
+                    <h4>✅ Tu tienes el control </h4> 
+                    <p>Encuentra todas las herramientas que necesitas.</p>
+                </li>
+                <li>
+                    <h4>🔒 Es seguro </h4> 
+                    <p>Evitamos que suplanten tu identidad mediante nuestra seguridad.</p>
+                </li>
+                <li>
+                    <h4>🕰️ No toma mucho tiempo </h4> 
+                    <p>Puedes acceder a tu información y ver reportes en cualquier momento.</p>
+                </li>
+            </ul>
+        </div>
+    </div><br><br><br>
+    {% endblock %}
+    {% block piePagina %}{% endblock  %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('login-form');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+        const loginButton = document.getElementById('login-button');
+    
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar el envío real del formulario
+    
+            // Limpiar mensajes y clases de estado anteriores
+            errorMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            successMessage.textContent = '';
+            successMessage.style.display = 'none';
+            loginForm.classList.remove('form-error');
+    
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+    
+            // Validación simple (solo para demostración)
+            if (username === '' || password === '') {
+                showError('Ambos campos son requeridos.');
+                return;
+            }
+    
+            // Simulación de autenticación
+            // ¡¡IMPORTANTE: NUNCA hagas esto en producción!!
+            // La autenticación real debe hacerse en el servidor.
+            if (username === 'cosmo' && password === 'portal123') {
+                showSuccess('¡Acceso concedido! Iniciando viaje...');
+    
+                // Deshabilitar botón para evitar doble clic
+                loginButton.disabled = true;
+                loginButton.style.opacity = '0.7';
+                loginButton.style.cursor = 'wait';
+    
+                // Simular redirección después de un breve retraso
+                setTimeout(() => {
+                    // Aquí redirigirías a la página principal
+                    // window.location.href = '/dashboard';
+                    alert('¡Bienvenido, Viajero Cósmico! (Redirección simulada)');
+                    // Reactivar botón por si el usuario vuelve atrás (o para reintentar)
+                    loginButton.disabled = false;
+                    loginButton.style.opacity = '1';
+                    loginButton.style.cursor = 'pointer';
+                    successMessage.style.display = 'none'; // Ocultar mensaje de éxito
+                }, 2000); // Espera 2 segundos
+    
+            } else {
+                showError('Credenciales incorrectas. Verifica tu código de portal.');
+                // Aplicar clase de error para animación 'shake'
+                loginForm.classList.add('form-error');
+                // Quitar la clase después de la animación para poder volver a aplicarla
+                setTimeout(() => {
+                    loginForm.classList.remove('form-error');
+                }, 400); // Duración un poco mayor que la animación
+            }
+        });
+    
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+    
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+    });
+</script>
+</body>
+</html>

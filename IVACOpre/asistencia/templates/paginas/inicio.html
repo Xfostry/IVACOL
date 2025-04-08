@@ -1,0 +1,240 @@
+
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+{% load static %}
+
+<!Doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <title>{% block titulo %} IVACO {% endblock  %}</title>
+    <link rel="shortcut icon" href="{% static 'favicon.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="{% static 'css/heroes.css' %}" rel="stylesheet">
+    <style>
+      body.dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+      .dark-mode .bg-body-tertiary {
+        background-color: #1f1f1f !important;
+      }
+      .dark-mode .btn-primary {
+        background: linear-gradient(to bottom,rgba(73, 73, 73, 0.58), #e0e0e0) !important; /* Vertical gradient */
+        border-color: rgb(33, 18, 247);
+        color: rgb(0, 0, 0);
+        border-width: 2px;
+    }
+    .dark-mode .btn-primary:hover {
+        background: linear-gradient(to bottom,rgb(184, 184, 184),rgb(148, 145, 145)) !important; /* Reverse gradient on hover */
+        color:rgb(0, 0, 0) !important; /* Ensure text is visible on hover */
+    }
+      .dark-mode .btn-outline-secondary {
+        border-color:rgb(33, 18, 247);
+        color:rgb(230, 230, 230);
+      }
+      .dark-mode .navbar, .dark-mode .navbar a, .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6 {
+        color: #ffffff !important;
+      }
+      .dark-mode .form-control {
+        background-color: #333333;
+        color: #ffffff;
+        border-color: #555555;
+      }
+      .dark-mode .form-control::placeholder {
+        color: #bbbbbb;
+      }
+      .dark-mode .text-body-secondary {
+        color: #bbbbbb !important;
+      }
+      .b-example-divider {
+        background-color:rgb(148, 154, 160); /* Blue color for normal mode */
+        border: none;
+      }
+      
+      .dark-mode .b-example-divider {
+          background-color:rgb(148, 154, 160); /* Darker blue for dark mode */
+      }    
+    .btn-primary:hover {
+        color: #ffffff !important; /* Ensure text is visible on hover */
+    }
+        .custom-theme-toggle {
+        border-right: 2px solid #ccc; /* Add a right border */
+        padding: 0.25rem 0.5rem; /* Adjust padding for a smaller button */
+        font-size: 0.875rem; /* Smaller font size */
+        background-color: #007bff; /* Blue background */
+        color: #ffffff; /* White text color */
+        transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+        margin-right: 1rem; /* Custom margin to separate from the search form */
+    }
+    
+    .custom-theme-toggle:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        color: #ffffff; /* White text on hover */
+    }
+    
+    .dark-mode .custom-theme-toggle {
+        background-color: #007bff; /* Blue background for dark mode */
+        color: #ffffff; /* White text color */
+        border-color: #007bff; /* Blue border color */
+    }
+    
+    .dark-mode .custom-theme-toggle:hover {
+        background-color: #0056b3; /* Darker blue on hover in dark mode */
+        color: #ffffff; /* White text on hover */
+    }
+    .btn-theme-toggle {
+        background-color: #007bff; /* Blue background */
+        color: #ffffff; /* White text color */
+        border: 2px solid #ffffff; /* White border */
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Smooth transition */
+        padding: 0.25rem 0.5rem; /* Adjust padding for a smaller button */
+        font-size: 0.875rem; /* Smaller font size */
+    }
+    
+    .btn-theme-toggle:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+        color: #ffffff; /* White text on hover */
+        border-color: #ffffff; /* Maintain white border on hover */
+    }
+    @media (prefers-color-scheme: light) {
+      .btn-secondary {
+        background-color: white;
+        border: 2px solid blue;
+        color: blue;
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      .modal-body {
+        color: black; /* Ensures text and title are visible on dark backgrounds */
+      }
+      .modal-header {
+        background-color: #333333; /* Dark background for modal header */
+        color: #ffffff; /* White text for modal header */
+      }
+    }
+    </style>
+  </head>
+  <body>
+    <header>
+      <!-- Aquí puedes agregar un logo o un título para el sitio -->
+    </header>
+    <main>
+      <div class="container col-xxl-8 px-4 py-5">
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+          <div class="col-10 col-sm-8 col-lg-6">
+            <img src="{% static 'images/canvaIVA.png' %}" class="d-block mx-lg-auto img-fluid" alt="Bootstrap Themes" width="700" height="500" loading="lazy">
+          </div>
+          <div class="col-lg-6">
+            <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">IVACO TE AYUDA</h1>
+            <p class="lead">Nuestra intención es proporcionarle a toda Colombia una herramienta para poder gestionar y mantener controlado el estado de declaración del IVA.</p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+              <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Lo sabía</button>
+              <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#infoModal">
+                Quiero saber más
+              </button>
+              <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="infoModalLabel">Información Adicional</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      En IVACO, nuestra misión es Diseñar, desarrollar e implementar un sistema eficiente para la gestión del IVA, orientado a brindar a los ciudadanos una herramienta accesible, justa y segura que fomente la confianza en el sistema tributario y contribuya al desarrollo económico nacional.
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="b-example-divider"></div>
+
+      <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <div class="row align-items-center g-lg-5 py-5">
+          <div class="col-lg-7 text-center text-lg-start">
+            <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3">¿Cómo inicio a usar la herramienta?</h1>
+            <p class="col-lg-10 fs-4">Queremos tener un control de usuarios para poner administrar un mejor servicio y así ayudar a más personas, si quieres tener acceso puedes llenar la información para recibir una respuesta.</p>
+          </div>
+          <div class="col-md-10 mx-auto col-lg-5">
+            <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary">
+              <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="floatingInput" placeholder="" name="correo" id="correo" required>
+                <label for="floatingInput">Dirección de correo</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="name" class="form-control" id="Name" placeholder="" name="nombre" id="nombre" required>
+                <label for="Name">Nombre</label>
+              </div>
+              <div class="checkbox mb-3">
+                <label>
+                  <input type="checkbox" value="remember-me"> Acepto el tratamiento de mis datos personales.
+                </label>
+              </div>
+              <button class="w-100 btn btn-lg btn-primary" type="submit">Enviar</button>
+              <hr class="my-4">
+              <small class="text-body-secondary">Al dar clic en Enviar, aceptas los términos de uso.</small>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="b-example-divider"></div>
+
+      <div class="bg-dark text-secondary px-4 py-5 text-center">
+        <div class="py-5">
+          <h1 class="display-5 fw-bold text-white">Más pronto</h1>
+          <div class="col-lg-6 mx-auto">
+            <p class="fs-5 mb-4"></p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+              <button type="button" class="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold"></button>
+              <button type="button" class="btn btn-outline-light btn-lg px-4"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="b-example-divider mb-0"></div>
+    </main>
+
+    <script>
+      function toggleDarkMode() {
+        document.body.classList.toggle('dark-mode');
+        const themeText = document.getElementById('bd-theme-text');
+        const darkModeIcon = document.getElementById('dark-mode-icon');
+        const lightModeIcon = document.getElementById('light-mode-icon');
+      
+        if (document.body.classList.contains('dark-mode')) {
+          themeText.textContent = 'Modo Claro';
+          darkModeIcon.style.display = 'none';
+          lightModeIcon.style.display = 'inline';
+        } else {
+          themeText.textContent = 'Modo Oscuro';
+          darkModeIcon.style.display = 'inline';
+          lightModeIcon.style.display = 'none';
+        }
+      }
+    </script>
+    <script>
+      document.getElementById('infoButton').addEventListener('click', function() {
+        var infoBox = document.getElementById('infoBox');
+        if (infoBox.style.display === 'none') {
+          infoBox.style.display = 'block';
+        } else {
+          infoBox.style.display = 'none';
+        }
+      });
+    </script>
+    {% endblock  %}
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+  </body>
+</html>

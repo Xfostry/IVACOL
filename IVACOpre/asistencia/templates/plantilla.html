@@ -1,0 +1,169 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <title> {% block titulo %} {% endblock  %} </title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <link rel="stylesheet" href="{% static 'css/plantilla.css' %}">
+        <style>
+            .navbar-toggler {
+                border-color: #ffffff; /* White border for the toggler button */
+            }
+            .navbar-toggler-icon {
+                background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+            }
+
+        </style>
+    </head> 
+   
+    <body>
+        {% block navBar %} 
+        <header>
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid" style="background-color:rgb(29, 34, 36);">
+                <a class="navbar-brand" href="/"><img src="{% static 'images/ivamoneda.jpg' %}" class="imageniva"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="50" height="50" viewBox="0 0 128 128">
+                        <path fill="#fff" d="M64 14A50 50 0 1 0 64 114A50 50 0 1 0 64 14Z"></path><path fill="#444b54" d="M64,117c-29.2,0-53-23.8-53-53s23.8-53,53-53s53,23.8,53,53S93.2,117,64,117z M64,17c-25.9,0-47,21.1-47,47s21.1,47,47,47s47-21.1,47-47S89.9,17,64,17z"></path><path fill="#444b54" d="M86.5 52h-45c-1.7 0-3-1.3-3-3s1.3-3 3-3h45c1.7 0 3 1.3 3 3S88.2 52 86.5 52zM86.5 67h-45c-1.7 0-3-1.3-3-3s1.3-3 3-3h45c1.7 0 3 1.3 3 3S88.2 67 86.5 67z"></path><g><path fill="#444b54" d="M86.5,82h-45c-1.7,0-3-1.3-3-3s1.3-3,3-3h45c1.7,0,3,1.3,3,3S88.2,82,86.5,82z"></path></g>
+                        </svg>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="{% url 'login' %}">Ingresar</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Información *
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#">Actualizaciones</a></li>
+                                <li><a class="dropdown-item" href="#">Notas</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Ayúdanos a mejorar</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'contactenos' %}">Contactenos</a>                    
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'crud' %}">ADMIN</a>                    
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'presentacion' %}">Presentación</a>                    
+                        </li>
+                    </ul>
+                    <button class="btn btn-theme-toggle py-1 px-2 d-flex align-items-center" id="bd-theme" type="button" aria-label="Toggle theme">
+                        <span class="text-white">Modo &nbsp;</span>
+                        <span id="dark-mode-icon" class="theme-icon">
+                            <!-- Luna para modo oscuro -->
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                                <g>
+                                    <path d="M0 0h24v24H0z" fill="none"/>
+                                    <path d="M10 6a8 8 0 0 0 11.955 6.956C21.474 18.03 17.2 22 12 22 6.477 22 2 17.523 2 12c0-5.2 3.97-9.474 9.044-9.955A7.963 7.963 0 0 0 10 6z" fill="#ffffff" fill-rule="nonzero"/>
+                                </g>
+                            </svg>
+                        </span>
+                        <span id="light-mode-icon" class="theme-icon" style="display: none;">
+                            <!-- Sol para modo claro -->
+                            <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+                                <rect fill="none" height="256" width="256"/>
+                                <circle cx="128" cy="128" fill="none" r="60" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="128" x2="128" y1="36" y2="16"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="62.9" x2="48.8" y1="62.9" y2="48.8"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="36" x2="16" y1="128" y2="128"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="62.9" x2="48.8" y1="193.1" y2="207.2"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="128" x2="128" y1="220" y2="240"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="193.1" x2="207.2" y1="193.1" y2="207.2"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="220" x2="240" y1="128" y2="128"/>
+                                <line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="193.1" x2="207.2" y1="62.9" y2="48.8"/>
+                            </svg>
+                        </span>
+                    </button>&nbsp;&nbsp;
+                    <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Búsqueda" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Buscar</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        </header>
+        {% endblock %}
+        <main>
+            {% block contenido %} 
+            {% endblock %}
+        </main>
+        {% block piePagina %}
+        <footer class="piePag">
+            <!-- place footer here -->
+            <h6 style="text-align: center;">© 2025 Derechos Reservados. &nbsp;&nbsp;&nbsp;&nbsp; IVACOL, Tu app para gestionar el Iva.</h6>
+        </footer>
+        {% endblock %}
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleButton = document.getElementById('bd-theme');
+                const body = document.body;
+
+                // Check for saved user preference, if any, on load of the website
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme) {
+                    body.classList.add(currentTheme);
+                    updateThemeIcons(currentTheme);
+                }
+
+                toggleButton.addEventListener('click', function() {
+                    body.classList.toggle('dark-mode');
+                    let theme = 'light-mode';
+                    if (body.classList.contains('dark-mode')) {
+                        theme = 'dark-mode';
+                    }
+                    // Save the user's preference in localStorage
+                    localStorage.setItem('theme', theme);
+                    updateThemeIcons(theme);
+                });
+
+                function updateThemeIcons(theme) {
+                    const darkModeIcon = document.getElementById('dark-mode-icon');
+                    const lightModeIcon = document.getElementById('light-mode-icon');
+
+                    if (theme === 'dark-mode') {
+                        darkModeIcon.style.display = 'none';
+                        lightModeIcon.style.display = 'inline';
+                    } else {
+                        darkModeIcon.style.display = 'inline';
+                        lightModeIcon.style.display = 'none';
+                    }
+                }
+            });
+        </script>
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+              let lastScrollTop = 0;
+              const navbar = document.querySelector('.navbar');
+      
+              window.addEventListener('scroll', function() {
+                  const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+      
+                  if (currentScroll > lastScrollTop) {
+                      // Scrolling down
+                      navbar.classList.add('hidden');
+                  } else {
+                      // Scrolling up
+                      navbar.classList.remove('hidden');
+                  }
+      
+                  lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // For Mobile or negative scrolling
+              });
+          });
+      </script>
+    </body>
+</html>
