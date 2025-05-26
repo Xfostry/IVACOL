@@ -1,0 +1,333 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Registro de Usuario {% endblock %}</title> <!-- Título más descriptivo -->
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href=" {% static "css/registrarse.css" %} ">
+</head>
+<body class="light-mode"> <!-- Puedes añadir 'light-mode' o 'dark-mode' para probar -->
+<br>
+    <div class="register-container">
+        <form id="register-form" class="register-form" method="post" action="{% url 'registrarse' %}" novalidate>
+            {% csrf_token %}
+            <h2>Registrar Usuario</h2>
+            <p class="subtitle">Crea tu cuenta para estar al día con tu declaración</p>
+
+            <!-- Mensajes Django -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="form-message {% if message.tags %}{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}{% endif %}" style="display: block;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <!-- Mensaje JS -->
+            <p id="form-message" class="form-message"></p>
+
+             <!-- [ ... RESTO DEL CONTENIDO DEL FORMULARIO HTML SIN CAMBIOS ... ] -->
+            <div class="input-group"> <label for="fullname"><i class="fas fa-user"></i> Nombre Completo</label> <input type="text" id="fullname" name="fullname" placeholder="Ej: Juan Manuel Rodriguez" required> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label> <input type="email" id="email" name="email" placeholder="tu.correo@example.com" required> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="doc_type"><i class="fas fa-id-card"></i> Tipo de Documento</label> <select id="doc_type" name="doc_type" required> <option value="" selected disabled>Seleccione una opción</option> <option value="CC">Cédula de Ciudadanía (CC)</option> <option value="CE">Cédula de Extranjería (CE)</option> <option value="PEP">Permiso Especial de Permanencia (PEP)</option> <option value="PPT">Permiso por Protección Temporal (PPT)</option> <option value="RUT">Registro Único Tributario (RUT)</option> <option value="NIT">Número de Identificación Tributaria (NIT)</option> </select> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="doc_number"><i class="fas fa-hashtag"></i> Número de Documento</label> <input type="text" id="doc_number" name="doc_number" placeholder="Ingrese el número sin puntos ni comas" required> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="gender"><i class="fas fa-venus-mars"></i> Género</label> <select id="gender" name="gender" required> <option value="" selected disabled>Selecciona tu género</option> <option value="masculino">Masculino</option> <option value="femenino">Femenino</option> <option value="otro">Otro</option> <option value="no_especificado">Prefiero no decir</option> </select> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="password"><i class="fas fa-lock"></i> Contraseña</label> <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required> <div class="password-strength"> <div class="strength-bar"></div> <span class="strength-text"></span> </div> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="confirm_password"><i class="fas fa-lock-open"></i> Confirmar Contraseña</label> <input type="password" id="confirm_password" name="confirm_password" placeholder="Repite la contraseña" required> <span class="validation-icon fas"></span> <div id="password_error" class="password-error-message">Las contraseñas no coinciden</div> </div>
+            <div class="input-group"> <label for="phone"><i class="fas fa-phone"></i> Número de Teléfono</label> <input type="tel" id="phone" name="phone" placeholder="Ej: 3001234567" required> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección </label> <input type="text" id="address" name="address" placeholder="Ej: Calle 10 # 20-30 Apto 101" required> <span class="validation-icon fas"></span> </div>
+            <div class="input-group"> <label for="city"><i class="fas fa-city"></i> Ciudad </label> <input type="text" id="city" name="city" placeholder="Ej: Bogotá D.C."required> <span class="validation-icon fas"></span> </div>
+            <button type="submit" id="register-button" class="submit-button"> Completar Registro <i class="fas fa-user-plus"></i> </button>
+            <div class="extra-links"> <span>¿Ya tienes una cuenta?</span><a href="{% url "login" %}">Inicia Sesión</a> </div>
+            <div class="extra-links"> <a href="{% url "solicitarContra" %}">¿Olvidaste tu contraseña?</a> </div>
+
+        </form>
+    </div>
+{% endblock %}
+{% block "piePagina" %} {% endblock "piePagina" %}
+
+        <script>
+            // [ ... TODO EL CÓDIGO JAVASCRIPT DE VALIDACIÓN SIN CAMBIOS ... ]
+            document.addEventListener('DOMContentLoaded', () => {
+                // --- Element References ---
+                const registerForm = document.getElementById('register-form');
+                const fullnameInput = document.getElementById('fullname');
+                const emailInput = document.getElementById('email');
+                const docTypeSelect = document.getElementById('doc_type');
+                const docNumberInput = document.getElementById('doc_number');
+                const genderSelect = document.getElementById('gender');
+                const passwordInput = document.getElementById('password');
+                const confirmPasswordInput = document.getElementById('confirm_password');
+                const phoneInput = document.getElementById('phone');
+                const addressInput = document.getElementById('address');
+                const cityInput = document.getElementById('city');
+                const registerButton = document.getElementById('register-button');
+                const formMessage = document.getElementById('form-message'); // General message div
+                const passwordError = document.getElementById('password_error'); // Specific password mismatch message div
+
+                // Password Strength Elements
+                const strengthMeter = registerForm.querySelector('.password-strength');
+                const strengthBar = strengthMeter?.querySelector('.strength-bar');
+                const strengthText = strengthMeter?.querySelector('.strength-text');
+
+                // --- Helper: Update Visual Validation Status (Icon & Border) ---
+                function updateVisualValidation(field, isValid) {
+                    const group = field.closest('.input-group');
+                    if (!group) return;
+                    const icon = group.querySelector('.validation-icon');
+                    if (!icon) return;
+
+                    field.classList.remove('valid', 'invalid');
+                    icon.classList.remove('fa-check-circle', 'fa-times-circle', 'valid', 'invalid');
+                    // icon.style.opacity = '0'; // Hide icon by default <-- No es necesario si el estilo base lo oculta
+
+                    // Determine final state based on value and required status
+                    const value = field.value.trim();
+                    const isRequired = field.required;
+
+                    if (value === '' && !isRequired) {
+                        // Optional field is empty - visually neutral
+                         icon.style.opacity = '0';
+                    } else if (isValid) {
+                        field.classList.add('valid');
+                        icon.classList.add('fa-check-circle', 'valid');
+                        icon.style.opacity = '1';
+                    } else {
+                        // Invalid (either required & empty, or failed specific validation)
+                        field.classList.add('invalid');
+                        icon.classList.add('fa-times-circle', 'invalid');
+                        icon.style.opacity = '1';
+                    }
+                }
+
+                // --- Helper: Show/Hide Password Mismatch Error ---
+                function showPasswordMismatchError(show) {
+                    passwordError.classList.toggle('visible', show);
+                }
+
+                // --- Core Validation Logic for a Single Field ---
+                function validateField(field) {
+                    let isValid = true;
+                    const value = field.value.trim();
+                    const isRequired = field.required;
+
+                    // 1. Basic Required Check
+                    if (isRequired && value === '') {
+                        isValid = false;
+                    }
+                    // 2. Specific Validations (Only if not already invalid by required check)
+                    else if (value !== '') {
+                        switch (field.id) {
+                            case 'email':
+                                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                                isValid = emailRegex.test(value);
+                                break;
+                            case 'phone':
+                                const phoneRegex = /^(?=.*\d)[\d\s()+-]{7,}$/; // Acepta números, espacios, (), +, - (mínimo 7 dígitos)
+                                isValid = phoneRegex.test(value);
+                                break;
+                            case 'password':
+                                isValid = value.length >= 8;
+                                // Fortaleza se actualiza en el listener de input
+                                break;
+                            case 'confirm_password':
+                                // Validation depends directly on the main password field
+                                isValid = (value === passwordInput.value);
+                                break; // Mismatch error shown/hidden separately
+                            case 'doc_number':
+                                const docNumRegex = /^[a-zA-Z0-9-]{5,}$/; // Acepta letras, números y guiones, mín 5 caracteres
+                                isValid = docNumRegex.test(value);
+                                break;
+                            // case 'fullname': // Ejemplo: Mínimo de 2 palabras
+                            //    isValid = value.split(' ').filter(Boolean).length >= 2;
+                            //    break;
+                             case 'address':
+                             case 'city':
+                                isValid = value.length >= 3; // Simple validación de longitud mínima
+                                break;
+                            case 'doc_type': // El required ya asegura que no esté vacío
+                            case 'gender': // El required ya asegura que no esté vacío
+                               isValid = value !== ''; // El select tiene una opción inválida con value=""
+                               break;
+                        }
+                    }
+
+                    // 3. Update Visuals for the current field
+                    updateVisualValidation(field, isValid);
+
+                    // 4. Special Handling for Confirm Password Synchronization
+                    if (field.id === 'password' || field.id === 'confirm_password') {
+                        const passValue = passwordInput.value;
+                        const confValue = confirmPasswordInput.value;
+
+                        // Show mismatch error ONLY if confirm field has content AND it doesn't match pass field
+                        const shouldShowMismatch = confValue !== '' && passValue !== confValue;
+                        showPasswordMismatchError(shouldShowMismatch);
+
+                        // Re-validate the *other* password field to update its visual state if necessary
+                        if (field.id === 'password') {
+                             // If password changed, re-validate confirm_password's own state
+                             if (confValue !== '') { // Only re-validate if confirm has content
+                                  const isConfirmNowValid = (confValue === passValue);
+                                  updateVisualValidation(confirmPasswordInput, isConfirmNowValid);
+                             } else {
+                                 // Si confirm estaba vacío, su estado visual no necesita cambiar (debería estar neutro)
+                                  updateVisualValidation(confirmPasswordInput, true); // Asumimos que vacío es "válido" visualmente hasta que se escribe algo
+                             }
+                        } else { // field.id === 'confirm_password'
+                             // If confirm_password changed, its validity (based on match) was just set by validateField.
+                             // The mismatch message visibility was also just updated. Nothing more needed here.
+                        }
+                    }
+
+                    return isValid; // Return the validity of the specific field checked
+                }
+
+                 // --- Password Strength Meter Logic ---
+                function updatePasswordStrength() {
+                    if (!strengthMeter || !strengthBar || !strengthText) return;
+
+                    const password = passwordInput.value;
+                    let strength = 0;
+                    let text = '';
+                    let color = '#444'; // Color base de la barra vacía (el fondo)
+
+                    if (password.length > 0) strengthMeter.style.opacity = '1';
+                    else strengthMeter.style.opacity = '0'; // Ocultar si está vacío
+
+                    if (password.length === 0) {
+                        strength = 0;
+                        text = '';
+                        strengthText.style.opacity = '0';
+                    } else {
+                        if (password.length >= 8) strength++; else strength = Math.max(0, strength - 0.5); // Penalización ligera si es corto
+                        if (/[A-Z]/.test(password)) strength++;
+                        if (/[a-z]/.test(password)) strength++;
+                        if (/[0-9]/.test(password)) strength++;
+                        if (/[^A-Za-z0-9\s]/.test(password)) strength++; // Cualquier no alfanumérico
+
+                        strength = Math.max(1, strength); // Mínimo 1 si hay algo escrito
+
+                        const percentage = Math.min(100, (strength / 5) * 100);
+                        strengthBar.style.width = `${percentage}%`;
+                        strengthText.style.opacity = '1';
+
+
+                        if (strength <= 1.5) { text = 'Muy Débil'; color = '#ff595e'; }
+                        else if (strength <= 2.5) { text = 'Débil'; color = '#ff9f4f'; }
+                        else if (strength <= 3.5) { text = 'Media'; color = '#ffca3a'; }
+                        else if (strength <= 4.5) { text = 'Fuerte'; color = '#8ac926'; }
+                        else { text = 'Muy Fuerte'; color = '#1982c4'; }
+
+                        strengthBar.style.backgroundColor = color;
+                        strengthText.textContent = text;
+                   }
+                }
+
+                // --- Array of fields to attach listeners ---
+                const fieldsToValidate = [
+                    fullnameInput, emailInput, docTypeSelect, docNumberInput, genderSelect,
+                    passwordInput, confirmPasswordInput, phoneInput, addressInput, cityInput
+                ];
+
+                // --- Attach Event Listeners ---
+                fieldsToValidate.forEach(field => {
+                    const eventType = (field.tagName === 'SELECT') ? 'change' : 'input';
+                    // Validate on input/change
+                    field.addEventListener(eventType, () => {
+                        validateField(field);
+                        // Special case: if password changes, also update strength meter
+                        if (field.id === 'password') {
+                            updatePasswordStrength();
+                        }
+                    });
+                    // Also validate on blur for final check
+                    field.addEventListener('blur', () => validateField(field));
+                });
+
+                // Initial call for password strength if needed (e.g., password managers)
+                 updatePasswordStrength();
+
+                // --- Form Submission Handling ---
+                registerForm.addEventListener('submit', (event) => {
+                    // 1. Reset general message
+                    showMessage('', '');
+
+                    // 2. Validate ALL fields one last time
+                    let isFormValid = true;
+                    fieldsToValidate.forEach(field => {
+                        // Use logical AND assignment (&=) for brevity
+                        isFormValid &= validateField(field);
+                    });
+
+                    // 3. Final Explicit Check: Passwords MUST match
+                    const passValue = passwordInput.value;
+                    const confValue = confirmPasswordInput.value;
+                    if (passValue !== confValue) {
+                         isFormValid = false;
+                         updateVisualValidation(confirmPasswordInput, false); // Mark confirm as invalid explicitly
+                         showPasswordMismatchError(true);
+                         console.log("Submit check: Passwords do not match.");
+                    } else {
+                         // If they DO match ensure the specific mismatch error is hidden
+                         showPasswordMismatchError(false);
+                    }
+
+                    // 4. Check minimum length for password again (crucial check)
+                    if (passwordInput.required && passValue.length < 8) {
+                         isFormValid = false;
+                         updateVisualValidation(passwordInput, false); // Ensure it's marked invalid
+                         console.log("Submit check: Password too short.");
+                    }
+
+
+                    // 5. Decide whether to proceed
+                    if (isFormValid) {
+                        showMessage('Enviando registro...', 'info');
+                        registerButton.disabled = true;
+                        registerButton.innerHTML = 'Procesando... <i class="fas fa-spinner fa-spin"></i>';
+                        console.log("Formulario JS válido. Permitiendo envío al backend...");
+                        // **IMPORTANT**: Do NOT call event.preventDefault() here.
+                        // Let the form submit normally to your Django backend.
+
+                    } else {
+                        // **IMPORTANT**: Prevent the default submission because validation failed.
+                        event.preventDefault();
+                        showMessage('Por favor, corrige los campos marcados en rojo.', 'error');
+                        registerButton.disabled = false; // Re-enable button
+                        registerButton.innerHTML = 'Completar Registro <i class="fas fa-user-plus"></i>'; // Restore button text/icon
+
+                        // Focus the first invalid field found
+                        const firstInvalidField = registerForm.querySelector('.invalid');
+                        if (firstInvalidField) {
+                            firstInvalidField.focus();
+                             // Optional: Smooth scroll
+                             // firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        console.log("Formulario JS inválido. Envío bloqueado.");
+                    }
+                });
+
+                // --- Helper: Show General Form Messages ---
+                function showMessage(message, type) { // type can be 'success', 'error', 'info', or '' to clear
+                    formMessage.textContent = message;
+                    formMessage.className = 'form-message'; // Reset classes
+                    if (type) {
+                        formMessage.classList.add(type);
+                        formMessage.style.display = 'block';
+                    } else {
+                        formMessage.style.display = 'none';
+                    }
+                }
+
+            });
+        </script>
+</body>
+</html>

@@ -1,0 +1,284 @@
+{% load static %}
+
+<!doctype html>
+<html lang="es"> <!-- Cambiado a español -->
+    <head>
+        <title> {% block titulo %} {% endblock  %} </title>
+        <!-- Metadatos requeridos -->
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+        <!-- Bootstrap Icons (Para icono de búsqueda si se necesitara) -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <!-- CSS Personalizado -->
+        <link rel="stylesheet" href="{% static 'css/plantilla.css' %}">
+        <style>
+            /* Estilo para el botón toggler (borde opcional) */
+            .navbar-toggler {
+                padding: 0.25rem 0.5rem; /* Ajustar padding si es necesario */
+                border: none; /* Quitar borde si no te gusta */
+            }
+
+            .navbar-nav-right-small {
+                gap: 0.5rem; /* Añade espacio entre los elementos */
+            }
+             .navbar-nav-right-small .btn-sm {
+                 /* Estilos opcionales para el botón de búsqueda pequeño */
+            }
+
+             /* Ocultar navbar al hacer scroll hacia abajo */
+            .navbar.hidden {
+                transform: translateY(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+             .navbar {
+                 transition: transform 0.3s ease-in-out;
+             }
+
+             /* --- INICIO: ESTILOS NAVBAR MODO OSCURO --- */
+            [data-bs-theme="dark"] .navbar {
+                /* Elige UNO de los siguientes degradados (descomenta el que prefieras) */
+
+                /* Degradado sutil de gris oscuro a negro azulado */
+                /* background-image: linear-gradient(to right, #212529, #1a202c); */
+
+                /* Degradado azul nocturno */
+                background-image: linear-gradient(to right, #0b132b, #1c2541);
+
+                /* Degradado púrpura oscuro a azul */
+                /* background-image: linear-gradient(to right, #3c1053, #2a2a72); */
+
+                /* Degradado verde oscuro */
+                /* background-image: linear-gradient(to right, #143a3a, #0f2e2e); */
+
+                /* IMPORTANTE: Quitar el color de fondo sólido que Bootstrap podría aplicar */
+                background-color: transparent !important;
+            }
+
+            /* Asegurar que el texto y los iconos sigan siendo claros en el degradado */
+             [data-bs-theme="dark"] .navbar .navbar-brand,
+             [data-bs-theme="dark"] .navbar .nav-link,
+             [data-bs-theme="dark"] .navbar .navbar-toggler svg path, /* Para tu SVG toggler */
+             [data-bs-theme="dark"] .btn-theme-toggle,
+             [data-bs-theme="dark"] .btn-theme-toggle svg path { /* Para icono sol/luna */
+                 color: #f8f9fa !important; /* Un color claro como blanco roto */
+                 fill: #f8f9fa !important; /* Para el fill de los SVG */
+            }
+
+             /* Ajuste específico para el botón de tema si es necesario */
+             [data-bs-theme="dark"] .btn-theme-toggle {
+                 background-color: transparent; /* Que no tenga fondo propio */
+                 border: none; /* Sin borde */
+             }
+             /* --- FIN: ESTILOS NAVBAR MODO OSCURO --- */
+
+             /* Estilos generales del body para que se note el cambio de tema */
+             body.light-mode {
+                background-color: #f8f9fa; /* Color claro por defecto */
+                color: #212529;
+             }
+             body.dark-mode {
+                background-color: #1a1a1a; /* Un fondo oscuro para el body */
+                color: #f8f9fa;
+             }
+              body.dark-mode .piePag { /* Ajusta el footer en modo oscuro */
+                 background-color: #111;
+                 color: #ccc;
+             }
+
+        </style>
+    </head>
+
+    <body>
+        {% block navBar %}
+<header>
+    <!-- Navbar -->
+    <!-- 'fixed-top' mantiene la barra arriba -->
+    <!-- REMOVIDO: style="background-color:rgb(29, 34, 36);" -->
+    <nav class="navbar navbar-expand-lg fixed-top" data-bs-theme="dark">
+        <div class="container-fluid">
+
+            <!-- 1. Brand/Logo (Siempre a la izquierda) -->
+            <a class="navbar-brand" href="/"><img src="{% static 'images/ivamoneda.jpg' %}" class="imageniva" alt="Logo IVACOL"></a>
+
+            <!-- 2. Grupo para Elementos Alineados a la Derecha en Pantallas Pequeñas -->
+            <div class="d-flex align-items-center ms-auto d-lg-none navbar-nav-right-small">
+                 <!-- Botón Toggle de Tema (Pantallas Pequeñas) -->
+                 <button class="btn btn-theme-toggle py-1 px-2 d-flex align-items-center" id="bd-theme-small" type="button" aria-label="Toggle theme">
+                    <span id="dark-mode-icon-small" class="theme-icon"> <!-- Icono Luna -->
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20"><g><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6a8 8 0 0 0 11.955 6.956C21.474 18.03 17.2 22 12 22 6.477 22 2 17.523 2 12c0-5.2 3.97-9.474 9.044-9.955A7.963 7.963 0 0 0 10 6z" fill="#ffffff" fill-rule="nonzero"/></g></svg>
+                    </span>
+                    <span id="light-mode-icon-small" class="theme-icon" style="display: none;"> <!-- Icono Sol -->
+                        <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" width="20" height="20"><rect fill="none" height="256" width="256"/><circle cx="128" cy="128" fill="none" r="60" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="128" x2="128" y1="36" y2="16"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="62.9" x2="48.8" y1="62.9" y2="48.8"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="36" x2="16" y1="128" y2="128"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="62.9" x2="48.8" y1="193.1" y2="207.2"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="128" x2="128" y1="220" y2="240"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="193.1" x2="207.2" y1="193.1" y2="207.2"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="220" x2="240" y1="128" y2="128"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="193.1" x2="207.2" y1="62.9" y2="48.8"/></svg>
+                    </span>
+                 </button>
+
+                 <!-- Formulario de Búsqueda (Pantallas Pequeñas) -->
+                 <form class="d-flex ms-2" role="search">
+                     <input class="form-control form-control-sm me-1" type="search" placeholder="Buscar..." aria-label="Search">
+                     <button class="btn btn-outline-success btn-sm" type="submit">Ir</button>
+                 </form>
+
+                 <!-- Botón Toggler del Menú Principal (Hamburguesa) -->
+                 <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="28" height="28" viewBox="0 0 128 128">
+                        <path fill="#fff" d="M64 14A50 50 0 1 0 64 114A50 50 0 1 0 64 14Z"></path><path fill="#444b54" d="M64,117c-29.2,0-53-23.8-53-53s23.8-53,53-53s53,23.8,53,53S93.2,117,64,117z M64,17c-25.9,0-47,21.1-47,47s21.1,47,47,47s47-21.1,47-47S89.9,17,64,17z"></path><path fill="#fff" d="M86.5 52h-45c-1.7 0-3-1.3-3-3s1.3-3 3-3h45c1.7 0 3 1.3 3 3S88.2 52 86.5 52zM86.5 67h-45c-1.7 0-3-1.3-3-3s1.3-3 3-3h45c1.7 0 3 1.3 3 3S88.2 67 86.5 67z"></path><g><path fill="#fff" d="M86.5,82h-45c-1.7,0-3-1.3-3-3s1.3-3,3-3h45c1.7,0,3,1.3,3,3S88.2,82,86.5,82z"></path></g>
+                    </svg>
+                 </button>
+            </div>
+
+            <!-- 3. Contenido Colapsable (Enlaces y Elementos para Pantallas Grandes) -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Enlaces de Navegación (Empujados a la izquierda con me-auto) -->
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'login' %}">Ingresar</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'nosotros' %}">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'contactenos' %}">Contactenos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'crud' %}">ADMIN</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Presentación
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url "presentacion" %}">Documentos</a></li>
+                            <li><a class="dropdown-item" href="{% url "diccionario" %}">Diccionario de Datos</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url "dml" %}">DML</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Toggle de Tema y Formulario de Búsqueda (Visibles SÓLO en Pantallas Grandes) -->
+                <div class="d-none d-lg-flex align-items-center">
+                     <!-- Botón Toggle de Tema (Pantallas Grandes) -->
+                     <button class="btn btn-theme-toggle py-1 px-2 d-flex align-items-center me-3" id="bd-theme-large" type="button" aria-label="Toggle theme">
+                         <span class="">Modo  </span> <!-- Texto sin clase de color específica, heredará del CSS -->
+                         <span id="dark-mode-icon-large" class="theme-icon"> <!-- Icono Luna -->
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><g><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6a8 8 0 0 0 11.955 6.956C21.474 18.03 17.2 22 12 22 6.477 22 2 17.523 2 12c0-5.2 3.97-9.474 9.044-9.955A7.963 7.963 0 0 0 10 6z" fill="#ffffff" fill-rule="nonzero"/></g></svg>
+                         </span>
+                         <span id="light-mode-icon-large" class="theme-icon" style="display: none;"> <!-- Icono Sol -->
+                            <svg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect fill="none" height="256" width="256"/><circle cx="128" cy="128" fill="none" r="60" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="128" x2="128" y1="36" y2="16"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="62.9" x2="48.8" y1="62.9" y2="48.8"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="36" x2="16" y1="128" y2="128"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="62.9" x2="48.8" y1="193.1" y2="207.2"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="128" x2="128" y1="220" y2="240"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="193.1" x2="207.2" y1="193.1" y2="207.2"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="220" x2="240" y1="128" y2="128"/><line fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" x1="193.1" x2="207.2" y1="62.9" y2="48.8"/></svg>
+                         </span>
+                     </button>
+
+                     <!-- Formulario de Búsqueda (Pantallas Grandes) -->
+                     <form class="d-flex" role="search">
+                        <input class="form-control me-2" type="search" placeholder="Búsqueda" aria-label="Search">
+                        <button class="btn btn-outline-success" type="submit">Buscar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+{% endblock %}
+
+        <!-- Añadimos margen superior al contenido principal para evitar solapamiento con navbar fija -->
+        <main style="margin-top: 70px;"> <!-- Ajusta el valor según la altura de tu navbar -->
+             <div class="container py-4"> <!-- Añadido container y padding para mejor espaciado -->
+                {% block contenido %}
+                {% endblock %}
+             </div>
+        </main>
+
+        {% block piePagina %}
+        <!-- mt-auto empuja el footer hacia abajo si el contenido es corto -->
+        <footer class="piePag mt-auto py-3">
+             <div class="container">
+                <h6 style="text-align: center; margin-bottom: 0;">© 2025 Derechos Reservados.      IVACOL, Tu app para gestionar el Iva.</h6>
+             </div>
+        </footer>
+        {% endblock %}
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+        <!-- Script Toggle de Tema (Actualizado para Bootstrap 5.3 data-bs-theme) -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleButtons = document.querySelectorAll('.btn-theme-toggle');
+                const htmlElement = document.documentElement; // Seleccionar el elemento <html>
+
+                // Función para aplicar el tema y actualizar iconos
+                function applyTheme(theme) {
+                    htmlElement.setAttribute('data-bs-theme', theme); // Cambiar el atributo en <html>
+                    localStorage.setItem('theme', theme);
+                    updateThemeIcons(theme);
+                }
+
+                // Función para mostrar/ocultar los iconos correctos (luna/sol)
+                function updateThemeIcons(theme) {
+                    const isDark = theme === 'dark'; // BS 5.3 usa 'dark', no 'dark-mode' para el atributo
+
+                    // Iconos pequeños
+                    const darkIconSmall = document.getElementById('dark-mode-icon-small');
+                    const lightIconSmall = document.getElementById('light-mode-icon-small');
+                    // Iconos grandes
+                    const darkIconLarge = document.getElementById('dark-mode-icon-large');
+                    const lightIconLarge = document.getElementById('light-mode-icon-large');
+
+                    // Actualiza iconos pequeños (Luna para claro, Sol para oscuro)
+                    if (darkIconSmall && lightIconSmall) {
+                        darkIconSmall.style.display = isDark ? 'none' : 'inline';
+                        lightIconSmall.style.display = isDark ? 'inline' : 'none';
+                    }
+                    // Actualiza iconos grandes (Luna para claro, Sol para oscuro)
+                    if (darkIconLarge && lightIconLarge) {
+                         darkIconLarge.style.display = isDark ? 'none' : 'inline';
+                         lightIconLarge.style.display = isDark ? 'inline' : 'none';
+                    }
+                }
+
+                // Obtener tema guardado o usar 'light' por defecto
+                const currentTheme = localStorage.getItem('theme') || 'light';
+                applyTheme(currentTheme); // Aplicar tema inicial
+
+                // Listener para los botones
+                toggleButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const newTheme = htmlElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+                        applyTheme(newTheme);
+                    });
+                });
+            });
+        </script>
+
+        <!-- Script para Ocultar/Mostrar Navbar al Hacer Scroll (Sin cambios) -->
+         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let lastScrollTop = 0;
+                const navbar = document.querySelector('.navbar');
+                const mainNavbarCollapse = document.getElementById('navbarSupportedContent');
+
+                window.addEventListener('scroll', function() {
+                    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+                    const isScrollingDown = currentScroll > lastScrollTop;
+                    const isNavbarCollapsed = mainNavbarCollapse ? mainNavbarCollapse.classList.contains('show') : false;
+
+                    if (isScrollingDown && currentScroll > 50 && !isNavbarCollapsed) {
+                        navbar.classList.add('hidden');
+                    } else {
+                        navbar.classList.remove('hidden');
+                    }
+                    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+                });
+
+                 if (mainNavbarCollapse) {
+                      mainNavbarCollapse.addEventListener('show.bs.collapse', function () {
+                          navbar.classList.remove('hidden');
+                      });
+                 }
+            });
+        </script>
+    </body>
+</html>

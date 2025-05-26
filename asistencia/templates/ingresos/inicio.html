@@ -1,0 +1,64 @@
+{% extends "plantilla.html" %}
+
+{% block titulo %} Estudiantes {% endblock %}
+
+{% block contenido %} 
+    <br><h3>Aquí puede administrar los estudiantes.</h3>
+    <!-- bs5-button-a -->
+<div class="text-end">
+    <a name="" id="" class="btn btn-success" href="{% url 'crear' %}" role="button">Agregar Estudiante</a>
+</div>    
+
+    <!-- bs5-card-head-foot -->
+    <div class="card">
+        <div class="card-header">Sistema de ASISTENCIA 3069239</div>
+        <div class="card-body">
+            <h4 class="card-title">Estudiantes</h4>
+            <!-- bs5-table-default -->
+            <div
+                class="table-responsive"
+            >
+                <table
+                    class="table table-primary"
+                >
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Foto</th>
+                            <th scope="col">Nombres</th>
+                            <th scope="col">Apellidos</th>
+                            <th scope="col">Clase</th>
+                            <th scope="col">Dirección</th>
+                            <th scope="col">Fecha Ingreso</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for estudiante in estudiantes %}
+
+                        <tr class="">
+                            <td scope="row">{{estudiante.id}}</td>
+                            <td><img src="{{estudiante.foto.url}}" alt="Foto del estudiante" width="80px" height="80px"></td>
+                            <td>{{estudiante.nombre}}</td>
+                            <td>{{estudiante.apellido}}</td>
+                            <td>{{estudiante.clase}}</td>
+                            <td>{{estudiante.direccion}}</td>
+                            <td>{{estudiante.fechaIngreso}}</td>
+                            <td>
+                                <a name="" id="" class="btn btn-primary" href="{% url 'editar' estudiante.id %}" role="button" placeholder="{{ campo.Label }}" value="{{ campo.value|default:'' }}" >Editar</a>
+                                <a name="" id="" class="btn btn-danger" href="{% url 'eliminar' estudiante.id %}" role="button" onclick="return confirm('¿Está seguro de borrar al usuario?')">Borrar</a>                     
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        <div class="card-footer text-muted">Los datos siempre son acordes con los del formulario de registro.</div>
+    </div>
+    
+
+{% endblock %}
+

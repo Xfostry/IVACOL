@@ -1,0 +1,141 @@
+.descarga-container {
+    padding: 25px 30px; max-width: 800px; margin: 40px auto;
+    background-color: var(--section-bg-light); /* Usar fondo de sección */
+    border-radius: 12px; /* Redondez consistente */
+    box-shadow: var(--section-shadow-light); /* Sombra estándar */
+    text-align: center;
+    border: 1px solid transparent; /* Para transición dark */
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.descarga-container h1 {
+    margin-bottom: 15px; font-size: 1.8em;
+    color: var(--profile-primary-light); /* Usar color título perfil */
+    transition: color 0.3s ease;
+}
+.descarga-container p {
+    color: var(--text-muted-light); /* Color texto base apagado */
+    line-height: 1.6; margin-bottom: 25px;
+    transition: color 0.3s ease;
+}
+
+/* Sección Filtro Fechas */
+.date-filter-section {
+    background-color: var(--footer-bg-light); /* Gris claro como footer */
+    border: 1px solid var(--section-border-light); /* Borde sutil */
+    padding: 15px 20px; margin-bottom: 25px; border-radius: 8px; /* Un poco menos redondo que card */
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+.date-filter-section label {
+    font-weight: 600; /* Más peso que texto normal */
+    color: var(--label-color-light); /* Usar color label estándar */
+     margin-right: 5px; white-space: nowrap;
+    transition: color 0.3s ease;
+}
+.date-filter-section input[type="date"] { /* Input fecha */
+    padding: 8px 10px; border: 1px solid var(--input-border-light); border-radius: 6px; font-size: 0.95em;
+    background-color: var(--input-bg-light); color: var(--input-color-light);
+    flex-grow: 1; min-width: 140px; max-width: 180px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.15s ease-in-out;
+}
+.date-filter-section input[type="date"]:focus {
+     border-color: var(--input-focus-border-light); outline: 0;
+     box-shadow: 0 0 0 0.25rem var(--input-focus-shadow-light);
+}
+.btn-clear-dates { /* Botón pequeño limpiar */
+    padding: 7px 12px; background-color: var(--text-muted-light); /* Gris */
+    color: white; border: none; border-radius: 6px; /* Menos redondo */
+     cursor: pointer; font-size: 0.85em; transition: background-color 0.2s ease;
+}
+.btn-clear-dates:hover { background-color: #5a6268; } /* Gris oscuro hover */
+
+/* Botón Principal Descarga */
+.btn-descarga-pdf {
+    padding: 12px 25px;
+    background-color: var(--link-color-light); /* Azul principal */
+    color: white; border: none;
+    border-radius: var(--btn-border-radius); /* Redondo */
+    cursor: pointer; font-size: 1.1em; font-weight: 600; /* Un poco más grande/bold */
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+    display: inline-block; min-width: 200px; text-align: center;
+}
+.btn-descarga-pdf:hover { background-color: var(--link-hover-light); }
+.btn-descarga-pdf:disabled {
+    background-color: #adb5bd; /* Gris Bootstrap disabled */
+     opacity: 0.7; cursor: not-allowed;
+}
+.btn-descarga-pdf i { margin-right: 8px; } /* Icono dentro del botón */
+
+/* Mensaje de Estado */
+.status-message {
+    margin-top: 20px; font-style: italic;
+    color: var(--text-muted-light); /* Gris */
+    min-height: 1.5em; transition: color 0.3s ease;
+}
+.icono-inline { font-size: 0.9em; }
+
+
+/* --- Estilos Dark Mode para Página Descarga (Añadir DENTRO de body.dark-mode {...}) --- */
+body.dark-mode .descarga-container {
+    background-color: var(--section-bg-dark);
+    border-color: var(--section-border-dark);
+    box-shadow: var(--section-shadow-dark);
+}
+body.dark-mode .descarga-container h1 {
+    color: var(--header-title-dark); /* Azul brillante título */
+}
+body.dark-mode .descarga-container p {
+    color: var(--text-muted-dark); /* Gris claro */
+}
+body.dark-mode .date-filter-section {
+    background-color: var(--input-bg-dark); /* Fondo oscuro inputs */
+    border-color: var(--input-border-dark);
+}
+body.dark-mode .date-filter-section label {
+    color: var(--label-color-dark); /* Color label oscuro */
+}
+body.dark-mode .date-filter-section input[type="date"] {
+    background-color: var(--input-bg-dark);
+    border-color: var(--input-border-dark);
+    color: var(--input-color-dark);
+    color-scheme: dark; /* Para icono calendario */
+}
+body.dark-mode .date-filter-section input[type="date"]:focus {
+     border-color: var(--input-focus-border-dark);
+     box-shadow: 0 0 0 0.25rem var(--input-focus-shadow-dark);
+}
+body.dark-mode .btn-clear-dates {
+    background-color: var(--theme-button-bg-dark); /* Reutilizar fondo botón tema */
+    color: var(--theme-button-color-dark);
+}
+body.dark-mode .btn-clear-dates:hover {
+    background-color: var(--theme-button-hover-bg-dark);
+}
+body.dark-mode .btn-descarga-pdf {
+    background-color: var(--link-color-dark); /* Azul brillante */
+    color: #111; /* Texto oscuro para contraste */
+}
+body.dark-mode .btn-descarga-pdf:hover {
+    background-color: var(--link-hover-dark);
+}
+body.dark-mode .btn-descarga-pdf:disabled {
+    background-color: var(--theme-button-bg-dark); /* Fondo botón tema oscuro */
+    color: var(--text-muted-dark);
+    opacity: 0.6;
+}
+body.dark-mode .status-message {
+    color: var(--text-muted-dark); /* Gris claro */
+}
+
+:root {
+    --header-bg-light: #0d47a1;     
+--header-border-light: #0b3a80;    
+--header-title-light: #ffffff;     
+--nav-link-light: #ffffff;        
+--nav-link-hover-light: #cce5ff;   
+/* Ajustes Botón Tema Claro sobre fondo azul */
+--theme-button-border-light: rgba(255, 255, 255, 0.5); /* Borde blanco semitransparente */
+--theme-button-color-light: #ffffff;         
+--theme-button-bg-light: rgba(255, 255, 255, 0.1);  /* Fondo muy sutil o transparente */
+--theme-button-hover-bg-light: rgba(255, 255, 255, 0.2); /* Más visible al pasar el mouse */
+}

@@ -1,0 +1,480 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}IVACOL App{% endblock titulo %}</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static "images/logo.png" %}" type="image/x-icon">
+
+    <!-- Frameworks y Librerías CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Segoe+UI&display=swap" rel="stylesheet">
+
+    <!-- CSS Personalizado Enlazado -->
+    <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
+
+    <!-- === ESTILOS INLINE CENTRALIZADOS === -->
+    <style>
+        /* --- VARIABLES CSS GLOBALES (PARA EL RESTO DE LA PÁGINA) --- */
+        :root {
+            /* Colores Base (Modo Claro) */
+            --body-bg-light: #f8f9fa;
+            --body-color-light: #212529;
+            --section-bg-light: #ffffff;
+            --section-border-light: #dee2e6;
+            --section-shadow-light: 0 5px 15px rgba(0, 0, 0, 0.08);
+            --text-muted-light: #6c757d;
+            --link-color-light: #0d6efd;
+            --link-hover-light: #0a58ca;
+
+            /* <<< VARIABLES NAVBAR MODO CLARO - YA NO SON NECESARIAS PARA EL COLOR FIJO, PERO LAS DEJAMOS POR SI OTROS ELEMENTOS LAS USAN >>> */
+            /* --header-bg-light: #0d47a1; */ /* Comentado/Eliminado ya que se aplica fijo */
+            /* --header-border-light: #0b3d8f; */
+            /* --header-title-light: #ffffff; */
+            /* --nav-link-light: #e3f2fd; */
+            /* --nav-link-hover-light: #ffffff; */
+
+            /* <<< AJUSTES BOTÓN TEMA CLARO (AHORA SIEMPRE SOBRE AZUL) >>> */
+            --theme-button-border-light: rgba(255, 255, 255, 0.5); /* Borde blanco semitransparente */
+            --theme-button-color-light: #ffffff; /* Texto/Icono blanco */
+            --theme-button-bg-light: rgba(255, 255, 255, 0.1);  /* Fondo casi transparente */
+            --theme-button-hover-bg-light: rgba(255, 255, 255, 0.2); /* Más visible al pasar */
+
+            /* Footer Claro */
+            --footer-bg-light: #e9ecef;
+            --footer-color-light: #6c757d;
+            --footer-border-light: #dee2e6;
+
+            /* Formularios Claro */
+            --input-bg-light: #ffffff;
+            --input-color-light: #495057;
+            --input-border-light: #ced4da;
+            --input-focus-border-light: #86b7fe;
+            --input-focus-shadow-light: rgba(13, 110, 253, 0.25);
+            --placeholder-color-light: #6c757d;
+            --label-color-light: #495057;
+
+            /* Tablas Claro */
+            --table-head-bg-light: #e9f5ff;
+            --table-head-color-light: #0056b3;
+            --table-head-border-light: #bde0ff;
+            --table-cell-border-light: #e0e0e0;
+            --table-row-even-bg-light: #f8f9fa;
+            --table-row-hover-bg-light: #e9ecef;
+
+            /* Colores Específicos Componentes Claro */
+            --title-color-light: #0056b3;
+            --title-border-light: #e0e0e0;
+            --historial-thead-bg-light: #3498db;
+            --action-button-bg-light: #e9f5ff;
+            --action-button-border-light: #bde0ff;
+            --action-button-color-light: #0056b3;
+            --action-button-hover-bg-light: #ccebff;
+            --profile-border-top-light: #3498db;
+            --profile-primary-light: #2c3e50;
+            --profile-secondary-light: #3498db;
+            --profile-dark-gray-light: #7f8c8d;
+
+            /* ========================== */
+            /* Colores Base (Modo Oscuro) */
+            /* ========================== */
+            --body-bg-dark: #1a1e21;
+            --body-color-dark: #e3e4e6;
+            --section-bg-dark: #272c31;
+            --section-border-dark: #3b434a;
+            --section-shadow-dark: 0 5px 15px rgba(0, 0, 0, 0.2);
+            --text-muted-dark: #858c93;
+            --link-color-dark: #58a6ff;
+            --link-hover-dark: #79b8ff;
+
+            /* <<< VARIABLES NAVBAR MODO OSCURO - ELIMINADAS O COMENTADAS >>> */
+            /* --header-bg-dark: #22272b; */
+            /* --header-border-dark: #3b434a; */
+            /* --header-title-dark: #58a6ff; */
+            /* --nav-link-dark: #58a6ff; */
+            /* --nav-link-hover-dark: #79b8ff; */
+
+            /* <<< VARIABLES BOTÓN TEMA OSCURO (AHORA SIEMPRE SOBRE AZUL) >>> */
+            /* Estas variables ya no afectarán al botón del navbar si eliminamos la regla específica */
+            /* Las dejamos por si se usan en otros botones de tema fuera del navbar */
+            --theme-button-border-dark: rgba(255, 255, 255, 0.5); /* Similar al claro sobre azul */
+            --theme-button-color-dark: #ffffff; /* Blanco */
+            --theme-button-bg-dark: rgba(255, 255, 255, 0.15); /* Ligeramente más opaco que claro */
+            --theme-button-hover-bg-dark: rgba(255, 255, 255, 0.25); /* Ligeramente más opaco que claro hover */
+
+            /* Footer Oscuro */
+            --footer-bg-dark: #22272b;
+            --footer-color-dark: #858c93;
+            --footer-border-dark: #3b434a;
+
+            /* Formularios Oscuro */
+            --input-bg-dark: #2c3136;
+            --input-color-dark: #e3e4e6;
+            --input-border-dark: #555e66;
+            --input-focus-border-dark: #58a6ff;
+            --input-focus-shadow-dark: rgba(88, 166, 255, 0.25);
+            --placeholder-color-dark: #858c93;
+            --label-color-dark: #c4c8cc;
+
+            /* Tablas Oscuro */
+            --table-head-bg-dark: #3b434a;
+            --table-head-color-dark: #c4c8cc;
+            --table-head-border-dark: #555e66;
+            --table-cell-border-dark: #4f5860;
+            --table-row-even-bg-dark: #2c3136;
+            --table-row-hover-bg-dark: #4f5860;
+
+             /* Colores Específicos Componentes Oscuro */
+            --title-color-dark: #79b8ff;
+            --title-border-dark: #4f5860;
+            --historial-thead-bg-dark: #2c3e50;
+            --action-button-bg-dark: #333a40;
+            --action-button-border-dark: #555e66;
+            --action-button-color-dark: #b0c4de;
+            --action-button-hover-bg-dark: #4f5860;
+            --profile-border-top-dark: #58a6ff;
+            --profile-primary-dark: #a0c4e3;
+            --profile-secondary-dark: #58a6ff;
+            --profile-dark-gray-dark: #858c93;
+
+            /* Fuentes */
+            --font-primary: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --font-secondary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+             /* Botones */
+             --btn-border-radius: 25px;
+        }
+
+        /* --- ESTILOS GLOBALES Y BASE (El resto de la página SÍ cambia) --- */
+        body {
+            background-color: var(--body-bg-light);
+            color: var(--body-color-light);
+            font-family: var(--font-primary);
+            line-height: 1.6;
+            margin: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        a { color: var(--link-color-light); text-decoration: none; transition: color 0.3s ease;}
+        a:hover { color: var(--link-hover-light); text-decoration: underline; }
+        main { padding-bottom: 50px; }
+        .oculto { display: none !important; }
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* --- ESTILOS NAVBAR (FIJOS) --- */
+        .navbar {
+            background-color: #0d47a1 !important; /* <<< COLOR AZUL FIJO Y !important para asegurar override >>> */
+            border-bottom: 1px solid #0b3d8f !important; /* <<< BORDE AZUL OSCURO FIJO >>> */
+            /* La transición ya no es necesaria para el color de fondo/borde si es fijo */
+        }
+        .navbar .navbar-brand {
+             color: #ffffff !important; /* <<< TEXTO BLANCO FIJO >>> */
+             transition: color 0.3s ease; /* Transición puede quedar por si acaso */
+        }
+        .navbar .navbar-nav .nav-link {
+            color: #e3f2fd !important; /* <<< TEXTO ENLACE CLARO FIJO >>> */
+            transition: color 0.3s ease;
+        }
+        .navbar .navbar-nav .nav-link:hover,
+        .navbar .navbar-nav .nav-link:focus {
+            color: #ffffff !important; /* <<< TEXTO ENLACE HOVER/FOCUS BLANCO FIJO >>> */
+            text-decoration: none;
+        }
+        /* Icono notificación - SIEMPRE blanco */
+        .navbar .btn-icon img.loko {
+            filter: brightness(0) invert(1) !important; /* <<< FILTRO BLANCO FIJO >>> */
+            transition: none; /* Ya no necesita transición de filtro */
+            width: 22px; height: 22px; vertical-align: middle;
+        }
+        /* Icono hamburguesa (toggler) - hacerlo blanco */
+         .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.2) !important; /* Borde sutil */
+         }
+         .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important; /* Icono SVG blanco */
+         }
+
+        /* Botón de tema (adaptado a fondo azul fijo) */
+        .btn-theme-toggle {
+            /* Usar las variables ajustadas para el modo claro */
+            border: 1px solid var(--theme-button-border-light) !important;
+            color: var(--theme-button-color-light) !important;
+            background-color: var(--theme-button-bg-light) !important;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            border-radius: var(--btn-border-radius);
+            padding: 5px 10px;
+            line-height: 1;
+        }
+        .btn-theme-toggle:hover {
+            background-color: var(--theme-button-hover-bg-light) !important;
+        }
+        .btn-theme-toggle svg {
+            vertical-align: middle;
+            /* El color del SVG ya está controlado por el 'currentColor' y la variable --theme-button-color-light */
+        }
+
+        /* --- ESTILOS FOOTER (SÍ cambian con el tema) --- */
+        footer.piePag {
+            background-color: var(--footer-bg-light);
+            color: var(--footer-color-light);
+            border-top: 1px solid var(--footer-border-light);
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            text-align: center; padding: 1rem 0; margin-top: 40px; font-size: 0.9rem;
+        }
+         footer.piePag h6 { margin-bottom: 0; }
+
+        /* --- ESTILOS GENERALES BOTONES (SÍ cambian con el tema, excepto si están en navbar) --- */
+        .btn {
+             padding: 10px 25px; border: none;
+             border-radius: var(--btn-border-radius);
+             font-size: 0.9em; font-weight: 600; cursor: pointer;
+             transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+             display: inline-block; text-decoration: none; text-align: center;
+             line-height: 1.5;
+        }
+        .btn-primary {
+             background: linear-gradient(135deg, var(--profile-secondary-light, #3498db) 0%, #2980b9 100%);
+             color: #ffffff; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+             border: none;
+        }
+        .btn-primary:hover {
+             background: linear-gradient(135deg, #2980b9 0%, var(--profile-secondary-light, #3498db) 100%);
+             transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
+        }
+        .btn-secondary {
+             background-color: var(--footer-bg-light);
+             color: var(--text-muted-light);
+             border: 1px solid var(--section-border-light);
+        }
+        .btn-secondary:hover {
+             background-color: #e2e6ea; border-color: #dae0e5;
+             transform: translateY(-2px);
+        }
+        .btn-success { background-color: #2ecc71; color: white; border: none; }
+        .btn-success:hover { background-color: #27ae60; transform: translateY(-2px); }
+        .btn-danger { background-color: #e74c3c; color: white; border: none; }
+        .btn-danger:hover { background-color: #c0392b; transform: translateY(-2px); }
+
+        /* --- ESTILOS COMPONENTES PAGINA PRINCIPAL (SÍ cambian con el tema) --- */
+        section {
+            background-color: var(--section-bg-light);
+            padding: 25px; margin-bottom: 30px; border-radius: 12px;
+            box-shadow: var(--section-shadow-light);
+            border: 1px solid transparent;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        section h2, section h3 {
+            color: var(--title-color-light);
+            margin-top: 0; border-bottom: 2px solid var(--title-border-light);
+            padding-bottom: 10px; margin-bottom: 20px;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        /* ... (resto de estilos para .welcome-section, .actions-grid, etc. que SÍ cambian con el tema) ... */
+
+
+        /* =============================================== */
+        /* =========== ESTILOS MODO OSCURO (PARA EL RESTO DE LA PÁGINA) ============ */
+        /* =============================================== */
+        body.dark-mode {
+            background-color: var(--body-bg-dark);
+            color: var(--body-color-dark);
+        }
+        body.dark-mode a { color: var(--link-color-dark); }
+        body.dark-mode a:hover { color: var(--link-hover-dark); }
+
+        /* --- Header/Navbar Dark --- */
+        /* <<< SE ELIMINAN LAS REGLAS body.dark-mode .navbar {...} por completo, ya que el navbar es fijo >>> */
+        /* body.dark-mode .navbar { ... } */
+        /* body.dark-mode .navbar .navbar-brand { ... } */
+        /* body.dark-mode .navbar .navbar-nav .nav-link { ... } */
+        /* body.dark-mode .navbar .navbar-nav .nav-link:hover { ... } */
+        /* body.dark-mode .btn-theme-toggle { ... } <<< Esto TAMBIÉN se elimina, el botón usa el estilo base ahora */
+        /* body.dark-mode .navbar .btn-icon img.loko { ... } */
+        /* body.dark-mode .navbar-toggler { ... } */
+        /* body.dark-mode .navbar-toggler-icon { ... } */
+
+
+        /* --- Footer Dark --- */
+        body.dark-mode footer.piePag {
+            background-color: var(--footer-bg-dark);
+            color: var(--footer-color-dark);
+            border-top-color: var(--footer-border-dark);
+        }
+
+        /* --- Secciones Dark --- */
+        body.dark-mode section {
+            background-color: var(--section-bg-dark);
+            border-color: var(--section-border-dark);
+            box-shadow: var(--section-shadow-dark);
+        }
+        body.dark-mode section h2, body.dark-mode section h3 {
+            color: var(--title-color-dark);
+            border-bottom-color: var(--title-border-dark);
+        }
+        /* ... (resto de estilos para componentes como .welcome-section, .action-button, etc. en modo oscuro) ... */
+
+        /* --- Botones Dark --- */
+        body.dark-mode .btn-primary {
+             background: var(--link-color-dark); color: #111;
+             box-shadow: 0 4px 15px rgba(88, 166, 255, 0.15);
+        }
+        body.dark-mode .btn-primary:hover {
+             background: var(--link-hover-dark); box-shadow: 0 6px 20px rgba(88, 166, 255, 0.25);
+        }
+        body.dark-mode .btn-secondary {
+             background-color: #3b434a; /* Usar un gris oscuro consistente */
+             color: #c4c8cc;
+             border-color: #555e66;
+        }
+        body.dark-mode .btn-secondary:hover { background-color: #4f5860; }
+        body.dark-mode .btn-success { background-color: #27ae60; color: white; }
+        body.dark-mode .btn-success:hover { background-color: #229954; }
+        body.dark-mode .btn-danger { background-color: #c0392b; color: white; }
+        body.dark-mode .btn-danger:hover { background-color: #a93226; }
+
+        /* ... (resto de estilos de modo oscuro para tablas, dashboard, perfil, modal, etc.) ... */
+
+        /* --- MEDIA QUERIES --- */
+        /* ... (sin cambios necesarios en las media queries existentes, a menos que afecten al navbar específicamente) ... */
+
+         /* <<< ELIMINADO EL SEGUNDO BLOQUE <style> REDUNDANTE >>> */
+
+    </style>
+    <!-- <<< ELIMINADO EL SEGUNDO BLOQUE <style> REDUNDANTE >>> -->
+</head>
+<body>
+    {% block navBar %}
+    {# El HTML del navbar sigue igual #}
+    <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="{% url 'paginaPrincipal' %}">IVACOL</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbarContent" aria-controls="mainNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand fw-bold fs-4" href="{% url 'facturasAdmin' %}">.</a>
+            <div class="collapse navbar-collapse" id="mainNavbarContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "paginaPrincipal" %}">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "contactenos" %}">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "perfil" %}" id="profile-link">Mi Perfil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url "login" %}" id="logout-link">Cerrar Sesión</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center ps-lg-3">
+                    <a href="{% url 'notificaciones' %}" class="btn btn-icon nav-link p-1 me-2" aria-label="Notificaciones" title="Notificaciones">
+                        <img src="{% static 'icons/campanita.svg' %}" class="loko" alt="Notificaciones">
+                    </a>
+                    <button class="btn btn-theme-toggle py-1 px-2 d-flex align-items-center" id="bd-theme-small" type="button" aria-label="Toggle theme">
+                        <span id="dark-mode-icon-small" class="theme-icon">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor">
+                                <g><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6a8 8 0 0 0 11.955 6.956C21.474 18.03 17.2 22 12 22 6.477 22 2 17.523 2 12c0-5.2 3.97-9.474 9.044-9.955A7.963 7.963 0 0 0 10 6z" fill-rule="nonzero"/></g>
+                            </svg>
+                        </span>
+                        <span id="light-mode-icon-small" class="theme-icon" style="display: none;">
+                            <svg class="bi bi-sun-fill" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                                <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endblock navBar %}
+
+    <main>
+        {% block Contenido %}
+        <!-- El contenido específico de cada página irá aquí -->
+        {% endblock Contenido %}
+    </main>
+
+    {% block piePag %}
+    <footer class="piePag mt-auto py-3">
+        <div class="container">
+           <h6>© 2025 IVACOL, Tu app para gestionar el Iva. Derechos Reservados.</h6>
+        </div>
+   </footer>
+    {% endblock piePag %}
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+
+    <!-- Script Manejador de Tema (El script sigue funcionando para el resto de la página) -->
+    <script>
+          document.addEventListener('DOMContentLoaded', function () {
+            const body = document.body;
+            const themeToggleButtons = document.querySelectorAll('.btn-theme-toggle'); // Selecciona TODOS los botones de tema
+
+            // Función para aplicar tema AL BODY y actualizar iconos
+            function setTheme(theme) {
+                body.classList.remove('light-mode', 'dark-mode');
+                body.classList.add(theme);
+                localStorage.setItem('theme', theme);
+
+                // Actualizar iconos de TODOS los botones de tema
+                themeToggleButtons.forEach(button => updateButtonIcons(button, theme));
+                // Ya no se necesita lógica especial para el icono de notificación del navbar
+            }
+
+            // Función para actualizar los iconos sol/luna en un botón específico
+            function updateButtonIcons(button, theme) {
+                const sunIcon = button.querySelector('#light-mode-icon-small');
+                const moonIcon = button.querySelector('#dark-mode-icon-small');
+                if (sunIcon && moonIcon) {
+                    // El icono que se muestra es el opuesto al tema actual
+                    sunIcon.style.display = (theme === 'dark-mode' ? 'inline' : 'none');
+                    moonIcon.style.display = (theme === 'light-mode' ? 'inline' : 'none');
+                }
+            }
+
+            // Cargar tema inicial
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark-mode' : 'light-mode');
+            setTheme(savedTheme); // Aplicar tema inicial
+
+            // Listener para CADA botón de tema
+            themeToggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    let currentTheme = body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
+                    let newTheme = currentTheme === 'light-mode' ? 'dark-mode' : 'light-mode';
+                    setTheme(newTheme);
+                    // Disparar evento por si otros scripts lo necesitan
+                    document.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+                });
+            });
+
+            // Observer sigue siendo útil si Chart.js u otros scripts reaccionan al cambio de clase en BODY
+            const themeObserver = new MutationObserver((mutationsList) => {
+                for(let mutation of mutationsList) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        const newTheme = document.body.classList.contains('dark-mode') ? 'dark-mode' : 'light-mode';
+                        // console.log(`MutationObserver: Theme changed to ${newTheme}`);
+                        document.dispatchEvent(new CustomEvent('themeChangedByObserver', { detail: { theme: newTheme } }));
+                    }
+                }
+            });
+            themeObserver.observe(document.body, { attributes: true });
+        });
+    </script>
+
+    {% block scripts %}
+    {% endblock scripts %}
+
+</body>
+</html>

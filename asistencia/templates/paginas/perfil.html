@@ -1,0 +1,487 @@
+{% extends "plantillas.html" %}
+{% load static %}
+{% block Contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Mi Perfil {% endblock titulo %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- <link rel="stylesheet" href="plantillapp.css"> -->
+
+    <style>
+        /* ... (Tus estilos CSS generales como :root, profile-page-wrapper, etc.) ... */
+        :root {
+            --primary-color: #2c3e50; /* Azul oscuro */
+            --secondary-color: #3498db; /* Azul claro */
+            --light-gray: #f8f9fa;
+            --medium-gray: #bdc3c7;
+            --dark-gray: #7f8c8d;
+            --text-color: #333;
+            --white: #ffffff;
+            --gradient-start: #e0eafc;
+            --gradient-end: #cfdef3;
+        }
+
+        .profile-page-wrapper {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 80vh;
+            box-sizing: border-box;
+            color: var(--text-color);
+        }
+        .profile-container { width: 100%; max-width: 550px; }
+        .profile-card { background-color: var(--white); border-radius: 15px; box-shadow: 0 12px 35px rgba(44, 62, 80, 0.15); overflow: hidden; text-align: center; padding: 35px 30px; transition: transform 0.3s ease, box-shadow 0.3s ease; border-top: 5px solid var(--secondary-color); }
+        /* .profile-card:hover { transform: translateY(-6px); box-shadow: 0 18px 45px rgba(44, 62, 80, 0.2); } */
+        .profile-header { margin-bottom: 25px; position: relative; }
+        .user-name { margin: 15px 0 5px 0; font-size: 1.7em; font-weight: 700; color: var(--primary-color); }
+        .user-role { margin: 0 0 20px 0; font-size: 1.05em; color: var(--dark-gray); font-weight: 400; }
+        .profile-details { margin-bottom: 30px; text-align: left; border-top: 1px solid #eee; padding-top: 25px; }
+        .detail-item { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; font-size: 0.95em; color: var(--text-color); min-height: 2.5em; }
+        .detail-item i { color: var(--secondary-color); width: 20px; text-align: center; font-size: 1.1em; flex-shrink: 0; }
+        .detail-item span, .detail-item a { word-break: break-word; flex-grow: 1; }
+        .detail-item strong { font-weight: 600; color: var(--primary-color); }
+        .detail-item a { color: var(--secondary-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .detail-item a:hover { color: var(--primary-color); text-decoration: underline; }
+        .profile-actions { margin-top: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .btn { padding: 10px 25px; border: none; border-radius: 25px; font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; text-decoration: none; text-align: center; }
+        .btn-primary { background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%); color: var(--white); box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
+        .btn-primary:hover { background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color) 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4); }
+        .btn-secondary { background-color: var(--light-gray); color: var(--dark-gray); border: 1px solid var(--medium-gray); }
+        .btn-secondary:hover { background-color: #e9ecef; border-color: #adb5bd; transform: translateY(-2px); }
+        .btn-success { background-color: #2ecc71; color: white; }
+        .btn-danger { background-color: #e74c3c; color: white; }
+
+        /* --- ESTILOS PARA EDICIÓN IN-PLACE Y VISIBILIDAD DE BOTONES --- */
+        .edit-input {
+            display: none; /* Oculto por defecto */
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 0.9em;
+            box-sizing: border-box; /* Importante para el ancho */
+        }
+
+        .profile-card.editing .display-field { display: none; } /* Oculta texto normal en modo edición */
+        .profile-card.editing .edit-input { display: inline-block; width: calc(100% - 0px); } /* Muestra inputs en modo edición (ajusta ancho si es necesario) */
+
+        /* Control de visibilidad de los contenedores de botones */
+        .profile-card .view-mode-controls {
+            display: flex; /* Mostrar por defecto */
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+        }
+        .profile-card .edit-mode-controls {
+            display: none; /* Ocultar por defecto */
+        }
+
+        .profile-card.editing .view-mode-controls {
+            display: none; /* Ocultar en modo edición */
+        }
+        .profile-card.editing .edit-mode-controls {
+            display: flex; /* Mostrar en modo edición */
+            gap: 15px;
+            justify-content: center;
+            width: 100%;
+        }
+
+        /* Ajustes responsivos para botones */
+         @media (max-width: 600px) {
+             .profile-card { padding: 25px 20px; }
+             .profile-actions { flex-direction: column; gap: 10px; }
+             .btn { width: 100%; box-sizing: border-box; }
+             /* Asegurar que ambos contenedores se apilen en móvil */
+             .profile-card .view-mode-controls,
+             .profile-card.editing .edit-mode-controls {
+                 flex-direction: column;
+                 gap: 10px;
+             }
+         }
+
+.profile-page-wrapper {
+    /* Vamos a usar un fondo sólido o un gradiente más sutil para que sea más fácil adaptarlo */
+    /* background: linear-gradient(135deg, var(--gradient-start, #e0eafc) 0%, var(--gradient-end, #cfdef3) 100%); */
+    background-color: var(--body-bg-light); /* Usar fondo base del body */
+    font-family: 'Poppins', sans-serif; /* Aplicar fuente si te gusta para toda la app */
+    padding: 40px 20px;
+    display: flex; justify-content: center; align-items: flex-start;
+    min-height: 80vh; box-sizing: border-box;
+    color: var(--body-color-light); /* Color de texto base */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.profile-card {
+    background-color: var(--section-bg-light); /* Reutilizar fondo de sección */
+    border-radius: 15px;
+    box-shadow: var(--section-shadow-light); /* Usar sombra estándar */
+    overflow: hidden; text-align: center; padding: 35px 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+    border-top: 5px solid var(--secondary-color, #3498db); /* Color borde superior */
+    border: 1px solid transparent; /* Para transición borde general */
+    color: var(--body-color-light); /* Asegurar herencia texto base */
+}
+.profile-header { margin-bottom: 25px; position: relative; }
+.user-name {
+    margin: 15px 0 5px 0; font-size: 1.7em; font-weight: 700;
+    color: var(--primary-color, #2c3e50); /* Variable o color específico */
+    transition: color 0.3s ease;
+}
+.user-role {
+    margin: 0 0 20px 0; font-size: 1.05em;
+    color: var(--dark-gray, #7f8c8d); /* Variable o color específico */
+    font-weight: 400;
+     transition: color 0.3s ease;
+}
+.profile-details {
+    margin-bottom: 30px; text-align: left;
+    border-top: 1px solid var(--title-border-light); /* Usar variable borde sutil */
+    padding-top: 25px;
+    transition: border-color 0.3s ease;
+}
+.detail-item {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 15px;
+    font-size: 0.95em; color: var(--body-color-light); min-height: 2.5em;
+}
+.detail-item i {
+    color: var(--secondary-color, #3498db); /* Variable o color */
+    width: 20px; text-align: center; font-size: 1.1em; flex-shrink: 0;
+    transition: color 0.3s ease;
+}
+.detail-item span, .detail-item a { word-break: break-word; flex-grow: 1; }
+.detail-item strong {
+    font-weight: 600;
+    color: var(--primary-color, #2c3e50); /* Variable o color */
+    transition: color 0.3s ease;
+}
+.detail-item a {
+    color: var(--secondary-color, #3498db); /* Variable o color */
+    text-decoration: none; font-weight: 500; transition: color 0.3s ease;
+}
+.detail-item a:hover {
+    color: var(--primary-color, #2c3e50); /* Variable o color */
+    text-decoration: underline;
+}
+.profile-actions { margin-top: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+
+/* Botones específicos del perfil (clase .btn) - ya están definidos antes */
+/* Solo asegurar que hereden bien o definir colores base si es necesario */
+.btn { /* Asegurar que .btn ya esté definido con border-radius: 25px */
+    padding: 10px 25px; border: none; border-radius: 25px; font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; text-decoration: none; text-align: center;
+}
+.btn-primary { /* Definición base si no existe fuera del perfil */
+    background: linear-gradient(135deg, var(--secondary-color, #3498db) 0%, #2980b9 100%);
+    color: var(--white, #ffffff);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+.btn-primary:hover { /* Definición base */
+    background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color, #3498db) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+.btn-secondary { /* Definición base si no existe fuera del perfil */
+    background-color: var(--light-gray, #f8f9fa);
+    color: var(--dark-gray, #7f8c8d);
+    border: 1px solid var(--medium-gray, #bdc3c7);
+}
+.btn-secondary:hover { /* Definición base */
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-2px);
+}
+/* .btn-success, .btn-danger ya deberían estar definidos con sus contrapartes dark */
+
+/* Estilos Edición In-Place */
+.edit-input {
+    display: none; width: 100%; padding: 6px 10px;
+    border: 1px solid var(--medium-gray, #bdc3c7);
+    border-radius: 5px; font-family: inherit; font-size: 0.9em;
+    box-sizing: border-box;
+    background-color: var(--input-bg-light, #fefefe); /* Añadir bg */
+    color: var(--input-color-light, inherit); /* Añadir color */
+     transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.profile-card.editing .display-field { display: none; }
+.profile-card.editing .edit-input { display: inline-block; width: calc(100% - 0px); }
+
+.profile-card .view-mode-controls { display: flex; gap: 15px; justify-content: center; width: 100%; }
+.profile-card .edit-mode-controls { display: none; /* Oculto por defecto */ gap: 15px; justify-content: center; width: 100%; }
+.profile-card.editing .view-mode-controls { display: none; }
+.profile-card.editing .edit-mode-controls { display: flex; }
+
+
+/* --- Estilos Dark Mode para Página de Perfil (Añadir DENTRO de body.dark-mode {...}) --- */
+body.dark-mode .profile-page-wrapper {
+    /* Cambiar gradiente o usar fondo sólido oscuro */
+    /* background: linear-gradient(135deg, #232526 0%, #414345 100%); */
+    background-color: var(--body-bg-dark);
+    color: var(--body-color-dark); /* Color texto dark mode */
+}
+body.dark-mode .profile-card {
+    background-color: var(--section-bg-dark);
+    box-shadow: var(--section-shadow-dark); /* Sombra oscura */
+    border-top-color: var(--link-color-dark); /* Azul brillante para el borde superior */
+    border: 1px solid var(--section-border-dark); /* Borde general oscuro */
+    color: var(--body-color-dark); /* Asegurar herencia texto */
+}
+body.dark-mode .user-name {
+    color: var(--header-title-dark); /* Usar color brillante del título del header */
+}
+body.dark-mode .user-role {
+    color: var(--footer-color-dark); /* Gris claro */
+}
+body.dark-mode .profile-details {
+    border-top-color: var(--section-border-dark); /* Borde oscuro */
+}
+body.dark-mode .detail-item {
+    color: var(--body-color-dark); /* Hereda color principal */
+}
+body.dark-mode .detail-item i {
+    color: var(--link-color-dark); /* Iconos color azul brillante */
+}
+body.dark-mode .detail-item strong {
+    color: var(--header-title-dark); /* Texto strong igual que user-name */
+}
+body.dark-mode .detail-item a {
+    color: var(--link-color-dark); /* Enlaces azul brillante */
+}
+body.dark-mode .detail-item a:hover {
+    color: var(--nav-link-hover-dark); /* Hover de enlace estándar */
+}
+body.dark-mode .edit-input { /* Estilos input edición dark */
+    background-color: var(--input-bg-dark);
+    border-color: var(--input-border-dark);
+    color: var(--input-color-dark);
+    color-scheme: dark;
+}
+/* Ajustes botones dark mode */
+body.dark-mode .btn-primary {
+     /* Mantener gradiente o simplificar */
+     /* background: linear-gradient(135deg, var(--link-color-dark) 0%, var(--nav-link-hover-dark) 100%); */
+     background: var(--link-color-dark); /* O color sólido brillante */
+     color: #111; /* Texto oscuro para contraste */
+     box-shadow: 0 4px 15px rgba(88, 166, 255, 0.2); /* Sombra más clara */
+}
+body.dark-mode .btn-primary:hover {
+    background: var(--nav-link-hover-dark);
+    box-shadow: 0 6px 20px rgba(88, 166, 255, 0.3);
+}
+body.dark-mode .btn-secondary { /* Ya está definido en el CSS general de botones dark */
+    background-color: var(--button-bg-dark);
+    color: var(--button-color-dark);
+    border-color: var(--button-border-dark);
+}
+body.dark-mode .btn-secondary:hover {
+    background-color: var(--button-hover-bg-dark);
+}
+/* .btn-success, .btn-danger deberían usar las definiciones generales dark que ya existen */
+
+/* --- FIN DE LAS REGLAS PARA AÑADIR --- */
+:root {
+    --header-bg-light: #0d47a1;     
+--header-border-light: #0b3a80;    
+--header-title-light: #ffffff;     
+--nav-link-light: #ffffff;        
+--nav-link-hover-light: #cce5ff;   
+/* Ajustes Botón Tema Claro sobre fondo azul */
+--theme-button-border-light: rgba(255, 255, 255, 0.5); /* Borde blanco semitransparente */
+--theme-button-color-light: #ffffff;         
+--theme-button-bg-light: rgba(255, 255, 255, 0.1);  /* Fondo muy sutil o transparente */
+--theme-button-hover-bg-light: rgba(255, 255, 255, 0.2); /* Más visible al pasar el mouse */
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="profile-page-wrapper">
+        <div class="profile-card" id="profile-card">
+            <div class="profile-header">
+                <h1 class="user-name display-field" id="display-user-fullname">Deiby Rodriguez Avila</h1>
+                <input type="text" class="edit-input user-name" id="input-user-fullname" aria-label="Nombre completo">
+
+                <p class="user-role display-field" id="display-user-company">Programador</p>
+                <input type="text" class="edit-input user-role" id="input-user-company" aria-label="Rol o empresa">
+            </div>
+
+            <div class="profile-details">
+                <div class="detail-item" id="user-email-container">
+                    <i class="fas fa-envelope"></i>
+                    <span class="display-field"><a href="mailto:deibyr@gmail.com" id="display-user-email-link">deibyr@gmail.com</a></span>
+                    <input type="email" class="edit-input" id="input-user-email" aria-label="Correo electrónico">
+                </div>
+                <div class="detail-item" id="user-phone-container">
+                    <i class="fas fa-phone-alt"></i>
+                    <span class="display-field" id="display-user-phone">320 5681534</span>
+                    <input type="tel" class="edit-input" id="input-user-phone" aria-label="Teléfono">
+                </div>
+                <div class="detail-item" id="user-nif-container">
+                     <i class="fas fa-id-card"></i>
+                     <span class="display-field"><strong>C.C:</strong> <span id="display-user-nif">1004345721</span></span>
+                     <input type="text" class="edit-input" id="input-user-nif" aria-label="NIF/CIF">
+                </div>
+                 <div class="detail-item" id="user-address-container">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="display-field" id="display-user-address">Calle 140c 94d 38</span>
+                     <input type="text" class="edit-input" id="input-user-address" aria-label="Dirección">
+                </div>
+                <div class="detail-item" id="user-joined-container">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="user-joined">Cliente desde: Marzo 2025</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <!-- Botones modo visualización -->
+                 <div class="view-mode-controls"> <!-- Quitamos style inline -->
+                    <button class="btn btn-primary" id="edit-profile-btn">Editar Datos</button>
+                    <!-- Usamos un enlace normal para Ver Facturas, es más semántico -->
+                    <a href="{% url 'historial_facturas' %}" class="btn btn-secondary" id="view-invoices-link">Ver Facturas</a>
+                </div>
+                <!-- Botones modo edición -->
+                <div class="edit-mode-controls">
+                    <button class="btn btn-success" id="save-changes-btn">Guardar Cambios</button>
+                    <button class="btn btn-danger" id="cancel-edit-btn">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Espera a que el DOM esté completamente cargado
+        document.addEventListener('DOMContentLoaded', (event) => {
+
+            // --- Elementos del DOM ---
+            const profileCard = document.getElementById('profile-card');
+            const editBtn = document.getElementById('edit-profile-btn');
+            const saveBtn = document.getElementById('save-changes-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+            // const viewInvoicesLink = document.getElementById('view-invoices-link'); // No necesitamos JS para este
+
+            // Campos Display
+            const displayFullName = document.getElementById('display-user-fullname');
+            const displayCompany = document.getElementById('display-user-company');
+            const displayEmailLink = document.getElementById('display-user-email-link');
+            const displayPhone = document.getElementById('display-user-phone');
+            const displayNif = document.getElementById('display-user-nif');
+            const displayAddress = document.getElementById('display-user-address');
+            const nifPrefixElement = displayNif.previousElementSibling; // Para mantener "C.C: "
+
+            // Campos Input
+            const inputFullName = document.getElementById('input-user-fullname');
+            const inputCompany = document.getElementById('input-user-company');
+            const inputEmail = document.getElementById('input-user-email');
+            const inputPhone = document.getElementById('input-user-phone');
+            const inputNif = document.getElementById('input-user-nif');
+            const inputAddress = document.getElementById('input-user-address');
+
+            // --- Claves para localStorage ---
+            const STORAGE_KEYS = {
+                fullname: 'profile_fullname',
+                company: 'profile_company',
+                email: 'profile_email',
+                phone: 'profile_phone',
+                nif: 'profile_nif',
+                address: 'profile_address'
+            };
+
+            // --- Funciones ---
+
+            // Carga los datos desde localStorage al iniciar
+            function loadProfileFromStorage() {
+                displayFullName.textContent = localStorage.getItem(STORAGE_KEYS.fullname) ?? displayFullName.textContent;
+                displayCompany.textContent = localStorage.getItem(STORAGE_KEYS.company) ?? displayCompany.textContent;
+                const storedEmail = localStorage.getItem(STORAGE_KEYS.email);
+                if (storedEmail) {
+                    displayEmailLink.textContent = storedEmail;
+                    displayEmailLink.href = 'mailto:' + storedEmail;
+                }
+                displayPhone.textContent = localStorage.getItem(STORAGE_KEYS.phone) ?? displayPhone.textContent;
+                displayNif.textContent = localStorage.getItem(STORAGE_KEYS.nif) ?? displayNif.textContent;
+                displayAddress.textContent = localStorage.getItem(STORAGE_KEYS.address) ?? displayAddress.textContent;
+
+                // Asegurar que el NIF/CIF tenga prefijo si existe (ej. si el span se reconstruye)
+                 if (nifPrefixElement && nifPrefixElement.tagName === 'STRONG' && !displayNif.parentElement.textContent.includes(nifPrefixElement.textContent)) {
+                     displayNif.parentElement.prepend(nifPrefixElement);
+                 }
+            }
+
+            // Guarda los datos actuales (de los inputs) en localStorage
+            function saveProfileToStorage() {
+                localStorage.setItem(STORAGE_KEYS.fullname, inputFullName.value);
+                localStorage.setItem(STORAGE_KEYS.company, inputCompany.value);
+                localStorage.setItem(STORAGE_KEYS.email, inputEmail.value);
+                localStorage.setItem(STORAGE_KEYS.phone, inputPhone.value);
+                localStorage.setItem(STORAGE_KEYS.nif, inputNif.value);
+                localStorage.setItem(STORAGE_KEYS.address, inputAddress.value);
+                console.log("Datos guardados en localStorage.");
+            }
+
+            function enterEditMode() {
+                // Copiar valores actuales a los inputs
+                inputFullName.value = displayFullName.textContent;
+                inputCompany.value = displayCompany.textContent;
+                inputEmail.value = displayEmailLink.textContent;
+                inputPhone.value = displayPhone.textContent;
+                inputNif.value = displayNif.textContent; // Solo el número
+                inputAddress.value = displayAddress.textContent;
+
+                // Añadir clase 'editing'
+                profileCard.classList.add('editing');
+            }
+
+            function exitEditMode(saveChanges) {
+                if (saveChanges) {
+                    // Copiar valores de inputs a display
+                    displayFullName.textContent = inputFullName.value;
+                    displayCompany.textContent = inputCompany.value;
+                    displayEmailLink.textContent = inputEmail.value;
+                    displayEmailLink.href = 'mailto:' + inputEmail.value;
+                    displayPhone.textContent = inputPhone.value;
+                    displayNif.textContent = inputNif.value; // Actualiza solo el número
+                    displayAddress.textContent = inputAddress.value;
+
+                    // *** GUARDAR EN LOCALSTORAGE ***
+                    saveProfileToStorage();
+
+                    // alert('Cambios guardados (en el navegador). Recarga para probar la persistencia.');
+                } else {
+                    // No hacer nada, los inputs se descartarán visualmente
+                    console.log("Edición cancelada.");
+                }
+
+                // Quitar clase 'editing'
+                profileCard.classList.remove('editing');
+            }
+
+            // --- Inicialización y Event Listeners ---
+
+            // Cargar datos guardados al inicio
+            loadProfileFromStorage();
+
+            if (editBtn) {
+                editBtn.addEventListener('click', enterEditMode);
+            }
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => exitEditMode(true)); // Guardar
+            }
+
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => exitEditMode(false)); // Cancelar
+            }
+
+        }); // Fin del DOMContentLoaded
+    </script>
+{% endblock %}
+</body>
+</html>

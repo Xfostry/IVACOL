@@ -1,0 +1,31 @@
+{% extends "plantilla.html" %}
+
+{% block titulo %} Editar {% endblock %}
+
+{% block contenido %} 
+
+<section>
+    <div class="card text-white bg-danger mb-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">Información Adicional</h4>
+            <p class="card-text">Proporcione detalles adicionales sobre el estudiante, como intereses, actividades extracurriculares o notas importantes.</p>
+        </div>
+    </div>
+</section>
+
+<!-- bs5-card-header-footer -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">Editar Estudiante</div>
+    <div class="card-body">
+        <h4 class="card-title">Datos del Estudiante</h4>
+        <p class="card-text">Estos son los datos de los estudiantes para asistencia</p>
+
+        <a href="{% url 'estudiantes' %}" class="btn btn-danger">Cancelar</a>
+        
+        {% include 'estudiantes/formulario.html' %}
+        
+    </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,541 @@
+{% extends "plantillas.html" %}
+{% load static %}
+{% block Contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Historial de Facturas {% endblock titulo %}</title>
+    <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
+    <style>
+        /* --- Estilos Base (Modo Claro) --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; margin: 0; padding: 0; background-color: var(--body-bg-light, #f4f7f6); transition: background-color 0.3s ease, color 0.3s ease; }
+        .container-historial {
+            max-width: 1300px; margin: 40px auto; padding: 25px 30px;
+            background-color: var(--section-bg-light);
+            border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+            border: 1px solid transparent;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .titulo-contenedor {
+            position: relative; padding-bottom: 10px; margin-bottom: 30px;
+            border-bottom: 2px solid var(--title-border-light);
+            transition: border-color 0.3s ease;
+        }
+        .titulo-historial {
+            color: var(--header-title-light, #2c3e50);
+            font-weight: 600; text-align: center; font-size: 1.8em; margin: 0; padding: 0;
+            transition: color 0.3s ease;
+        }
+        .btn-descargar-facturas {
+            position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            padding: 8px 15px; background-color: #2980b9; color: white;
+            text-decoration: none; border: none; border-radius: 5px; cursor: pointer;
+            font-size: 0.9em; font-weight: 500; transition: background-color 0.3s ease; white-space: nowrap;
+        }
+        .btn-descargar-facturas:hover { background-color: #1f618d; }
+
+        /* --- Estilos Tabla Historial --- */
+        .tabla-historial { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .tabla-historial th, .tabla-historial td {
+            padding: 12px 15px; text-align: left;
+            border-bottom: 1px solid var(--table-cell-border-light);
+            vertical-align: middle; white-space: nowrap;
+            transition: border-color 0.3s ease, background-color 0.2s ease, color 0.3s ease; /* Añadido color a transition */
+            color: var(--body-color-light, #333); /* Color base modo claro */
+        }
+        .tabla-historial th {
+            background-color: #3498db; color: #ffffff; font-weight: 600;
+            text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px;
+            position: sticky; top: 0; z-index: 1; /* Para cabecera fija si hace scroll */
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Alineación derecha para columnas numéricas Y NIT */
+        .tabla-historial td.numero, .tabla-historial th.numero-header,
+        .tabla-historial td.nit-cell, .tabla-historial th.nit-header { /* NUEVO: Añadidas clases NIT */
+            text-align: right;
+            font-variant-numeric: tabular-nums; /* Mantiene ancho de números */
+        }
+        .tabla-historial tr:nth-child(even) { background-color: var(--table-row-even-bg-light); }
+        .tabla-historial tr:nth-child(odd) { background-color: var(--body-bg-light); } /* Fondo impar claro */
+        .tabla-historial tr:hover { background-color: var(--table-row-hover-bg-light); cursor: default; }
+
+        /* Resto de estilos modo claro (mensaje, botones acciones, modal...) sin cambios */
+        .mensaje-vacio { text-align: center; padding: 40px 20px; color: #7f8c8d; font-size: 1.1em; background-color: var(--body-bg-light); border: 1px dashed #bdc3c7; border-radius: 8px; margin-top: 30px; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        .mensaje-vacio.oculto { display: none; }
+        .action-button-historial { background: none; border: none; cursor: pointer; padding: 5px; margin: 0 3px; font-size: 1.1em; transition: color 0.3s ease, opacity 0.3s ease; }
+        .action-button-historial.edit { color: #f39c12; }
+        .action-button-historial.delete { color: #e74c3c; }
+        .action-button-historial:hover { opacity: 0.7; }
+        .tabla-historial th.acciones-header, .tabla-historial td.acciones-cell { text-align: center; white-space: nowrap; }
+
+        /* Estilos del Modal (como los tenías) */
+        .modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.5); }
+        .modal-content { background-color: var(--modal-bg-light, #fefefe); margin: 10% auto; padding: 25px 35px; border: 1px solid var(--modal-border-light, #ccc); width: 90%; max-width: 550px; border-radius: 8px; position: relative; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .modal-content .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; line-height: 1; cursor: pointer; transition: color 0.2s ease; }
+        .modal-content .close-button:hover, .modal-content .close-button:focus { color: #333; text-decoration: none; }
+        .modal-content h2 { margin-top: 0; margin-bottom: 25px; font-size: 1.6em; color: var(--header-title-light, #333); text-align: center; border-bottom: 1px solid var(--title-border-light, #eee); padding-bottom: 15px; transition: color 0.3s ease, border-color 0.3s ease; }
+        .modal-content .form-group { margin-bottom: 20px; }
+        .modal-content .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--body-color-light, #555); font-size: 0.95em; transition: color 0.3s ease; }
+        .modal-content .form-group input[type="text"], .modal-content .form-group input[type="date"], .modal-content .form-group input[type="number"], .modal-content .form-group select { box-sizing: border-box; width: 100%; padding: 10px 12px; border: 1px solid var(--input-border-light, #ccc); border-radius: 5px; font-size: 1rem; background-color: var(--input-bg-light, #fff); color: var(--body-color-light, #333); transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease; }
+        .modal-content .form-group input:focus, .modal-content .form-group select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+        .modal-content .submit-button { background-color: var(--submit-button-bg-light, #28a745); color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.3s ease, transform 0.1s ease; display: block; width: 100%; margin-top: 15px; }
+        .modal-content .submit-button:hover { background-color: var(--submit-button-hover-bg-light, #218838); transform: translateY(-1px); }
+
+        /* === ESTILOS DARK MODE === */
+        body.dark-mode { background-color: var(--body-bg-dark, #121212); color: var(--body-color-dark, #e0e0e0); }
+        body.dark-mode .container-historial { background-color: var(--section-bg-dark); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); border-color: var(--section-border-dark); }
+        body.dark-mode .titulo-contenedor { border-bottom-color: var(--title-border-dark); }
+        body.dark-mode .titulo-historial { color: var(--header-title-dark); }
+        body.dark-mode .btn-descargar-facturas { background-color: #5dade2; color: #1c1c1c; }
+        body.dark-mode .btn-descargar-facturas:hover { background-color: #85c1e9; }
+
+        /* Tabla Dark Mode */
+        body.dark-mode .tabla-historial th { background-color: #2c3e50; color: var(--table-head-color-dark); border-bottom-color: #4a5a6a; }
+        body.dark-mode .tabla-historial td { border-bottom-color: var(--table-cell-border-dark); color: var(--body-color-dark); } /* Hereda o define color claro */
+        body.dark-mode .tabla-historial td.numero,
+        body.dark-mode .tabla-historial td.nit-cell { /* NUEVO: Añadida .nit-cell */
+             color: var(--body-color-dark); /* Asegura color en columnas alineadas a la derecha */
+        }
+        body.dark-mode .tabla-historial tr:nth-child(even) { background-color: var(--table-row-even-bg-dark); }
+        body.dark-mode .tabla-historial tr:nth-child(odd) { background-color: var(--section-bg-dark); }
+        body.dark-mode .tabla-historial tr:hover { background-color: var(--table-row-hover-bg-dark); }
+
+        /* Resto de Dark Mode (mensaje, botones, modal...) */
+        body.dark-mode .mensaje-vacio { color: var(--footer-color-dark); background-color: var(--section-bg-dark); border-color: var(--button-border-dark); }
+        body.dark-mode .action-button-historial.edit { color: #f8c471; }
+        body.dark-mode .action-button-historial.delete { color: #f1948a; }
+
+        /* Modal Dark Mode */
+        body.dark-mode .modal-content { background-color: var(--modal-bg-dark, #252525); border-color: var(--modal-border-dark, #444); color: var(--body-color-dark, #e0e0e0); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); }
+        body.dark-mode .modal-content .close-button { color: #888; }
+        body.dark-mode .modal-content .close-button:hover { color: #ccc; }
+        body.dark-mode .modal-content h2 { color: var(--header-title-dark, #ccc); border-bottom-color: var(--title-border-dark, #444); }
+        body.dark-mode .modal-content .form-group label { color: var(--body-color-dark-muted, #bbb); }
+        body.dark-mode .modal-content .form-group input[type="text"], body.dark-mode .modal-content .form-group input[type="date"], body.dark-mode .modal-content .form-group input[type="number"], body.dark-mode .modal-content .form-group select { background-color: var(--input-bg-dark, #333); border-color: var(--input-border-dark, #555); color: var(--body-color-dark, #e0e0e0); }
+        body.dark-mode .modal-content .form-group input:-webkit-autofill, body.dark-mode .modal-content .form-group select:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark, #333) inset !important; -webkit-text-fill-color: var(--body-color-dark, #e0e0e0) !important; }
+        body.dark-mode .modal-content .form-group input:focus, body.dark-mode .modal-content .form-group select:focus { border-color: #5dade2; box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.25); }
+        body.dark-mode .modal-content .submit-button { background-color: var(--submit-button-bg-dark, #2a8a44); }
+        body.dark-mode .modal-content .submit-button:hover { background-color: var(--submit-button-hover-bg-dark, #217336); }
+
+        body.modal-open-no-scroll { overflow: hidden; }
+    </style>
+</head>
+<body>
+<br><br><br>
+<div class="container-historial">
+
+    <div class="titulo-contenedor">
+        <h1 class="titulo-historial">Historial de Facturas</h1>
+        <a href="{% url 'leerFacturas' %}" class="btn-descargar-facturas" title="Ir a Descargar Facturas">
+             Descargar Facturas
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="tabla-historial">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th class="numero-header">Número</th>
+                    <th>Descripción</th>
+                    <th class="nit-header">NIT</th>       <!-- <<< NUEVA CABECERA NIT >>> -->
+                    <th>Categoría</th>
+                    <th class="numero-header">Neto (COP)</th>
+                    <th class="numero-header">IVA (19%) (COP)</th>
+                    <th class="numero-header">Total (COP)</th>
+                    <th class="acciones-header">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-historial-body">
+                <!-- Filas generadas por JS, ahora incluirán el NIT -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="mensaje-vacio" class="mensaje-vacio oculto">
+        <p>No se encontraron datos de facturas guardados en este navegador.</p>
+    </div>
+
+</div>
+
+<!-- Modal de Edición (Sin cambios en el HTML del modal en sí) -->
+<div id="edit-invoice-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="close-edit-modal-btn">×</span>
+        <h2>Editar Factura</h2>
+        <form id="edit-invoice-form">
+            <input type="hidden" id="edit-invoice-index" name="edit-invoice-index">
+            <div class="form-group">
+                <label for="edit-invoice-date">Fecha:</label>
+                <input type="date" id="edit-invoice-date" name="edit-invoice-date" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-numero">Número:</label>
+                <input type="text" id="edit-invoice-numero" name="edit-invoice-numero" required>
+            </div>
+             <div class="form-group">
+                <label for="edit-invoice-label">Descripción:</label>
+                <input type="text" id="edit-invoice-label" name="edit-invoice-label" required>
+            </div>
+            <!-- A FUTURO: Podrías añadir aquí un campo para editar el NIT -->
+            <!-- <div class="form-group"> -->
+            <!--     <label for="edit-invoice-nit">NIT:</label> -->
+            <!--     <input type="text" id="edit-invoice-nit" name="edit-invoice-nit"> -->
+            <!-- </div> -->
+             <div class="form-group">
+                <label for="edit-invoice-category">Categoría:</label>
+                <select id="edit-invoice-category" name="edit-invoice-category" required>
+                     <option value="" disabled>Selecciona una categoría...</option>
+                     <option value="Supermercados">Supermercados</option>
+                     <option value="Servicios">Servicios</option>
+                     <option value="Entretenimiento">Entretenimiento</option>
+                     <option value="Tecnología">Tecnología</option>
+                     <option value="Transporte">Transporte</option>
+                     <option value="Salud">Salud</option>
+                     <option value="Restaurantes">Restaurantes</option>
+                     <option value="Otros">Otros</option>
+                 </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-neto">Monto Base (Neto):</label>
+                <input type="number" id="edit-invoice-neto" name="edit-invoice-neto" step="any" required>
+            </div>
+            <button type="submit" class="submit-button">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSFklMERUk7OgLLOzdpgudppAiHzQEUtGtk/juBSCvZx8rvFnujoPJjpSjuscefMeknXhHReA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const STORAGE_KEY = 'historialFacturasApp';
+        const IVA_RATE = 0.19;
+
+        const tablaBody = document.getElementById('tabla-historial-body');
+        const mensajeVacio = document.getElementById('mensaje-vacio');
+        const editModalElement = document.getElementById('edit-invoice-modal');
+        const editForm = document.getElementById('edit-invoice-form');
+        const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
+        const tablaHistorialElement = document.querySelector('.tabla-historial'); // Cambiado para mayor especificidad si es necesario
+
+        const editIndexInput = document.getElementById('edit-invoice-index');
+        const editDateInput = document.getElementById('edit-invoice-date');
+        const editNumeroInput = document.getElementById('edit-invoice-numero');
+        const editLabelInput = document.getElementById('edit-invoice-label');
+        const editNitInput = document.getElementById('edit-invoice-nit');
+        const editCategoryInput = document.getElementById('edit-invoice-category');
+        const editNetoInput = document.getElementById('edit-invoice-neto');
+
+        const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        // Datos de ejemplo (asegurarse que incluyan NIT)
+        const allDataDefaultHistorial = [
+            { date: '2024-09-20', numero: 'F-0920A', label: 'Mercado', category: 'Supermercados', neto: 120000, iva: 22800, acumulado: 142800, nit: '900123456-1' },
+            { date: '2024-10-05', numero: 'SW-1005', label: 'Servicio Web', category: 'Servicios', neto: 250000, iva: 47500, acumulado: 297500, nit: '900123457-2' },
+            { date: '2024-10-15', numero: 'FAC-1015B', label: 'Factura', category: 'Supermercados', neto: 180000, iva: 34200, acumulado: 214200, nit: '84938492342' }, // NIT vacío ejemplo
+             { date: '2024-11-05', numero: 'H-1105', label: 'Hosting', category: 'Servicios', neto: 75000, iva: 14250, acumulado: 89250, nit: '900123459-4' },
+            { date: '2024-11-20', numero: 'MANT-1120', label: 'Mantenimiento', category: 'Entretenimiento', neto: 95000, iva: 18050, acumulado: 113050, nit: '438234792873' }, // NIT null ejemplo
+             // ... (más datos con o sin NIT)
+        ];
+
+        function getFacturasFromStorageWithFallback() {
+             let facturas = [];
+             try {
+                 const datosGuardados = localStorage.getItem(STORAGE_KEY);
+                 if (datosGuardados) {
+                     const parsedData = JSON.parse(datosGuardados);
+                     if (Array.isArray(parsedData)) {
+                          // Asegurarse que cada factura sea un objeto y tenga propiedades mínimas
+                          if (parsedData.every(item => item && typeof item === 'object' && item.date && item.numero && typeof item.neto !== 'undefined')) {
+                               facturas = parsedData;
+                               console.log("Historial: Datos cargados desde localStorage.");
+                           } else if (parsedData.length === 0) {
+                               facturas = [];
+                               console.log("Historial: localStorage está vacío.");
+                           } else {
+                               console.warn("Historial: Datos en localStorage incompletos o mal formados. Usando datos por defecto.");
+                               facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+                           }
+                      } else {
+                           console.warn("Historial: Datos en localStorage no son un array. Usando datos por defecto.");
+                           facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+                      }
+                 } else {
+                      console.log("Historial: No hay datos en localStorage. Usando datos por defecto.");
+                      facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+                 }
+             } catch (error) {
+                 console.error("Historial: Error al leer/parsear localStorage:", error, ". Usando datos por defecto.");
+                 facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+             }
+             const facturasFinal = Array.isArray(facturas) ? facturas : JSON.parse(JSON.stringify(allDataDefaultHistorial));
+             // Recalcular/asegurar totales y añadir NIT vacío si no existe al cargar
+             return facturasFinal.map(factura => {
+                  const facturaCalculada = calculateInvoiceTotals(factura);
+                  // Asegurarse que la propiedad 'nit' exista, aunque sea vacía
+                  if (typeof facturaCalculada.nit === 'undefined') {
+                     facturaCalculada.nit = ''; // O null, según prefieras
+                  }
+                  return facturaCalculada;
+             });
+        }
+
+        function saveFacturasToStorage(facturas) {
+            try {
+                if (!Array.isArray(facturas)) {
+                    console.error("Intento de guardar datos que no son un array."); return;
+                }
+                const facturasAGuardar = facturas.map(calculateInvoiceTotals); // Siempre recalcular
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(facturasAGuardar));
+            } catch (error) {
+                console.error("Error al guardar en localStorage:", error);
+                alert('Error al guardar. Almacenamiento lleno?');
+            }
+        }
+
+        function calculateInvoiceTotals(factura) {
+             if (!factura || typeof factura !== 'object') return factura;
+             const neto = Number(factura.neto) || 0;
+             const iva = parseFloat((neto * IVA_RATE).toFixed(2));
+             const acumulado = parseFloat((neto + iva).toFixed(2));
+             // Devuelve un nuevo objeto con todo, incluyendo el nit si ya existía
+             return { ...factura, neto, iva, acumulado };
+         }
+
+        // ===>>> MODIFICADA PARA AÑADIR CELDA NIT <<<===
+        function renderTablaHistorial(facturas) {
+            tablaBody.innerHTML = '';
+
+            if (!Array.isArray(facturas) || facturas.length === 0) {
+                mensajeVacio.classList.remove('oculto'); return;
+            }
+            mensajeVacio.classList.add('oculto');
+
+            const facturasOrdenadasVisualmente = [...facturas].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            facturasOrdenadasVisualmente.forEach((factura, indexVisual) => {
+                 const indiceOriginal = facturas.findIndex(fOrig =>
+                      fOrig.date === factura.date &&
+                      fOrig.numero === factura.numero &&
+                      fOrig.neto === factura.neto // Ajustar si necesitas una comparación más única
+                  );
+
+                const fila = document.createElement('tr');
+                fila.setAttribute('data-original-index', indiceOriginal !== -1 ? indiceOriginal : -1);
+
+                let fechaFormateada = 'N/A';
+                try {
+                     if (factura.date) {
+                         const dateObj = new Date(`${factura.date}T00:00:00Z`);
+                         if (!isNaN(dateObj)) {
+                             fechaFormateada = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+                         } else { fechaFormateada = factura.date; }
+                     }
+                 } catch(e){ fechaFormateada = factura.date || 'N/A'; }
+
+                const netoFormateado = currencyFormatter.format(factura.neto || 0); // Añadir || 0 por si acaso
+                const ivaFormateado = currencyFormatter.format(factura.iva || 0);
+                const acumuladoFormateado = currencyFormatter.format(factura.acumulado || 0);
+                const nitMostrado = factura.nit || 'N/A'; // <<< Muestra N/A si nit es null, undefined o vacío >>>
+
+                fila.innerHTML = `
+                    <td>${fechaFormateada}</td>
+                    <td class="numero">${factura.numero || 'N/A'}</td>
+                    <td>${factura.label || 'Sin descripción'}</td>
+                    <td class="nit-cell">${nitMostrado}</td>      <!-- <<< NUEVA CELDA TD PARA NIT >>> -->
+                    <td>${factura.category || 'N/A'}</td>
+                    <td class="numero">${netoFormateado}</td>
+                    <td class="numero">${ivaFormateado}</td>
+                    <td class="numero">${acumuladoFormateado}</td>
+                    <td class="acciones-cell">
+                        <button class="action-button-historial edit" data-index="${indiceOriginal}" title="Editar">✏️</button>
+                        <button class="action-button-historial delete" data-index="${indiceOriginal}" title="Borrar">🗑️</button>
+                    </td>
+                `;
+                tablaBody.appendChild(fila);
+            });
+        }
+
+        function cargarYRenderizar() {
+            const facturasActuales = getFacturasFromStorageWithFallback();
+            renderTablaHistorial(facturasActuales);
+        }
+
+        function eliminarFactura(indexOriginal) {
+             if (indexOriginal < 0) { alert('Error: Índice inválido.'); return; }
+             let facturasActuales = getFacturasFromStorageWithFallback();
+             if (indexOriginal >= facturasActuales.length) { alert('Error: Factura no encontrada.'); cargarYRenderizar(); return; }
+             const facturaParaBorrar = facturasActuales[indexOriginal];
+             const facturaLabel = facturaParaBorrar?.label || facturaParaBorrar?.numero || `factura ${indexOriginal + 1}`;
+             if (confirm(`¿Borrar factura "${facturaLabel}"?`)) {
+                 facturasActuales.splice(indexOriginal, 1);
+                 saveFacturasToStorage(facturasActuales);
+                 renderTablaHistorial(facturasActuales);
+                 // alert('Factura borrada.'); // Opcional
+             }
+        }
+
+        function abrirModalEdicion(indexOriginal) {
+             if (indexOriginal < 0) { alert('Error: Índice inválido.'); return; }
+             let facturasActuales = getFacturasFromStorageWithFallback();
+             if (indexOriginal >= facturasActuales.length) { alert('Error: Factura no encontrada.'); cargarYRenderizar(); return; }
+             const factura = facturasActuales[indexOriginal];
+
+             editIndexInput.value = indexOriginal;
+             editDateInput.value = factura.date || '';
+             editNumeroInput.value = factura.numero || '';
+             editLabelInput.value = factura.label || '';
+             // Aquí NO se carga el NIT en el modal porque no existe el campo
+             // A FUTURO: editNitInput.value = factura.nit || '';
+             editCategoryInput.value = factura.category || '';
+             editNetoInput.value = factura.neto || 0;
+
+             if (editModalElement) {
+                 editModalElement.style.display = 'block';
+                 document.body.classList.add('modal-open-no-scroll');
+             } else { console.error("Error: Modal no encontrado."); alert("Error al abrir edición."); }
+        }
+
+        if (editForm) {
+             editForm.addEventListener('submit', function(event) {
+                 event.preventDefault();
+                 const indexOriginal = parseInt(editIndexInput.value, 10);
+                 const newDate = editDateInput.value;
+                 const newNumero = editNumeroInput.value.trim();
+                 const newLabel = editLabelInput.value.trim();
+                 // A FUTURO: const newNit = editNitInput.value.trim();
+                 const newCategory = editCategoryInput.value.trim();
+                 const newNeto = parseFloat(editNetoInput.value);
+
+                 if (isNaN(indexOriginal)) { alert('Error: Índice inválido.'); return; }
+                 if (!newDate || !newNumero || !newLabel || !newCategory || isNaN(newNeto) || newNeto < 0) {
+                     alert('Completa los campos correctamente.'); return;
+                 }
+
+                 let facturasOriginales = getFacturasFromStorageWithFallback();
+                 if (indexOriginal >= 0 && indexOriginal < facturasOriginales.length) {
+                     // Importante: Mantener el NIT original ya que no se puede editar aquí
+                     const nitOriginal = facturasOriginales[indexOriginal].nit;
+
+                     const updatedInvoiceData = {
+                         date: newDate, numero: newNumero, label: newLabel,
+                         nit: nitOriginal, // <<< MANTIENE EL NIT ORIGINAL >>>
+                         // A FUTURO: nit: newNit,
+                         category: newCategory, neto: newNeto
+                     };
+                     const updatedInvoiceWithTotals = calculateInvoiceTotals(updatedInvoiceData);
+
+                     facturasOriginales[indexOriginal] = updatedInvoiceWithTotals;
+                     saveFacturasToStorage(facturasOriginales);
+                     renderTablaHistorial(facturasOriginales);
+                     closeEditModal();
+                     // alert('Factura actualizada.'); // Opcional
+                 } else {
+                     alert('Error al guardar actualización.'); closeEditModal(); cargarYRenderizar();
+                 }
+             });
+        }
+
+        function closeEditModal() {
+             if (editModalElement) {
+                 editModalElement.style.display = 'none';
+                 document.body.classList.remove('modal-open-no-scroll');
+                 editForm.reset();
+             }
+         }
+         if (closeEditModalBtn) closeEditModalBtn.onclick = closeEditModal;
+         window.onclick = function(event) { if (event.target == editModalElement) closeEditModal(); }
+         window.addEventListener('keydown', function(event){ if (event.key === 'Escape' && editModalElement?.style.display === 'block') closeEditModal(); });
+
+        tablaBody.addEventListener('click', function(event) {
+            const button = event.target.closest('button.action-button-historial');
+            if (!button) return;
+            const indexOriginal = parseInt(button.getAttribute('data-index'), 10);
+            if (isNaN(indexOriginal)) { console.error("Índice inválido en botón"); return; }
+            if (button.classList.contains('delete')) { eliminarFactura(indexOriginal); }
+            else if (button.classList.contains('edit')) { abrirModalEdicion(indexOriginal); }
+        });
+
+        // Funcionalidad Descargar PDF (SIN CAMBIOS INTERNOS)
+         function downloadPdfHistorial() {
+            // ... tu código existente para generar PDF ...
+             console.log("Iniciando descarga PDF del historial...");
+             if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') { alert("Error: Librerías PDF no cargadas."); console.error("jsPDF o html2canvas no definidos."); return; }
+             if (!tablaHistorialElement) { alert("Error: Tabla no encontrada."); console.error("Tabla '.tabla-historial' no encontrada."); return; }
+
+             const { jsPDF } = window.jspdf;
+             const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+             const pdfWidth = pdf.internal.pageSize.getWidth();
+             const pdfHeight = pdf.internal.pageSize.getHeight();
+             const margin = 10;
+
+             pdf.setFontSize(16); pdf.setTextColor(40); pdf.text("Historial de Facturas", margin, margin + 5);
+             pdf.setFontSize(10); pdf.setTextColor(100); pdf.text(`Generado el: ${new Date().toLocaleString('es-ES')}`, margin, margin + 10);
+
+             // Asegurarse que la tabla sea visible temporalmente si estaba oculta
+             const wasTableHidden = tablaHistorialElement.style.display === 'none';
+             if(wasTableHidden) tablaHistorialElement.style.display = ''; // Mostrar
+
+             html2canvas(tablaHistorialElement, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains('dark-mode') ? '#252525' : '#ffffff' })
+             .then(canvas => {
+                 if(wasTableHidden) tablaHistorialElement.style.display = 'none'; // Ocultar de nuevo si estaba oculta
+
+                 const imgData = canvas.toDataURL('image/png');
+                 const imgProps = pdf.getImageProperties(imgData);
+                 const pdfImageWidth = pdfWidth - (margin * 2);
+                 const pdfImageHeight = (imgProps.height * pdfImageWidth) / imgProps.width;
+                 let heightLeft = pdfImageHeight;
+                 let position = margin + 18; // Posición Y inicial
+
+                 pdf.addImage(imgData, 'PNG', margin, position, pdfImageWidth, pdfImageHeight);
+                 heightLeft -= (pdfHeight - margin - position); // Altura restante después de la 1ª pág
+
+                 // Añadir páginas si es necesario
+                 while (heightLeft > 0) {
+                     position = heightLeft - pdfImageHeight - margin; // Nueva posición Y negativa
+                     pdf.addPage();
+                     pdf.addImage(imgData, 'PNG', margin, position, pdfImageWidth, pdfImageHeight);
+                     heightLeft -= (pdfHeight - margin * 2); // Restar altura útil de la nueva pág
+                 }
+
+                 const fechaISO = new Date().toISOString().split('T')[0].replace(/-/g, '');
+                 pdf.save(`HistorialFacturas_${fechaISO}.pdf`);
+                 console.log("PDF generado.");
+             }).catch(error => {
+                 if(wasTableHidden) tablaHistorialElement.style.display = 'none'; // Asegurar ocultar en caso de error
+                 console.error("Error generando PDF con html2canvas:", error);
+                 alert("Error al generar el PDF.");
+             });
+         }
+        // Intentar encontrar el botón de descarga PDF (si existe)
+        const downloadPdfButton = document.getElementById('download-pdf-historial'); // Busca el botón por ID
+        if (downloadPdfButton) {
+             downloadPdfButton.addEventListener('click', downloadPdfHistorial);
+             console.log("Listener añadido al botón de descarga PDF.");
+         } else {
+             console.warn("Botón con id 'download-pdf-historial' no encontrado. La descarga de PDF del historial no funcionará desde un botón dedicado.");
+         }
+
+        // --- EJECUCIÓN INICIAL ---
+        cargarYRenderizar();
+
+        // --- Listener para storage ---
+        window.addEventListener('storage', (event) => {
+             if (event.key === STORAGE_KEY && event.newValue !== event.oldValue) {
+                 console.log('Historial: Cambio detectado, recargando...');
+                 cargarYRenderizar();
+             }
+        });
+
+    }); // Fin del DOMContentLoaded
+</script>
+{% endblock %}
+</body>
+</html>

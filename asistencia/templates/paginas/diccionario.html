@@ -1,0 +1,1038 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Diccionario de Datos {% endblock titulo %}</title>
+    <style>
+        table{
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        abbr{
+            cursor: help;
+        }
+        table, td, th{
+            border-style: solid;
+            border-width: 1px;
+        }
+        /* --- ESTILOS PARA CAPTION --- */
+        caption { /* Aplicable a todos los captions */
+            caption-side: top; /* <-- AÑADIDO: Posiciona el caption arriba */
+            font-size: 120%;
+            font-weight: bold;
+            color: black;
+             /* Puedes añadir un margen inferior si quieres más separación */
+            margin-bottom: 5px;
+        }
+        /* Puedes eliminar o comentar la regla específica 'table caption' si 'caption' ya hace lo necesario */
+        /*
+        table caption{
+            font-size: 120%;
+            font-weight: bold;
+        }
+        */
+        td, th{
+            border-color: rgb(28, 221, 54);
+        }
+        tr:hover{
+            color: #705c96;
+            background-color: #F2F2F2;
+        }
+        th{
+            background-color: rgb(14, 200, 233);
+        }
+        td{
+            color: rgb(41, 117, 216);
+        }
+        ul{
+            font-style: italic;
+        }
+        #title-sect{
+            color: rgb(9, 58, 194);
+            text-align: right;
+        }
+        .proj-desc{
+            text-align: right;
+        }
+        h2{
+            color: rgb(71, 148, 110);
+        }
+        .text-center img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 100%;
+            height: auto;
+        }
+        .content-margin {
+            margin: 20px; /* Add margin to separate from the border */
+        }
+    </style>
+</head>
+<body>
+    <br><br><br><br>
+    <div class="text-center">
+        <h2>Base de Datos</h2><hr>
+        <img src="{% static 'images/DIAGRAMAIVACOL.png' %}" alt="Diagrama Base de Datos" class="img-fluid">
+    </div>
+    <div class="text-center"><hr>
+        <h2>Diagrama de Clases</h2>
+        <img src="{% static 'images/DiagramaClases.png' %}" alt="Diagrama Base de Datos" class="img-fluid">
+    </div><br><hr><br><br>
+    <div class="content-margin">
+        <div id="title-sect">
+            <h1>IVACOL<br> </h1>
+            <p>
+            <em>2025-03-28</em>
+            </p>
+            <p class="proj-desc">
+            <em></em>
+            </p>
+        </div>
+        <h2>Diccionario</h2>
+        <ul>
+            <li><a href='#accionessistema'>accionessistema</a></li>
+            <li><a href='#ciudad'>ciudad</a></li>
+            <li><a href='#departamento'>departamento</a></li>
+            <li><a href='#facturas'>facturas</a></li>
+            <li><a href='#facturasimpuestos'>facturasimpuestos</a></li>
+            <li><a href='#genero'>genero</a></li>
+            <li><a href='#historialacceso'>historialacceso</a></li>
+            <li><a href='#imagenesfacturas'>imagenesfacturas</a></li>
+            <li><a href='#proveedores'>proveedores</a></li>
+            <li><a href='#roles'>roles</a></li>
+            <li><a href='#tipodocumento'>tipodocumento</a></li>
+            <li><a href='#tiposimpuesto'>tiposimpuesto</a></li>
+            <li><a href='#usuarios'>usuarios</a></li>
+            </ul>
+            <table id='accionessistema'>
+            <caption>accionessistema</caption>
+            <tr><td colspan='11'>acciones que puede realizar un usuario en el sistema</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador de la accion</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre de la accion realizada</td>
+            </tr>
+            </table> <!-- Cerrar tabla accionessistema -->
+
+            <table id='ciudad'>
+            <caption>ciudad</caption>
+            <tr><td colspan='11'>datos de la ciudad del usuario</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador de la ciudad</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre de la ciudad</td>
+            </tr>
+            <tr>
+                <td>iddepartamento</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador del departamento</td>
+            </tr>
+            </table> <!-- Cerrar tabla ciudad -->
+
+            <table id='departamento'>
+            <caption>departamento</caption>
+            <tr><td colspan='11'>datos de los departamentos</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del departamento</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre del departamento o estado</td>
+            </tr>
+            </table> <!-- Cerrar tabla departamento -->
+
+             <table id='facturas'>
+            <caption>facturas</caption>
+            <tr><td colspan='11'>datos de las facturas</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador de la factura</td>
+            </tr>
+            <tr>
+                <td>idusuario</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador del usuario que sube la factura</td>
+            </tr>
+            <tr>
+                <td>idproveedor</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador del proveedor que emite la factura</td>
+            </tr>
+            <tr>
+                <td>numero</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>numero de factura</td>
+            </tr>
+            <tr>
+                <td>fecha</td>
+                <td>DATE</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>fecha de la factura</td>
+            </tr>
+            <tr>
+                <td>valtotal</td>
+                <td>DECIMAL(10,2)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>monto total de la factura</td>
+            </tr>
+            <tr>
+                <td>valiva</td>
+                <td>DECIMAL(10,2)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>monto del iva en la factura</td>
+            </tr>
+            </table> <!-- Cerrar tabla facturas -->
+
+            <table id='facturasimpuestos'>
+            <caption>facturasimpuestos</caption>
+            <tr><td colspan='11'>relacion entre facturas e impuestos aplicados</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador de la relacion</td>
+            </tr>
+            <tr>
+                <td>idfactura</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador de la factura</td>
+            </tr>
+            <tr>
+                <td>idimpuesto</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador del impuesto</td>
+            </tr>
+            <tr>
+                <td>valor</td>
+                <td>DECIMAL(10,2)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>valor calculado del impuesto en la factura</td>
+            </tr>
+            <tr>
+                <td>porcentaje</td>
+                <td>DECIMAL(5,2)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>porcentaje aplicado</td>
+            </tr>
+            </table> <!-- Cerrar tabla facturasimpuestos -->
+
+            <table id='genero'>
+            <caption>genero</caption>
+            <tr><td colspan='11'>genero con el que se identifica</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador de genero</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(50)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>masculino o femenino</td>
+            </tr>
+            </table> <!-- Cerrar tabla genero -->
+
+            <table id='historialacceso'>
+            <caption>historialacceso</caption>
+            <tr><td colspan='11'>registro de accesos y acciones de los usuarios</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del acceso</td>
+            </tr>
+            <tr>
+                <td>idusuario</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>usuario que ingreso al sistema</td>
+            </tr>
+            <tr>
+                <td>fechahora</td>
+                <td>DATETIME</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td>CURRENT_TIMESTAMP()</td>
+                <td>fecha y hora del acceso</td>
+            </tr>
+            <tr>
+                <td>idaccion</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>accion realizada (ingreso, subio factura, elimino factura, etc.)</td>
+            </tr>
+            </table> <!-- Cerrar tabla historialacceso -->
+
+            <table id='imagenesfacturas'>
+            <caption>imagenesfacturas</caption>
+            <tr><td colspan='11'>almacenamiento de las imagenes de las facturas</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador de la imagen de la factura</td>
+            </tr>
+            <tr>
+                <td>idfactura</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador de la factura asociada</td>
+            </tr>
+            <tr>
+                <td>imagen_url</td>
+                <td>VARCHAR(255)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>url o ubicacion de la imagen de la factura</td>
+            </tr>
+            <tr>
+                <td>descripcion</td>
+                <td>VARCHAR(255)</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td>NULL</td>
+                <td>descripcion adicional de la imagen</td>
+            </tr>
+            </table> <!-- Cerrar tabla imagenesfacturas -->
+
+            <table id='proveedores'>
+            <caption>proveedores</caption>
+            <tr><td colspan='11'>datos de los proveedores de productos o servicios</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del proveedor</td>
+            </tr>
+            <tr>
+                <td>nit</td>
+                <td>VARCHAR(20)</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td>NULL</td>
+                <td>nit de la empresa</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre del proveedor</td>
+            </tr>
+            <tr>
+                <td>direccion</td>
+                <td>VARCHAR(200)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>direccion del proveedor</td>
+            </tr>
+            <tr>
+                <td>telefono</td>
+                <td>VARCHAR(20)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>telefono de contacto del proveedor</td>
+            </tr>
+            <tr>
+                <td>correo</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>correo de contacto del proveedor</td>
+            </tr>
+            </table> <!-- Cerrar tabla proveedores -->
+
+            <table id='roles'>
+            <caption>roles</caption>
+            <tr><td colspan='11'>roles para usuarios</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del rol</td>
+            </tr>
+            <tr>
+                <td>nombrerol</td>
+                <td>VARCHAR(50)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre del rol</td>
+            </tr>
+            </table> <!-- Cerrar tabla roles -->
+
+            <table id='tipodocumento'>
+            <caption>tipodocumento</caption>
+            <tr><td colspan='11'>tipos de documento del usuario</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del tipo de documento</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(10)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>tipo de documento (cc, ti, ce, etc.)</td>
+            </tr>
+            </table> <!-- Cerrar tabla tipodocumento -->
+
+            <table id='tiposimpuesto'>
+            <caption>tiposimpuesto</caption>
+            <tr><td colspan='11'>tipos de impuestos aplicados a las facturas</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del tipo de impuesto</td>
+            </tr>
+            <tr>
+                <td>nombre</td>
+                <td>VARCHAR(50)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre del impuesto (iva, retefuente, etc.)</td>
+            </tr>
+            </table> <!-- Cerrar tabla tiposimpuesto -->
+
+            <table id='usuarios'>
+            <caption>usuarios</caption>
+            <tr><td colspan='11'>usuarios del sistema</td></tr>
+            <tr>
+                <th>Column name</th>
+                <th>DataType</th>
+                <th><abbr title='Primary Key'>PK</abbr></th>
+                <th><abbr title='Not Null'>NN</abbr></th>
+                <th><abbr title='Unique'>UQ</abbr></th>
+                <th><abbr title='Binary'>BIN</abbr></th>
+                <th><abbr title='Unsigned'>UN</abbr></th>
+                <th><abbr title='Zero Fill'>ZF</abbr></th>
+                <th><abbr title='Auto Increment'>AI</abbr></th>
+                <th>Default</th>
+                <th>Comment</th>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>INT(11)</td>
+                <td>✔</td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td>✔</td>
+                <td></td>
+                <td>identificador del usuario</td>
+            </tr>
+            <tr>
+                <td>nombres</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>nombre del usuario</td>
+            </tr>
+            <tr>
+                <td>apellidos</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>apellido del usuario</td>
+            </tr>
+            <tr>
+                <td>idtipodocumento</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador del tipo de documento</td>
+            </tr>
+            <tr>
+                <td>nodocumento</td>
+                <td>VARCHAR(20)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>numero de documento</td>
+            </tr>
+            <tr>
+                <td>idgenero</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador de genero</td>
+            </tr>
+            <tr>
+                <td>idciudad</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador de la ciudad</td>
+            </tr>
+            <tr>
+                <td>numero</td>
+                <td>VARCHAR(20)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>numero de contacto</td>
+            </tr>
+            <tr>
+                <td>correo</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>correo del usuario</td>
+            </tr>
+            <tr>
+                <td>contrasena</td>
+                <td>VARCHAR(255)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>contrasena encriptada</td>
+            </tr>
+            <tr>
+                <td>direccion</td>
+                <td>VARCHAR(100)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>direccion del usuario</td>
+            </tr>
+            <tr>
+                <td>idrol</td>
+                <td>INT(11)</td>
+                <td> </td>
+                <td>✔</td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td> </td>
+                <td class='attr'> </td>
+                <td></td>
+                <td>identificador del rol</td>
+            </tr>
+        </table> <!-- Cerrar tabla usuarios -->
+    </div>
+</body>
+{% endblock  %}
+</html>

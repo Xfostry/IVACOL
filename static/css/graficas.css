@@ -1,0 +1,299 @@
+ /* ============================================= */
+        /* === ESTILOS RECREADOS PARA GRAFICAS.HTML === */
+        /* ============================================= */
+
+        /* --- Base y Contenedor Principal --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--body-bg-light, #f0f4f8); /* Fallback color */
+            color: var(--body-color-light, #333);
+            margin: 0;
+            padding: 0; /* Quitamos el padding 20px para controlar mejor con .main-container */
+            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.6;
+        }
+        .main-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px; /* Padding ahora aquí */
+        }
+        h1 {
+            text-align: center;
+            color: var(--header-title-light, #0d47a1);
+            margin-bottom: 30px;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+         /* Asegurar que header (si viene de plantillas.html) tenga estilos base */
+         header { /* Estilo de ejemplo si no está en plantillapp.css */
+             text-align: center; color: #fff; background-color: var(--header-bg-light, #0d47a1);
+             margin-bottom: 30px; font-weight: 600; padding: 18px 0;
+             box-shadow: 0 2px 8px rgba(13,71,161,0.08);
+             transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+         }
+
+        /* --- Contenedor de Filtros --- */
+        .filters-container {
+            background-color: var(--section-bg-light, #ffffff);
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: var(--section-shadow-light, 0 6px 20px rgba(0, 0, 0, 0.07));
+            margin-bottom: 35px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent; /* Para transición dark mode */
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .filters-container > div { /* Contenedor de label+input */
+           display: flex;
+           align-items: center;
+        }
+        .filters-container label {
+            font-weight: 600;
+            margin-right: 8px;
+            color: var(--label-color-light, #444);
+            transition: color 0.3s ease;
+            white-space: nowrap; /* Evitar que la etiqueta se parta */
+        }
+        .filters-container input[type="date"] {
+            padding: 9px 14px;
+            border: 1px solid var(--input-border-light, #ced4da);
+            border-radius: 6px;
+            font-size: 1em;
+            background-color: var(--input-bg-light, #f8f9fa);
+            color: var(--input-color-light, inherit);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .filters-container button {
+            padding: 10px 22px;
+            background-color: var(--link-color-light, #1e88e5); /* Usar color link por defecto */
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+        .filters-container button:hover {
+            background-color: var(--link-hover-light, #1565c0); /* Color link hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* --- Grid y Tarjetas de Gráficos --- */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Dos columnas por defecto */
+            gap: 35px;
+        }
+        .chart-card {
+            background-color: var(--section-bg-light, #ffffff);
+            padding: 25px 30px;
+            border-radius: 12px;
+            box-shadow: var(--section-shadow-light, 0 6px 20px rgba(0, 0, 0, 0.07));
+            border: 1px solid transparent; /* Transición dark mode */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 450px; /* Altura mínima para consistencia visual */
+        }
+        .chart-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada al pasar */
+        }
+        .chart-card h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--title-color-light, #495057);
+            font-size: 1.25em;
+            font-weight: 500;
+            flex-shrink: 0; /* Evitar que el título se encoja */
+            transition: color 0.3s ease;
+        }
+
+        /* --- Control de Valor Máximo --- */
+        .max-value-control {
+            display: flex;
+            justify-content: flex-end; /* Alinear a la derecha */
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-shrink: 0; /* Evitar que se encoja */
+        }
+        .max-value-control label {
+            font-size: 0.85em;
+            color: var(--label-color-light, #555);
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+        .max-value-input {
+            width: 90px; /* Ancho fijo pequeño */
+            padding: 4px 6px;
+            font-size: 0.85em;
+            border: 1px solid var(--input-border-light, #ccc);
+            border-radius: 4px;
+            text-align: right;
+            background-color: var(--input-bg-light, #fefefe);
+            color: var(--input-color-light, inherit);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+            -moz-appearance: textfield; /* Ocultar flechas en Firefox */
+        }
+        /* Ocultar flechas en Chrome, Safari, Edge */
+        .max-value-input::-webkit-outer-spin-button,
+        .max-value-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+         /* --- Contenedores internos de gráficos y mensaje "No Data" --- */
+         .chart-content-wrapper {
+             position: relative;
+             width: 100%;
+             flex-grow: 1; /* Ocupa el espacio restante en la card */
+             display: flex; /* Usa flexbox para controlar canvas/mensaje */
+             flex-direction: column; /* Coloca canvas encima de mensaje */
+             min-height: 200px; /* Altura mínima por si no hay nada */
+         }
+         .canvas-wrapper {
+             position: relative;
+             width: 100%;
+             height: 320px; /* Altura inicial del canvas */
+             flex-grow: 1; /* Ocupa espacio, pero permite que no-data-message aparezca */
+             display: block; /* Asegurar que se muestra si tiene contenido */
+         }
+         .canvas-wrapper canvas {
+             display: block; /* Elimina espacio extra */
+             max-width: 100%;
+             max-height: 100%;
+             width: 100%; /* Asegura que use el ancho */
+             height: 100%; /* Asegura que use la altura */
+         }
+         .no-data-message {
+             text-align: center;
+             padding: 15px;
+             color: var(--footer-color-light, #888); /* Color tenue */
+             font-style: italic;
+             font-size: 0.9em;
+             flex-grow: 1; /* Ocupa el espacio si el canvas se oculta */
+             display: none; /* Oculto por defecto */
+             align-items: center; /* Centrar verticalmente */
+             justify-content: center; /* Centrar horizontalmente */
+             background-color: transparent; /* Sin fondo propio */
+             transition: color 0.3s ease;
+             min-height: 100px; /* Mínimo espacio para el mensaje */
+         }
+         #noDataGlobal {
+             background-color: var(--section-bg-light, #ffffff);
+             padding: 30px;
+             border-radius: 10px;
+             box-shadow: var(--section-shadow-light, 0 4px 15px rgba(0,0,0,0.08));
+             margin-top: 20px;
+             display: none; /* Inicialmente oculto */
+             color: var(--footer-color-light, #888);
+             transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+             text-align: center;
+         }
+
+         /* --- Media Queries para Responsividad --- */
+         @media (max-width: 992px) {
+             .main-container { max-width: 90%; }
+             .canvas-wrapper { height: 280px; }
+             .max-value-control { justify-content: center; } /* Centrar en pantallas medianas */
+         }
+         @media (max-width: 768px) {
+             .charts-grid { grid-template-columns: 1fr; /* Una columna en tablets */ gap: 30px; }
+             .filters-container { flex-direction: column; align-items: stretch; gap: 15px; }
+             .filters-container > div { /* Asegurar que label e input estén bien */ flex-direction: column; align-items: flex-start; gap: 5px; }
+             .canvas-wrapper { height: 250px; }
+             .max-value-control { justify-content: flex-end; } /* Volver a la derecha */
+             .chart-card { min-height: 400px; }
+         }
+         @media (max-width: 480px) {
+             h1 { font-size: 1.6em; }
+             .chart-card h2 { font-size: 1.1em; }
+             .filters-container input[type="date"], .filters-container button { font-size: 0.9em; padding: 8px 12px;}
+             .chart-card { padding: 20px; min-height: 350px;}
+             .max-value-control label { font-size: 0.8em; }
+             .max-value-input { font-size: 0.8em; width: 75px;}
+         }
+
+        /* ================================= */
+        /* === ESTILOS DARK MODE OVERRIDES === */
+        /* ================================= */
+        body.dark-mode {
+            background-color: var(--body-bg-dark, #1a1a2e);
+            color: var(--body-color-dark, #e0e0e0);
+        }
+        body.dark-mode h1 { color: var(--header-title-dark, #f9b17a); }
+         body.dark-mode header { /* Estilo header dark si no está en plantillapp.css */
+             background-color: var(--header-bg-dark, #1f2d3d);
+             color: var(--header-color-dark, #e0e0e0);
+             box-shadow: var(--header-shadow-dark, 0 2px 8px rgba(0,0,0,0.4));
+         }
+        body.dark-mode .filters-container {
+            background-color: var(--section-bg-dark);
+            border-color: var(--section-border-dark);
+            box-shadow: var(--section-shadow-dark);
+        }
+        body.dark-mode .filters-container label { color: var(--label-color-dark); }
+        body.dark-mode .filters-container input[type="date"] {
+            background-color: var(--input-bg-dark);
+            border-color: var(--input-border-dark);
+            color: var(--input-color-dark);
+            color-scheme: dark; /* Mejora el picker de fecha en algunos navegadores */
+        }
+         /* Estilo para autofill en dark mode */
+        body.dark-mode .filters-container input:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark) inset !important;
+            -webkit-text-fill-color: var(--input-color-dark) !important;
+        }
+        body.dark-mode .filters-container button {
+            background-color: var(--link-color-dark);
+            color: var(--button-dark-text-color, var(--input-bg-dark)); /* Texto oscuro para contraste */
+            box-shadow: 0 2px 5px rgba(255,255,255,0.1);
+        }
+        body.dark-mode .filters-container button:hover {
+            background-color: var(--link-hover-dark);
+            box-shadow: 0 4px 8px rgba(255,255,255,0.15);
+        }
+        body.dark-mode .chart-card {
+            background-color: var(--section-bg-dark);
+            border-color: var(--section-border-dark);
+            box-shadow: var(--section-shadow-dark);
+        }
+        body.dark-mode .chart-card:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); }
+        body.dark-mode .chart-card h2 { color: var(--title-color-dark); }
+        body.dark-mode .max-value-control label { color: var(--label-color-dark); }
+        body.dark-mode .max-value-input {
+            background-color: var(--input-bg-dark);
+            border-color: var(--input-border-dark);
+            color: var(--input-color-dark);
+            color-scheme: dark; /* También para el input number */
+        }
+         body.dark-mode .max-value-input:-webkit-autofill {
+             -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark) inset !important;
+             -webkit-text-fill-color: var(--input-color-dark) !important;
+         }
+        body.dark-mode .no-data-message { color: var(--footer-color-dark); }
+        body.dark-mode #noDataGlobal {
+            background-color: var(--section-bg-dark);
+            box-shadow: var(--section-shadow-dark);
+            color: var(--footer-color-dark);
+        }
+         /* Ajustes específicos para los gráficos en modo oscuro */
+         body.dark-mode .chartjs-render-monitor { /* Selector común de Chart.js */
+             /* Colores de ejes y rejillas */
+             --chart-grid-color: rgba(255, 255, 255, 0.1);
+             --chart-tick-color: rgba(255, 255, 255, 0.7);
+         }
+         /* Sobrescribir opciones de Chart.js si es necesario */
+         /* (El JS ya intenta hacer esto con Chart.defaults, pero CSS puede reforzarlo) */
+        body.dark-mode .chartjs-render-monitor text { /* Ejemplo genérico para texto ejes */
+             fill: var(--body-color-dark, #e0e0e0) !important; /* Forzar color texto ejes */
+        }

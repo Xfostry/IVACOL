@@ -1,0 +1,417 @@
+/* Estilos específicos para el <header> personalizado */
+header {
+    background-color: #0056b3; /* Azul oscuro */
+    color: #fff;
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* Añadimos transición si planeas cambiar el fondo (ej. con dark mode o scroll) */
+    transition: background-color 0.3s ease;
+}
+
+.header-content {
+    /* Asumiendo que 'container' ya centra y limita el ancho */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Elimina 'container' si no lo usas, o ajusta según tu layout */
+    max-width: 1140px; /* Ejemplo de ancho máximo si no usas .container */
+    margin: 0 auto;    /* Centrar si no usas .container */
+    padding: 0 15px;   /* Padding lateral si no usas .container */
+}
+
+header h1 {
+    margin: 0;
+    color: #fff; /* Asegura color blanco */
+    font-size: 1.8rem; /* Tamaño del título */
+}
+
+header nav ul {
+    list-style: none; /* Quita los puntos de la lista */
+    padding: 0;       /* Quita padding por defecto del ul */
+    margin: 0;        /* Quita margen por defecto del ul */
+    display: flex;    /* Coloca los elementos en línea */
+    gap: 20px;        /* Espacio entre elementos (alternativa a margin-left) */
+}
+
+/* Eliminamos el estilo li específico si solo usamos gap en ul */
+/* header nav ul li { */
+    /* margin-left: 20px; /* Espacio a la izquierda de cada item (excepto el primero) */
+/* } */
+
+header nav ul li a {
+    color: #fff;            /* Color del texto del enlace */
+    text-decoration: none; /* Quita el subrayado */
+    font-weight: 500;      /* Grosor de la fuente */
+    transition: color 0.2s ease; /* Transición suave para el hover */
+}
+
+header nav ul li a:hover {
+    color: #e9ecef; /* Color ligeramente más claro al pasar el ratón */
+    /* text-decoration: none; /* No es necesario repetirlo */
+}
+
+/* --- ESTILOS OPCIONALES PARA DARK MODE (Aplicados al Body) --- */
+/* Estos afectan el fondo general, podrías querer ajustar el header también */
+
+/* Estilos generales del body para el cambio de tema */
+body.light-mode {
+   background-color: #ffffff; /* Fondo blanco por defecto */
+   color: #212529; /* Texto oscuro por defecto */
+   /* Asegúrate que otros elementos hereden bien el color */
+}
+
+body.dark-mode {
+   background-color: #121212; /* Fondo oscuro */
+   color: #ffffff; /* Texto claro por defecto */
+}
+
+/* Si quieres que el header cambie en dark mode, añade esto: */
+/* body.dark-mode header {
+    background-color: #1c2541; /* Un azul más oscuro o gris oscuro */
+    /* O podrías usar un degradado como tenías antes, pero aplicado a 'header' */
+    /* background-image: linear-gradient(to right, #0b132b, #1c2541); */
+    /* background-color: transparent !important; /* Necesario si usas background-image */
+/* } */
+
+/* Ajuste opcional para el footer en modo oscuro (si tienes uno con esa clase) */
+body.dark-mode footer.piePag {
+   background-color: #1c1c1c; /* Un gris un poco más claro que el body */
+   color: #adb5bd; /* Un gris más suave para el texto */
+}
+
+/* --- FIN ESTILOS DARK MODE --- */
+
+/* Nota: Si necesitas que el header se oculte al hacer scroll, necesitarás
+   añadir una clase (ej. 'header-hidden') con JavaScript y definir su estilo:
+   header.header-hidden {
+       transform: translateY(-100%);
+       transition: transform 0.3s ease-in-out;
+   }
+   Pero el CSS original que hacía esto apuntaba a '.navbar.hidden', que no aplica aquí.
+*/
+footer { background-color: #e9ecef; color: #6c757d; text-align: center; padding: 1rem 0; margin-top: 40px; border-top: 1px solid #dee2e6; }
+
+.loko {
+    width: 20px; height: 20px; vertical-align: top; margin-right: 0; margin-bottom: 5px;
+}
+
+
+/* === ESTILOS DE LA NAVBAR DEFINIDOS EN plantillas.html === */
+
+/* --- Variables de Color (Importantes para el estilo) --- */
+:root {
+    /* ... (todas tus variables --header-bg-light, --header-title-light, --nav-link-light, etc.) ... */
+    /* Light Mode */
+    --header-bg-light: #ffffff;
+    --header-border-light: #dee2e6;
+    --header-title-light: #0d6efd;
+    --nav-link-light: #0d6efd;
+    --nav-link-hover-light: #0a58ca;
+    --button-border-light: #ced4da;
+    --button-color-light: #495057;
+    --button-bg-light: #fff;
+    --button-hover-bg-light: #e9ecef;
+    /* Dark Mode */
+    --header-bg-dark: #252525;
+    --header-border-dark: #333;
+    --header-title-dark: #58a6ff;
+    --nav-link-dark: #58a6ff;
+    --nav-link-hover-dark: #79b8ff;
+    --button-border-dark: #555;
+    --button-color-dark: #e0e0e0;
+    --button-bg-dark: #333;
+    --button-hover-bg-dark: #444;
+    /* ... y otras variables si las usas en la navbar ... */
+}
+
+/* --- Contenedor Principal del Header --- */
+header {
+    background-color: var(--header-bg-light);
+    border-bottom: 1px solid var(--header-border-light);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    padding: 1rem 0; /* Ajusta el padding vertical si es necesario */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+/* --- Contenedor Flex para Alinear Elementos --- */
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1100px; /* O el ancho de tu container */
+    margin: 0 auto; /* Centrar el contenido */
+    padding: 0 20px; /* Padding lateral del container */
+}
+
+/* --- Lado Izquierdo (Título y Botón Tema) --- */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre título y botón */
+}
+
+/* --- Título Principal (H1) --- */
+header h1 {
+    color: var(--header-title-light);
+    transition: color 0.3s ease;
+    margin: 0; /* Quitar márgenes por defecto */
+    font-size: 1.8rem; /* Tamaño de fuente */
+    font-weight: 700; /* O el peso que prefieras */
+    }
+    /* --- ESTILOS BASE (MODO CLARO) --- */
+        /* (Se mantienen los estilos base del modo claro como los tenías) */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--body-bg-light); color: var(--body-color-light); line-height: 1.6; transition: background-color 0.3s ease, color 0.3s ease; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        a { color: var(--link-color-light); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Estilos Header - Asume que estos podrían estar en plantillapp.css o aquí */
+        /* ... tus estilos de header existentes ... */
+
+        main { padding-bottom: 50px; }
+
+        /* Estilos Secciones (Modo Claro) */
+        section {
+             background-color: var(--section-bg-light);
+             padding: 25px; margin-bottom: 30px; border-radius: 8px;
+             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+             border: 1px solid transparent; /* Para transición suave a borde oscuro */
+             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        section h2, section h3 {
+            color: var(--header-title-light); /* Ejemplo: Azul oscuro */
+            margin-top: 0;
+            border-bottom: 2px solid var(--title-border-light); /* Ejemplo: Azul muy claro */
+            padding-bottom: 10px; margin-bottom: 20px;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .welcome-section h2 { font-size: 1.6rem; border-bottom: none; margin-bottom: 5px; }
+        .welcome-section p { font-size: 1.1rem; color: #555; transition: color 0.3s ease; }
+        #user-name { font-weight: bold; color: #004085; transition: color 0.3s ease;}
+
+        /* Grid de Acciones (Modo Claro) */
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .action-button {
+             display: flex; flex-direction: column; align-items: center; justify-content: center;
+             padding: 25px 15px; background-color: var(--button-bg-light); /* Ejemplo: Azul muy pálido */
+             border: 1px solid var(--button-border-light); /* Ejemplo: Azul pálido */
+             border-radius: 8px; color: var(--button-color-light); /* Ejemplo: Azul medio */
+             font-size: 1rem; font-weight: 500; text-align: center; cursor: pointer;
+             transition: all 0.3s ease; text-decoration: none;
+        }
+        .action-button:hover {
+             background-color: var(--button-hover-bg-light);
+             border-color: var(--button-hover-border-light);
+             transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0, 86, 179, 0.1);
+        }
+        .action-button .icon { width: 40px; height: 40px; margin-bottom: 10px; }
+         /* Importante: Iconos SVG pueden necesitar ajuste para dark mode */
+         .action-button .icon { transition: filter 0.3s ease; }
+
+        /* Estilos tabla facturas y totales (Modo Claro) - Alineado con historial */
+        .invoice-table {
+            width: 100%; border-collapse: collapse; margin-top: 15px;
+            font-size: 0.95rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            background-color: #ffffff; /* Fondo base tabla claro */
+        }
+        .invoice-table thead { /* Cabecera de la tabla */
+            /* Usamos el mismo azul que en historial para la cabecera */
+            background-color: #3498db; /* Azul historial */
+            color: #ffffff; /* Texto blanco */
+            border-bottom: 2px solid #2980b9; /* Borde inferior un poco más oscuro */
+        }
+         .invoice-table th { /* Celdas de cabecera */
+            padding: 12px 15px; text-align: left; vertical-align: middle;
+            font-weight: 600; text-transform: uppercase; font-size: 0.85em;
+            letter-spacing: 0.5px; position: sticky; top: 0; z-index: 1; /* Si es necesario */
+             border-bottom: 1px solid var(--table-cell-border-light); /* Borde coherente */
+             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+         }
+        .invoice-table td { /* Celdas de datos */
+            border-bottom: 1px solid var(--table-cell-border-light); /* Usar variable */
+            padding: 10px 12px; text-align: left; vertical-align: middle;
+            color: var(--body-color-light); /* Color texto por defecto claro */
+            transition: border-color 0.3s ease, background-color 0.2s ease, color 0.3s ease;
+        }
+         .invoice-table tbody tr:nth-child(even) {
+            background-color: var(--table-row-even-bg-light); /* Usar variable */
+        }
+        .invoice-table tbody tr:nth-child(odd) {
+             background-color: #ffffff; /* Blanco para impares en claro */
+        }
+        .invoice-table tbody tr:hover {
+            background-color: var(--table-row-hover-bg-light); /* Usar variable */
+             cursor: default;
+        }
+        /* Alineación derecha para números y NIT */
+        .invoice-table td.numero, .invoice-table th.numero-header,
+        .invoice-table td.nit-cell, .invoice-table th.nit-header {
+             text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap;
+        }
+
+        /* Contenedor Responsive para tablas */
+        .table-responsive {
+            overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px;
+            border: 1px solid var(--table-container-border-light);
+            border-radius: 4px;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Mensajes de "No hay datos" (Modo Claro) - Alineado con historial */
+        #no-invoices-message, #no-totals-message {
+             text-align: center; padding: 40px 20px; color: #7f8c8d; font-size: 1.1em;
+             background-color: var(--body-bg-light); /* Fondo claro */
+             border: 1px dashed #bdc3c7; border-radius: 8px; margin-top: 30px;
+             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        #no-invoices-message.oculto, #no-totals-message.oculto { display: none; }
+
+        /* --- Modal Styles --- */
+        /* (Usa los estilos de modal que YA tienes, asumiendo que funcionan bien) */
+        /* ... tus estilos .modal, .modal-content, .close-button, .form-group, .submit-button ... */
+         /* Asegúrate de añadir transiciones a los elementos del modal si quieres */
+        .modal-content { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+        .modal input, .modal select, .modal button { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+
+        /* --- Footer --- */
+        footer {
+             background-color: var(--footer-bg-light);
+             color: var(--footer-color-light);
+             text-align: center; padding: 1rem 0; margin-top: 40px;
+             border-top: 1px solid var(--footer-border-light);
+             transition: background-color 0.3s ease, color 0.3s ease, border-top-color 0.3s ease;
+         }
+
+
+        /* ========================================================== */
+        /* ========== ESTILOS ESPECÍFICOS PARA MODO OSCURO ========== */
+        /* ========================================================== */
+        /* Usamos body.dark-mode para activar los estilos oscuros vía JS */
+        body.dark-mode {
+             background-color: var(--body-bg-dark);
+             color: var(--body-color-dark);
+        }
+        body.dark-mode a { color: var(--link-color-dark); }
+
+        /* Secciones en Modo Oscuro */
+        body.dark-mode section {
+             background-color: var(--section-bg-dark);
+             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra del historial */
+             border-color: var(--section-border-dark); /* Borde del historial */
+        }
+        body.dark-mode section h2,
+        body.dark-mode section h3 {
+             color: var(--header-title-dark); /* Color título del historial */
+             border-bottom-color: var(--title-border-dark); /* Borde título del historial */
+        }
+        body.dark-mode .welcome-section p { color: var(--body-color-dark-muted); } /* Un gris más claro */
+        body.dark-mode #user-name { color: #9fceff; } /* Mantener si te gusta */
+
+        /* Grid de Acciones (Modo Oscuro) */
+        body.dark-mode .action-button {
+             background-color: var(--button-bg-dark); /* Gris oscuro */
+             border-color: var(--button-border-dark);   /* Borde un poco más claro */
+             color: var(--button-color-dark);       /* Texto claro */
+        }
+        body.dark-mode .action-button:hover {
+             background-color: var(--button-hover-bg-dark); /* Más claro al pasar el ratón */
+             border-color: var(--button-hover-border-dark);   /* Borde más claro */
+             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        /* Invertir iconos para que sean visibles en fondo oscuro */
+        body.dark-mode .action-button .icon {
+             filter: brightness(0) invert(1);
+        }
+
+        /* ===>>> ESTILOS DE TABLA MODO OSCURO (COPIADOS/ADAPTADOS DE HISTORIAL) <<<=== */
+        body.dark-mode .invoice-table {
+             /* No necesita background-color explícito si hereda de section */
+             box-shadow: none; /* Sombra ya está en section */
+        }
+        body.dark-mode .invoice-table thead {
+             background-color: #2c3e50; /* Azul oscuro/gris (de historial) */
+             color: var(--table-head-color-dark, #e0e0e0); /* Texto claro (var o fallback) */
+             border-bottom-color: #4a5a6a; /* Borde más oscuro (de historial) */
+        }
+        body.dark-mode .invoice-table th {
+             background-color: #2c3e50; /* Asegurar mismo fondo que thead */
+             color: var(--table-head-color-dark, #e0e0e0);
+             border-bottom-color: #4a5a6a; /* Borde inferior más oscuro */
+             /* El borde lateral/derecho viene de la regla th, td */
+        }
+        body.dark-mode .invoice-table th,
+        body.dark-mode .invoice-table td {
+             border-color: var(--table-cell-border-dark); /* Usar variable */
+             color: var(--body-color-dark); /* Texto claro general */
+        }
+        /* Asegurar texto visible en celdas de número y NIT */
+        body.dark-mode .invoice-table td.numero,
+        body.dark-mode .invoice-table td.nit-cell {
+             color: var(--body-color-dark);
+        }
+        body.dark-mode .invoice-table tbody tr:nth-child(odd) {
+             /* Fondo base para impares: debería ser el mismo que el contenedor o ligeramente diferente */
+             background-color: var(--section-bg-dark);
+        }
+        body.dark-mode .invoice-table tbody tr:nth-child(even) {
+             background-color: var(--table-row-even-bg-dark); /* Variable para pares */
+        }
+        body.dark-mode .invoice-table tbody tr:hover {
+             background-color: var(--table-row-hover-bg-dark); /* Variable para hover */
+             /* El texto podría aclararse más si es necesario */
+             /* color: #ffffff; */
+        }
+
+        /* Contenedor Responsive Modo Oscuro */
+        body.dark-mode .table-responsive {
+            border-color: var(--table-container-border-dark);
+        }
+
+        /* Mensajes "No hay datos" (Modo Oscuro) - Alineado con historial */
+        body.dark-mode #no-invoices-message,
+        body.dark-mode #no-totals-message {
+            color: var(--footer-color-dark); /* Reutilizar color footer (suele ser tenue) */
+            background-color: var(--section-bg-dark);
+            border-color: var(--button-border-dark); /* Usar borde similar a botones */
+        }
+
+        /* --- Modal Dark Mode --- */
+        /* (Añade estilos oscuros para tu modal si no los tenías) */
+         body.dark-mode .modal-content {
+             background-color: var(--modal-bg-dark, #252525); /* var o fallback */
+             border-color: var(--modal-border-dark, #444);
+             color: var(--body-color-dark);
+         }
+         body.dark-mode .modal .form-group label { color: var(--body-color-dark-muted, #ccc); }
+         body.dark-mode .modal .form-group input[type="text"],
+         body.dark-mode .modal .form-group input[type="date"],
+         body.dark-mode .modal .form-group input[type="number"],
+         body.dark-mode .modal .form-group input[type="file"],
+         body.dark-mode .modal .form-group select {
+             background-color: var(--input-bg-dark, #333);
+             border-color: var(--input-border-dark, #555);
+             color: var(--body-color-dark);
+         }
+         body.dark-mode .modal .close-button { color: var(--body-color-dark-muted, #aaa); }
+         body.dark-mode .modal .close-button:hover { color: #fff; }
+         body.dark-mode .modal .submit-button {
+              background-color: var(--submit-button-bg-dark, #2a8a44); /* Verde oscuro */
+              /* border-color: #218838; */ /* Opcional */
+              color: #fff;
+         }
+         body.dark-mode .modal .submit-button:hover {
+             background-color: var(--submit-button-hover-bg-dark, #218838); /* Más oscuro */
+         }
+
+         /* --- Footer Dark Mode --- */
+         body.dark-mode footer {
+             background-color: var(--footer-bg-dark);
+             color: var(--footer-color-dark);
+             border-top-color: var(--footer-border-dark);
+         }
+
+         /* Ocultar scrollbar feo en modo oscuro en WebKit (opcional) */
+         /* body.dark-mode ::-webkit-scrollbar { width: 8px; height: 8px;}
+         body.dark-mode ::-webkit-scrollbar-track { background: #2f3136; }
+         body.dark-mode ::-webkit-scrollbar-thumb { background-color: #4f545c; border-radius: 4px; border: 2px solid #2f3136;}
+         body.dark-mode ::-webkit-scrollbar-thumb:hover { background-color: #686d73; } */

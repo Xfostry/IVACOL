@@ -1,0 +1,423 @@
+{% extends "plantillas.html" %}
+{% load static %}
+{# Ya no necesitamos i18n/l10n/humanize aquí si llenamos la tabla con JS #}
+
+{% block Contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Gestión IVA - Principal {% endblock titulo %}</title>
+    <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
+    <style>
+        /* --- ESTILOS BASE (MODO CLARO) --- */
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--body-bg-light); color: var(--body-color-light); line-height: 1.6; transition: background-color 0.3s ease, color 0.3s ease; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        a { color: var(--link-color-light); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Estilos Header - Asume que estos podrían estar en plantillapp.css o aquí */
+         header { /* Estilo de ejemplo */ text-align: center; color: #fff; background-color: #0d47a1; margin-bottom: 30px; font-weight: 600; padding: 18px 0; box-shadow: 0 2px 8px rgba(13,71,161,0.08); }
+
+        main { padding-bottom: 50px; }
+
+        /* Estilos Secciones (Modo Claro) */
+        section {
+             background-color: var(--section-bg-light); padding: 25px; margin-bottom: 30px; border-radius: 8px;
+             box-shadow: var(--section-shadow-light, 0 1px 3px rgba(0,0,0,0.05)); border: 1px solid transparent;
+             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        section h2, section h3 {
+            color: var(--header-title-light); margin-top: 0; border-bottom: 2px solid var(--title-border-light);
+            padding-bottom: 10px; margin-bottom: 20px; transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .welcome-section h2 { font-size: 1.6rem; border-bottom: none; margin-bottom: 5px; }
+        .welcome-section p { font-size: 1.1rem; color: var(--body-color-light-muted, #555); transition: color 0.3s ease; }
+        #user-name { font-weight: bold; color: #004085; transition: color 0.3s ease;}
+
+        /* === Grid de Acciones (Modo Claro) - ESTILOS CORRECTOS === */
+        .actions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .action-button {
+             display: flex; flex-direction: column; align-items: center; justify-content: center;
+             padding: 25px 15px; background-color: var(--button-bg-light);
+             border: 1px solid var(--button-border-light); border-radius: 8px; color: var(--button-color-light);
+             font-size: 1rem; font-weight: 500; text-align: center; cursor: pointer;
+             transition: all 0.3s ease; text-decoration: none;
+        }
+        .action-button:hover {
+             background-color: var(--button-hover-bg-light); border-color: var(--button-hover-border-light);
+             transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0, 86, 179, 0.1);
+        }
+        .action-button .icon { width: 40px; height: 40px; margin-bottom: 10px; transition: filter 0.3s ease; }
+
+        /* Estilos tabla facturas y totales (Modo Claro) - Alineado con historial */
+        .invoice-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; box-shadow: 0 1px 3px rgba(0,0,0,0.03); background-color: var(--table-bg-light, #ffffff); }
+        .invoice-table thead { background-color: #3498db; color: #ffffff; border-bottom: 2px solid #2980b9; }
+        .invoice-table th { padding: 12px 15px; text-align: left; vertical-align: middle; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px; position: sticky; top: 0; z-index: 1; border-bottom: 1px solid var(--table-cell-border-light); transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        .invoice-table td { border-bottom: 1px solid var(--table-cell-border-light); padding: 10px 12px; text-align: left; vertical-align: middle; color: var(--body-color-light); transition: border-color 0.3s ease, background-color 0.2s ease, color 0.3s ease; }
+        .invoice-table tbody tr:nth-child(even) { background-color: var(--table-row-even-bg-light); }
+        .invoice-table tbody tr:nth-child(odd) { background-color: var(--table-bg-light, #ffffff); }
+        .invoice-table tbody tr:hover { background-color: var(--table-row-hover-bg-light); cursor: default; }
+        .invoice-table td.numero, .invoice-table th.numero-header, .invoice-table td.nit-cell, .invoice-table th.nit-header { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+        /* Contenedor Responsive para tablas */
+        .table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; border: 1px solid var(--table-container-border-light); border-radius: 4px; transition: border-color 0.3s ease; }
+
+        /* Mensajes de "No hay datos" (Modo Claro) */
+        #no-invoices-message, #no-totals-message { text-align: center; padding: 40px 20px; color: var(--text-muted-light, #7f8c8d); font-size: 1.1em; background-color: var(--body-bg-light); border: 1px dashed var(--input-border-light, #bdc3c7); border-radius: 8px; margin-top: 30px; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+        #no-invoices-message.oculto, #no-totals-message.oculto { display: none; }
+
+        /* --- Modal Styles (Alineados con Historial) --- */
+        .modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: var(--modal-bg-light, #fefefe); margin: 10% auto; padding: 25px 35px; border: 1px solid var(--modal-border-light, #ccc); width: 90%; max-width: 600px; border-radius: 8px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+        .modal .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: color 0.2s ease; }
+        .modal .close-button:hover { color: #333; }
+        .modal .modal-content h2 { margin-top: 0; margin-bottom: 25px; font-size: 1.6em; color: var(--header-title-light); text-align: center; border-bottom: 1px solid var(--title-border-light); padding-bottom: 15px; transition: color 0.3s ease, border-color 0.3s ease; }
+        .modal .form-group { margin-bottom: 15px; }
+        .modal .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--body-color-light, #555); font-size: 0.95em; transition: color 0.3s ease; }
+        .modal .form-group.radio-group label { display: inline-block; margin-right: 15px; font-weight: normal; }
+        .modal .form-group.radio-group input[type="radio"] { margin-right: 5px; vertical-align: middle; }
+        .modal .form-group input[type="text"], .modal .form-group input[type="date"], .modal .form-group input[type="number"], .modal .form-group input[type="file"], .modal .form-group select { box-sizing: border-box; width: 100%; padding: 10px 12px; border: 1px solid var(--input-border-light, #ccc); border-radius: 5px; font-size: 1rem; background-color: var(--input-bg-light, #fff); color: var(--body-color-light, #333); transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease; }
+        .modal .form-group input:focus, .modal .form-group select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52,152,219,0.2); }
+        .modal .submit-button { background-color: var(--submit-button-bg-light, #28a745); color: white; padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.3s ease; display: block; width: 100%; margin-top: 15px; }
+        .modal .submit-button:hover { background-color: var(--submit-button-hover-bg-light, #218838); }
+
+        /* --- Footer --- */
+        footer { background-color: var(--footer-bg-light); color: var(--footer-color-light); text-align: center; padding: 1rem 0; margin-top: 40px; border-top: 1px solid var(--footer-border-light); transition: background-color 0.3s ease, color 0.3s ease, border-top-color 0.3s ease; }
+
+        /* ========================== */
+        /* === ESTILOS DARK MODE === */
+        /* ========================== */
+        body.dark-mode { background-color: var(--body-bg-dark); color: var(--body-color-dark); }
+        body.dark-mode a { color: var(--link-color-dark); }
+        body.dark-mode header { /* Ejemplo */ background-color: var(--header-bg-dark); color: var(--header-color-dark); box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+        body.dark-mode section { background-color: var(--section-bg-dark); box-shadow: var(--section-shadow-dark, 0 5px 15px rgba(0, 0, 0, 0.3)); border-color: var(--section-border-dark); }
+        body.dark-mode section h2, body.dark-mode section h3 { color: var(--header-title-dark); border-bottom-color: var(--title-border-dark); }
+        body.dark-mode .welcome-section p { color: var(--body-color-dark-muted); }
+        body.dark-mode #user-name { color: var(--link-color-dark, #9fceff); }
+
+        /* === Grid de Acciones (Modo Oscuro) - ESTILOS CORRECTOS === */
+        body.dark-mode .action-button { background-color: var(--button-bg-dark); border-color: var(--button-border-dark); color: var(--button-color-dark); }
+        body.dark-mode .action-button:hover { background-color: var(--button-hover-bg-dark); border-color: var(--button-hover-border-dark); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+        body.dark-mode .action-button .icon { filter: brightness(0) invert(1); }
+
+        /* Tabla Dark Mode */
+        body.dark-mode .invoice-table { background-color: var(--table-bg-dark, transparent); box-shadow: none; }
+        body.dark-mode .invoice-table thead { background-color: #2c3e50; color: var(--table-head-color-dark); border-bottom-color: #4a5a6a; }
+        body.dark-mode .invoice-table th { background-color: #2c3e50; color: var(--table-head-color-dark); border-bottom-color: #4a5a6a; }
+        body.dark-mode .invoice-table th, body.dark-mode .invoice-table td { border-color: var(--table-cell-border-dark); color: var(--body-color-dark); }
+        body.dark-mode .invoice-table td.numero, body.dark-mode .invoice-table td.nit-cell { color: var(--body-color-dark); }
+        body.dark-mode .invoice-table tbody tr:nth-child(odd) { background-color: var(--section-bg-dark); }
+        body.dark-mode .invoice-table tbody tr:nth-child(even) { background-color: var(--table-row-even-bg-dark); }
+        body.dark-mode .invoice-table tbody tr:hover { background-color: var(--table-row-hover-bg-dark); }
+
+        /* Contenedor Responsive Modo Oscuro */
+        body.dark-mode .table-responsive { border-color: var(--table-container-border-dark); }
+
+        /* Mensajes "No hay datos" Modo Oscuro */
+        body.dark-mode #no-invoices-message, body.dark-mode #no-totals-message { color: var(--text-muted-dark, #7f8c8d); background-color: var(--section-bg-dark); border-color: var(--input-border-dark, #40444b); }
+
+        /* Modal Dark Mode */
+        body.dark-mode .modal-content { background-color: var(--modal-bg-dark); border-color: var(--modal-border-dark); color: var(--body-color-dark); }
+        body.dark-mode .modal .close-button { color: #888; }
+        body.dark-mode .modal .close-button:hover { color: #ccc; }
+        body.dark-mode .modal .modal-content h2 { color: var(--header-title-dark); border-bottom-color: var(--title-border-dark); }
+        body.dark-mode .modal .form-group label { color: var(--body-color-dark-muted); }
+        body.dark-mode .modal .form-group input[type="text"], body.dark-mode .modal .form-group input[type="date"], body.dark-mode .modal .form-group input[type="number"], body.dark-mode .modal .form-group input[type="file"], body.dark-mode .modal .form-group select { background-color: var(--input-bg-dark); border-color: var(--input-border-dark); color: var(--body-color-dark); }
+        body.dark-mode .modal .form-group input:-webkit-autofill, body.dark-mode .modal .form-group select:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark, #333) inset !important; -webkit-text-fill-color: var(--body-color-dark, #e0e0e0) !important; }
+        body.dark-mode .modal .form-group input:focus, body.dark-mode .modal .form-group select:focus { border-color: #5dade2; box-shadow: 0 0 0 3px rgba(93,173,226,0.25); }
+        body.dark-mode .modal .submit-button { background-color: var(--submit-button-bg-dark); }
+        body.dark-mode .modal .submit-button:hover { background-color: var(--submit-button-hover-bg-dark); }
+
+        /* Footer Dark Mode */
+        body.dark-mode footer { background-color: var(--footer-bg-dark); color: var(--footer-color-dark); border-top-color: var(--footer-border-dark); }
+    </style>
+</head>
+<body>
+{# --- Contenido HTML (SIN CAMBIOS) --- #}
+<br><br>
+    <main class="container">
+        <section class="welcome-section">
+            <h2>Bienvenido, Deiby Rodriguez!</h2>
+            <p>Gestiona tus facturas y calcula tu IVA fácilmente.</p>
+        </section>
+
+        <section class="actions-section">
+            <h3>Acciones Rápidas</h3>
+            <div class="actions-grid">
+                <button class="action-button" id="upload-invoice-btn">
+                    <img src="{% static 'icons/nube.svg' %}" alt="Subir" class="icon">
+                    <span>Subir Nueva Factura</span>
+                </button>
+                <a href="{% url 'historial_facturas' %}" class="action-button">
+                     <img src="{% static 'icons/historial.svg' %}" alt="Historial" class="icon">
+                    <span>Ver Historial Completo</span>
+                </a>
+                <a href="{% url 'graficas' %}" class="action-button">
+                    <img src="{% static 'icons/reporte.svg' %}" alt="Reporte" class="icon">
+                    <span>Reportes IVA</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Sección Totales Globales -->
+        <section class="global-totals-section">
+             <h3>Totales Globales Acumulados</h3>
+             <div class="table-responsive">
+                 <table class="invoice-table">
+                     <thead>
+                         <tr>
+                             <th>Concepto</th>
+                             <th class="numero-header">Valor Total</th>
+                         </tr>
+                     </thead>
+                     <tbody id="global-totals-tbody"></tbody>
+                 </table>
+             </div>
+             <div id="no-totals-message" class="oculto">
+                 Aún no hay facturas registradas para calcular totales.
+             </div>
+        </section>
+
+        <!-- Sección Últimas Facturas -->
+        <section class="previous-invoices-section">
+             <h3>Últimas Facturas Registradas</h3>
+             <div class="table-responsive">
+                 <table class="invoice-table">
+                     <thead>
+                         <tr>
+                             <th>Fecha</th>
+                             <th class="numero-header">Número</th>
+                             <th>Descripción</th>
+                             <th class="nit-header">NIT</th>
+                             <th>Categoría</th>
+                             <th class="numero-header">Monto Base</th>
+                             <th class="numero-header">IVA (19%)</th>
+                             <th class="numero-header">Monto Total</th>
+                         </tr>
+                     </thead>
+                     <tbody id="invoice-table-body"></tbody>
+                 </table>
+             </div>
+             <div id="no-invoices-message" class="oculto">
+                 Aún no has registrado ninguna factura. ¡Empieza subiendo una!
+             </div>
+        </section>
+
+        <!-- Modal para Subir Factura -->
+        <div id="upload-modal" class="modal">
+             <div class="modal-content">
+                <span class="close-button" id="close-modal-btn">×</span>
+                <h2>Subir Factura</h2>
+                <form id="invoice-form" novalidate>
+                    <div class="form-group">
+                        <label for="invoice-number">Número:</label>
+                        <input type="text" id="invoice-number" name="invoice-number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-description">Descripción:</label>
+                        <input type="text" id="invoice-description" name="invoice-description" required>
+                    </div>
+                     <div class="form-group">
+                         <label for="invoice-nit">NIT (Opcional):</label>
+                         <input type="text" id="invoice-nit" name="invoice-nit" placeholder="Número de Identificación Tributaria">
+                     </div>
+                    <div class="form-group">
+                        <label for="invoice-date">Fecha:</label>
+                        <input type="date" id="invoice-date" name="invoice-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-category">Categoría:</label>
+                        <select id="invoice-category" name="invoice-category" required>
+                            <option value="" disabled selected>Selecciona...</option>
+                            <option>Supermercados</option> <option>Servicios</option> <option>Entretenimiento</option> <option>Tecnología</option> <option>Restaurantes</option> <option>Transporte</option> <option>Salud</option> <option>Educación</option> <option>Vestuario</option> <option>Hogar</option> <option>Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group radio-group">
+                        <label>Monto Ingresado:</label> <br>
+                        <input type="radio" id="amount-type-neto" name="amount-type" value="neto" checked> <label for="amount-type-neto">Base (Sin IVA)</label>
+                        <input type="radio" id="amount-type-total" name="amount-type" value="total"> <label for="amount-type-total">Total (Con IVA)</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-amount">Monto:</label>
+                        <input type="number" id="invoice-amount" name="invoice-amount" step="any" placeholder="Monto numérico" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoice-file">Archivo (Opc):</label>
+                        <input type="file" id="invoice-file" name="invoice-file" accept=".pdf,.jpg,.png,.jpeg">
+                    </div>
+                    <button type="submit" class="submit-button">Guardar Factura</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+{% block scripts %}
+{# --- Script JS (SIN CAMBIOS) --- #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        console.log("DOM Cargado v7 (NIT added). Iniciando scripts...");
+
+        const STORAGE_KEY_PRINCIPAL = 'historialFacturasApp';
+        const IVA_RATE = 0.19;
+        const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        // Datos por defecto
+        const allDataDefaultHistorial = [ /* Tus datos por defecto */ ];
+
+        // --- Referencias DOM ---
+        const uploadBtn = document.getElementById('upload-invoice-btn');
+        const modal = document.getElementById('upload-modal');
+        const closeBtn = document.getElementById('close-modal-btn');
+        const invoiceForm = document.getElementById('invoice-form');
+        const tablaBodyPrincipal = document.getElementById('invoice-table-body');
+        const mensajeVacioPrincipal = document.getElementById('no-invoices-message');
+        const globalTotalsTbody = document.getElementById('global-totals-tbody');
+        const noTotalsMessage = document.getElementById('no-totals-message');
+        const tablaDetalladaExiste = tablaBodyPrincipal && mensajeVacioPrincipal;
+
+        let facturasActuales = [];
+
+        // --- Funciones (actualizarResumenGeneral, actualizarTablaDetallada, cargarDatosIniciales, etc.) SIN CAMBIOS ---
+         function actualizarResumenGeneral() { /*...*/
+             console.log("v7: Actualizando resumen global...");
+            const resumenGlobalExiste = globalTotalsTbody && noTotalsMessage;
+            if (!resumenGlobalExiste) return;
+
+            const facturas = facturasActuales;
+            const cantidadFacturas = facturas.length;
+
+            if (cantidadFacturas > 0) {
+                let totalAcumuladoGeneral = 0; let totalIvaGeneral = 0; let totalBaseGeneral = 0;
+                facturas.forEach(factura => {
+                    totalBaseGeneral += (Number(factura.neto) || 0);
+                    totalAcumuladoGeneral += (Number(factura.acumulado) || 0);
+                    totalIvaGeneral += (Number(factura.iva) || 0);
+                });
+
+                globalTotalsTbody.innerHTML = `
+                    <tr><td>Cantidad Total Facturas</td><td class="numero">${cantidadFacturas}</td></tr>
+                    <tr><td>Valor Total Base (Neto)</td><td class="numero">${currencyFormatter.format(totalBaseGeneral)}</td></tr>
+                    <tr><td>Valor Total IVA (19%)</td><td class="numero">${currencyFormatter.format(totalIvaGeneral)}</td></tr>
+                    <tr><td>Valor Total Facturado</td><td class="numero">${currencyFormatter.format(totalAcumuladoGeneral)}</td></tr>
+                `;
+                noTotalsMessage.classList.add('oculto');
+            } else {
+                 globalTotalsTbody.innerHTML = '';
+                 noTotalsMessage.classList.remove('oculto');
+            }
+         }
+         function actualizarTablaDetallada() { /*...*/
+            if (!tablaDetalladaExiste) { return; }
+            tablaBodyPrincipal.innerHTML = '';
+            const facturas = facturasActuales;
+
+            if (facturas.length > 0) {
+                mensajeVacioPrincipal.classList.add('oculto');
+                [...facturas].sort((a, b) => (b.date || '0').localeCompare(a.date || '0'))
+                  .forEach((factura) => {
+                    const fila = document.createElement('tr');
+                    let fechaFormateada = 'N/A';
+                    if (factura.date?.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        try { const parts = factura.date.split('-'); fechaFormateada = `${parts[2]}/${parts[1]}/${parts[0]}`; } catch (e) { fechaFormateada = factura.date; }
+                    }
+                    const netoFormateado = currencyFormatter.format(Number(factura.neto) || 0);
+                    const ivaFormateado = currencyFormatter.format(Number(factura.iva) || 0);
+                    const acumuladoFormateado = currencyFormatter.format(Number(factura.acumulado) || 0);
+                    const nitMostrado = factura.nit || 'N/A';
+
+                    fila.innerHTML = `
+                        <td>${fechaFormateada}</td> <td class="numero">${factura.numero || 'N/A'}</td>
+                        <td>${factura.label || 'S.D.'}</td> <td class="nit-cell">${nitMostrado}</td>
+                        <td>${factura.category || 'N/A'}</td> <td class="numero">${netoFormateado}</td>
+                        <td class="numero">${ivaFormateado}</td> <td class="numero">${acumuladoFormateado}</td>
+                    `;
+                    tablaBodyPrincipal.appendChild(fila);
+                });
+            } else {
+                mensajeVacioPrincipal.classList.remove('oculto');
+            }
+         }
+         function cargarDatosIniciales() { /*...*/
+              console.log("--- Iniciando carga de datos v7 ---");
+             let datosCargados = []; let usarDatosPorDefecto = false;
+             try {
+                 const datosGuardados = localStorage.getItem(STORAGE_KEY_PRINCIPAL);
+                 if (datosGuardados) {
+                     const parsedData = JSON.parse(datosGuardados);
+                     if (Array.isArray(parsedData) && parsedData.length > 0) {
+                          if (parsedData.every(f => f && typeof f === 'object' && f.date && f.numero && typeof f.neto !== 'undefined')) {
+                               datosCargados = parsedData.map(f => ({ ...f, nit: f.nit || '', neto: Number(f.neto) || 0, iva: Number(f.iva) || 0, acumulado: Number(f.acumulado) || 0 }));
+                           } else { usarDatosPorDefecto = true; console.warn("Formato inválido en localStorage."); }
+                     } else { if(Array.isArray(parsedData)) console.log("localStorage vacío."); else usarDatosPorDefecto = true;}
+                 } else { usarDatosPorDefecto = true; }
+             } catch (error) { console.error("Error localStorage:", error); usarDatosPorDefecto = true; }
+
+             facturasActuales = usarDatosPorDefecto ? [...allDataDefaultHistorial] : datosCargados;
+             actualizarResumenGeneral();
+             actualizarTablaDetallada();
+             console.log("--- Fin carga de datos v7 ---");
+         }
+
+        // --- Lógica del Modal y Submit (SIN CAMBIOS) ---
+        if (uploadBtn && modal && closeBtn) { /* Listeners para abrir/cerrar modal */
+             uploadBtn.onclick = function() { modal.style.display = "block"; document.getElementById('invoice-number')?.focus(); };
+             closeBtn.onclick = function() { modal.style.display = "none"; invoiceForm.reset(); };
+             window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; invoiceForm.reset(); } };
+         }
+         if (invoiceForm && modal) { /* Listener para submit del form */
+             invoiceForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const dateInput = document.getElementById('invoice-date').value;
+                const numberInput = document.getElementById('invoice-number').value.trim();
+                const descriptionInput = document.getElementById('invoice-description').value.trim();
+                const nitInput = document.getElementById('invoice-nit').value.trim();
+                const categoryInput = document.getElementById('invoice-category').value;
+                const amountInputStr = document.getElementById('invoice-amount').value;
+                const selectedAmountType = document.querySelector('input[name="amount-type"]:checked')?.value;
+
+                if (!numberInput || !descriptionInput || !categoryInput || !amountInputStr || !dateInput || !selectedAmountType) {
+                     alert('Completa campos obligatorios.'); return;
+                 }
+                if (!dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) { alert('Fecha inválida.'); return; }
+                 const amountInput = parseFloat(amountInputStr.replace(',', '.'));
+                if (isNaN(amountInput) || amountInput <= 0) { alert('Monto inválido.'); return; }
+
+                 let neto, iva, acumulado;
+                 if (selectedAmountType === 'neto') { neto = amountInput; }
+                 else { neto = amountInput / (1 + IVA_RATE); }
+                 neto = parseFloat(neto.toFixed(2));
+                 iva = parseFloat((neto * IVA_RATE).toFixed(2));
+                 acumulado = parseFloat((neto + iva).toFixed(2));
+
+                 const newInvoice = { date: dateInput, numero: numberInput, label: descriptionInput, nit: nitInput, category: categoryInput, neto, iva, acumulado };
+                 facturasActuales.push(newInvoice);
+
+                 try {
+                     localStorage.setItem(STORAGE_KEY_PRINCIPAL, JSON.stringify(facturasActuales));
+                     alert('¡Factura guardada!');
+                     actualizarResumenGeneral();
+                     actualizarTablaDetallada();
+                     modal.style.display = "none";
+                     invoiceForm.reset();
+                 } catch (storageError) {
+                     console.error("Error al guardar:", storageError);
+                     facturasActuales.pop(); // Revertir si falla
+                     alert(storageError.name === 'QuotaExceededError' ? 'Error: Almacenamiento lleno.' : 'Error al guardar.');
+                 }
+             });
+         }
+
+        // --- CARGA INICIAL ---
+        cargarDatosIniciales();
+
+    });
+</script>
+{% endblock scripts %}
+
+{% endblock Contenido %}
+</body>
+</html>

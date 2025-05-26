@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Title</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"/>
+    </head>
+
+    <body>
+        <button class="btn btn-theme-toggle py-1 px-2 d-flex align-items-center" id="bd-theme-small" type="button" aria-label="Toggle theme">
+            <!-- Icono Luna (Visible por defecto) -->
+            <span id="dark-mode-icon-small" class="theme-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+                    <g><path d="M0 0h24v24H0z" fill="none"/><path d="M10 6a8 8 0 0 0 11.955 6.956C21.474 18.03 17.2 22 12 22 6.477 22 2 17.523 2 12c0-5.2 3.97-9.474 9.044-9.955A7.963 7.963 0 0 0 10 6z" fill="currentColor" fill-rule="nonzero"/></g>
+                </svg>
+            </span>
+            <!-- Icono Sol (Oculto por defecto, visible en dark-mode) -->
+            <span id="light-mode-icon-small" class="theme-icon">
+                <svg class="theme-icon-active bi bi-sun-fill" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+                </svg>
+            </span>
+        </button>
+
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script>
+        
+document.addEventListener('DOMContentLoaded', function () {
+    const body = document.body;
+    const themeToggleButtons = document.querySelectorAll('.btn-theme-toggle');
+    const sunIcons = document.querySelectorAll('#light-mode-icon-small, #light-mode-icon-large');
+    const moonIcons = document.querySelectorAll('#dark-mode-icon-small, #dark-mode-icon-large');
+
+    // Load the saved theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light-mode';
+    body.classList.add(savedTheme);
+    toggleIcons(savedTheme);
+
+    themeToggleButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            if (body.classList.contains('light-mode')) {
+                body.classList.replace('light-mode', 'dark-mode');
+                localStorage.setItem('theme', 'dark-mode');
+                toggleIcons('dark-mode');
+            } else {
+                body.classList.replace('dark-mode', 'light-mode');
+                localStorage.setItem('theme', 'light-mode');
+                toggleIcons('light-mode');
+            }
+        });
+    });
+
+    function toggleIcons(theme) {
+        if (theme === 'dark-mode') {
+            sunIcons.forEach(icon => icon.style.display = 'inline');
+            moonIcons.forEach(icon => icon.style.display = 'none');
+        } else {
+            sunIcons.forEach(icon => icon.style.display = 'none');
+            moonIcons.forEach(icon => icon.style.display = 'inline');
+        }
+    }
+});
+    </script>
+    </body>
+</html>

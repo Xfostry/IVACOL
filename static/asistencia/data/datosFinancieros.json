@@ -1,0 +1,164 @@
+[
+    {
+        "date": "2024-09-20",
+        "numero": "F-0920A",
+        "label": "Mercado",
+        "category": "Supermercados",
+        "neto": 120000,
+        "iva": 22800,
+        "acumulado": 142800
+    },
+    {
+        "date": "2024-10-05",
+        "numero": "SW-1005",
+        "label": "Servicio Web",
+        "category": "Servicios",
+        "neto": 250000,
+        "iva": 47500,
+        "acumulado": 297500
+    },
+    {
+        "date": "2024-10-15",
+        "numero": "FAC-1015B",
+        "label": "Factura",
+        "category": "Supermercados",
+        "neto": 180000,
+        "iva": 34200,
+        "acumulado": 214200
+    },
+    {
+        "date": "2024-11-05",
+        "numero": "H-1105",
+        "label": "Hosting",
+        "category": "Servicios",
+        "neto": 75000,
+        "iva": 14250,
+        "acumulado": 89250
+    },
+    {
+        "date": "2024-11-20",
+        "numero": "MANT-1120",
+        "label": "Mantenimiento",
+        "category": "Entretenimiento",
+        "neto": 95000,
+        "iva": 18050,
+        "acumulado": 113050
+    },
+    {
+        "date": "2024-12-01",
+        "numero": "TEC-1201",
+        "label": "Laptop Asus",
+        "category": "Tecnología",
+        "neto": 350000,
+        "iva": 66500,
+        "acumulado": 416500
+    },
+    {
+        "date": "2024-12-12",
+        "numero": "F-1212C",
+        "label": "Venta Equipo ",
+        "category": "Supermercados",
+        "neto": 420000,
+        "iva": 79800,
+        "acumulado": 499800
+    },
+    {
+        "date": "2024-12-28",
+        "numero": "SOP-1228",
+        "label": "Soporte Urgente",
+        "category": "Servicios",
+        "neto": 110000,
+        "iva": 20900,
+        "acumulado": 130900
+    },
+    {
+        "date": "2025-01-08",
+        "numero": "PROY-0108",
+        "label": "Proyecto",
+        "category": "Tecnología",
+        "neto": 280000,
+        "iva": 53200,
+        "acumulado": 333200
+    },
+    {
+        "date": "2025-01-15",
+        "numero": "SOFT-0115",
+        "label": "Venta Software",
+        "category": "Supermercados",
+        "neto": 210000,
+        "iva": 39900,
+        "acumulado": 249900
+    },
+    {
+        "date": "2025-01-25",
+        "numero": "MA-0125",
+        "label": "Mantenimiento Anual",
+        "category": "Entretenimiento",
+        "neto": 150000,
+        "iva": 28500,
+        "acumulado": 178500
+    },
+    {
+        "date": "2025-02-02",
+        "numero": "DG-0202",
+        "label": "Diseño Gráfico",
+        "category": "Servicios",
+        "neto": 190000,
+        "iva": 36100,
+        "acumulado": 226100
+    },
+    {
+        "date": "2025-02-10",
+        "numero": "FAC-0210D",
+        "label": "Factura",
+        "category": "Supermercados",
+        "neto": 265000,
+        "iva": 50350,
+        "acumulado": 315350
+    },
+    {
+        "date": "2025-02-20",
+        "numero": "CEL-0220",
+        "label": "Celular nuevo",
+        "category": "Tecnología",
+        "neto": 300000,
+        "iva": 57000,
+        "acumulado": 357000
+    },
+    {
+        "date": "2025-02-28",
+        "numero": "AJ-0228",
+        "label": "Ajuste",
+        "category": "Entretenimiento",
+        "neto": 50000,
+        "iva": 9500,
+        "acumulado": 59500
+    },
+    {
+        "date": "2025-03-07",
+        "numero": "CLD-0307",
+        "label": "Servicio Cloud",
+        "category": "Servicios",
+        "neto": 220000,
+        "iva": 41800,
+        "acumulado": 261800
+    },
+    {
+        "date": "2025-03-15",
+        "numero": "VG-0315",
+        "label": "Mercado Familiar",
+        "category": "Supermercados",
+        "neto": 550000,
+        "iva": 104500,
+        "acumulado": 654500
+    },
+    {
+        "date": "2025-03-22",
+        "numero": "ST-0322",
+        "label": "Soporte Técnico",
+        "category": "Entretenimiento",
+        "neto": 85000,
+        "iva": 16150,
+        "acumulado": 101150
+    }
+]
