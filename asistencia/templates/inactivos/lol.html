@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Starlight Adventures - Tu puerta de entrada al cosmos. Viajes espaciales exclusivos a la Luna, Marte y más allá.">
+    <title>IVACOL</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- Iconos Font Awesome (opcional) -->
+    <style>
+        /* --- Reset y Base --- */
+:root {
+    --primary-color: #0B0C10;    /* Negro espacial profundo */
+    --secondary-color: #1F2833;  /* Azul oscuro metálico */
+    --accent-color: #66FCF1;     /* Cian neón brillante */
+    --highlight-color: #45A29E;  /* Cian más apagado */
+    --text-color: #C5C6C7;       /* Gris claro */
+    --light-text-color: #FFFFFF; /* Blanco */
+    --font-primary: 'Orbitron', sans-serif; /* Futurista para títulos */
+    --font-secondary: 'Roboto', sans-serif;   /* Legible para cuerpo */
+
+    --navbar-height: 70px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth; /* Desplazamiento suave */
+    font-size: 16px; /* Base para REM */
+}
+
+body {
+    font-family: var(--font-secondary);
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden; /* Previene scroll horizontal accidental */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--highlight-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-primary);
+    color: var(--light-text-color);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h1 { font-size: 3.5rem; letter-spacing: 2px; }
+h2 { font-size: 2.5rem; text-align: center; margin-bottom: 2.5rem; }
+h3 { font-size: 1.5rem; color: var(--accent-color); }
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+ul {
+    list-style: none;
+}
+
+/* --- Botones CTA --- */
+.cta-button {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    border-radius: 50px; /* Píldora */
+    font-family: var(--font-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.cta-button.nav-cta, .cta-button.hero-cta, .cta-button.submit-button {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    border-color: var(--accent-color);
+}
+
+.cta-button.nav-cta:hover, .cta-button.hero-cta:hover, .cta-button.submit-button:hover {
+    background-color: var(--highlight-color);
+    border-color: var(--highlight-color);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(102, 252, 241, 0.2);
+}
+
+.cta-button.secondary-cta {
+    background-color: transparent;
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.cta-button.secondary-cta:hover {
+    background-color: rgba(102, 252, 241, 0.1);
+    color: var(--highlight-color);
+    border-color: var(--highlight-color);
+    transform: translateY(-2px);
+}
+
+
+/* --- Navegación --- */
+.navbar {
+    position: fixed; /* Cambiado a fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--navbar-height);
+    background-color: rgba(11, 12, 16, 0.8); /* Fondo semitransparente */
+    backdrop-filter: blur(10px); /* Efecto cristal */
+    z-index: 1000;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: none;
+}
+
+.navbar.scrolled {
+    background-color: rgba(11, 12, 16, 0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.logo {
+    font-family: var(--font-primary);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--light-text-color);
+}
+
+.logo-highlight {
+    color: var(--accent-color);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links li {
+    margin-left: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    padding: 0.5rem 0;
+    position: relative;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after {
+    width: 100%;
+}
+
+.nav-links a.nav-cta {
+    margin-left: 2rem;
+    font-size: 0.8rem;
+    padding: 0.5rem 1.2rem; /* Más pequeño que otros CTAs */
+}
+
+.nav-links a.nav-cta::after { display: none; } /* No necesita subrayado */
+
+.menu-toggle {
+    display: none; /* Oculto por defecto */
+    background: none;
+    border: none;
+    color: var(--light-text-color);
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+/* --- Sección Hero --- */
+.hero-section {
+    height: 100vh; /* Pantalla completa */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: var(--light-text-color);
+    overflow: hidden; /* Clave para overlays y efectos */
+}
+
+/* --- Sección Hero --- */
+/* ... (otros estilos del hero) ... */
+
+.video-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Asegura que esté detrás del overlay y contenido */
+    overflow: hidden; /* Evita barras de scroll si el video es ligeramente más grande */
+    /* Mantenemos un fallback por si acaso, puedes quitarlo si quieres */
+    background: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?ixlib=rb-1.2.1&auto=format&fit=crop&w=1351&q=80') no-repeat center center/cover;
+}
+
+#bgvideo { /* Estilos específicos para nuestro video */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100; /* Asegura que esté bien detrás */
+    transform: translateX(-50%) translateY(-50%); /* Centra el video */
+    object-fit: cover; /* Hace que el video cubra el área sin distorsionarse (puede cortar bordes) */
+    /* Puedes quitar la animación de zoom si la tenías en .video-background antes */
+}
+
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Ajusta la oscuridad */
+    z-index: -50; /* Debe estar sobre el video pero debajo del contenido */
+}
+
+/* ... (resto de estilos del hero y la página) ... */
+.hero-content {
+    z-index: 1;
+    max-width: 800px;
+    padding: 0 2rem;
+}
+
+.hero-content h1 {
+    font-size: calc(2.5rem + 2.5vw); /* Tamaño fluido */
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 15px rgba(102, 252, 241, 0.5);
+}
+
+.hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+}
+
+.scroll-down-indicator {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    width: 24px;
+    height: 40px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50px;
+    cursor: pointer;
+}
+.scroll-down-indicator span {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    margin-left: -2px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 2px;
+    animation: scroll-anim 2s infinite;
+}
+
+@keyframes scroll-anim {
+    0% { opacity: 1; top: 8px; }
+    50% { opacity: 0; top: 16px; }
+    100% { opacity: 1; top: 8px; }
+}
+
+
+/* --- Secciones Generales --- */
+.content-section {
+    padding: 6rem 0;
+    position: relative; /* Para posibles ::before/::after decorativos */
+}
+
+.dark-section {
+    background-color: var(--secondary-color);
+}
+
+.section-title {
+    position: relative;
+    display: inline-block; /* Para centrar con ::after */
+    margin-bottom: 1rem; /* Ajustado para el subtítulo */
+}
+/* Linea decorativa bajo el título */
+.section-title::after {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 3px;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--highlight-color), var(--accent-color));
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    max-width: 600px;
+    margin: 0 auto 3rem auto;
+}
+
+
+/* --- Sección Destinos --- */
+.destinos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2.5rem;
+}
+
+.destino-card {
+    background-color: var(--secondary-color); /* O var(--primary-color) si la sección es clara */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.destino-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(102, 252, 241, 0.15);
+}
+
+.destino-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.destino-card:hover img {
+    transform: scale(1.05);
+}
+
+
+.destino-info {
+    padding: 1.5rem;
+}
+
+.destino-info h3 {
+    margin-bottom: 0.8rem;
+}
+
+.destino-info p {
+    font-size: 0.95rem;
+    margin-bottom: 1.2rem;
+    color: var(--text-color);
+}
+
+.learn-more {
+    font-weight: bold;
+    color: var(--accent-color);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+.learn-more::after {
+    content: ' →'; /* Flechita */
+}
+
+
+/* --- Sección Experiencias --- */
+.experiencias-section {
+    /* Añadir un sutil patrón de fondo si se desea */
+    /* background-image: url('path/to/subtle-pattern.png'); */
+}
+.experiencias-flex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.experiencia-item {
+    background-color: rgba(11, 12, 16, 0.5); /* Un poco más oscuro que el fondo de la sección */
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    flex: 1 1 250px; /* Base de 250px, permite crecer/encoger */
+    max-width: 300px;
+    border: 1px solid rgba(69, 162, 158, 0.3); /* Borde sutil */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.experiencia-item:hover {
+    transform: translateY(-8px);
+    background-color: rgba(11, 12, 16, 0.8);
+    border-color: var(--accent-color);
+}
+
+.experiencia-item i { /* Estilo para Font Awesome */
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+    font-size: 2.5rem; /* Tamaño íconos */
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.experiencia-item:hover i {
+    transform: scale(1.1);
+}
+
+.experiencia-item h3 {
+    margin-bottom: 0.8rem;
+    font-size: 1.3rem;
+}
+
+.experiencia-item p {
+    font-size: 0.9rem;
+}
+
+
+/* --- Sección Tecnología --- */
+.tech-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 3rem;
+}
+
+.tech-image img {
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.tech-content h2.section-title {
+    text-align: left; /* Alinear a la izquierda en este layout */
+}
+.tech-content h2.section-title::after {
+    left: 0; /* Alinear línea a la izquierda */
+    transform: translateX(0);
+    width: 30%; /* Más corta */
+}
+
+
+.tech-content ul {
+    list-style: disc; /* O un icono personalizado */
+    margin-left: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+.tech-content ul li {
+    margin-bottom: 0.8rem;
+}
+
+/* --- Sección Reserva --- */
+.reserva-section {
+    /* Fondo con gradiente sutil */
+    /* background: linear-gradient(180deg, var(--secondary-color) 0%, var(--primary-color) 100%); */
+}
+
+.reserva-form {
+    max-width: 600px;
+    margin: 3rem auto 0 auto;
+    display: grid;
+    grid-template-columns: 1fr; /* 1 columna por defecto */
+    gap: 1.5rem;
+}
+
+.form-group {
+    position: relative;
+}
+
+.reserva-form input[type="text"],
+.reserva-form input[type="email"],
+.reserva-form select {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    background-color: rgba(197, 198, 199, 0.1); /* Fondo muy tenue */
+    border: 1px solid var(--highlight-color);
+    border-radius: 5px;
+    color: var(--light-text-color);
+    font-family: var(--font-secondary);
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reserva-form input:focus,
+.reserva-form select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(102, 252, 241, 0.3);
+}
+
+.reserva-form select {
+    appearance: none; /* Quita estilo por defecto del navegador */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2366fcf1%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); /* Icono flecha */
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: .65em auto;
+    padding-right: 3rem; /* Espacio para la flecha */
+    color: var(--text-color); /* Color inicial */
+}
+.reserva-form select:focus,
+.reserva-form select:not([value=""]) { /* Si tiene valor seleccionado */
+    color: var(--light-text-color);
+}
+/* Opción placeholder */
+.reserva-form select option[value=""] {
+  color: var(--text-color);
+}
+
+.reserva-form ::placeholder {
+    color: rgba(197, 198, 199, 0.6);
+}
+
+.reserva-form .submit-button {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+}
+
+.form-disclaimer {
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: 1.5rem;
+    color: rgba(197, 198, 199, 0.7);
+}
+
+
+/* --- Footer --- */
+.footer-section {
+    background-color: var(--primary-color); /* Ligeramente diferente o igual */
+    padding: 4rem 0 1rem 0; /* Menos padding abajo */
+    border-top: 1px solid rgba(69, 162, 158, 0.2);
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.footer-logo {
+    font-family: var(--font-primary);
+    font-size: 1.5rem;
+    color: var(--light-text-color);
+    margin-bottom: 1rem;
+}
+.footer-logo p {
+    font-family: var(--font-secondary);
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.footer-links h4, .footer-social h4, .footer-contact h4 {
+    font-family: var(--font-primary);
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.footer-links ul li {
+    margin-bottom: 0.5rem;
+}
+.footer-links ul li a {
+    color: var(--text-color);
+}
+.footer-links ul li a:hover {
+    color: var(--accent-color);
+    padding-left: 5px; /* Sutil efecto hover */
+}
+
+.footer-social a {
+    color: var(--text-color);
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+.footer-social a:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+
+.footer-contact p {
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+    color: var(--text-color);
+}
+.footer-bottom {
+     border-top: 1px solid rgba(69, 162, 158, 0.1);
+     padding-top: 1.5rem;
+     text-align: center;
+     font-size: 0.85rem;
+     color: rgba(197, 198, 199, 0.6);
+}
+
+/* --- Botón Scroll Top --- */
+#scrollTopBtn {
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  bottom: 20px;
+  right: 30px;
+  z-index: 999;
+  border: none;
+  outline: none;
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: 0 5px 15px rgba(102, 252, 241, 0.3);
+  transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+}
+
+#scrollTopBtn:hover {
+  background-color: var(--highlight-color);
+  transform: translateY(-3px);
+}
+
+/* --- Animaciones al Hacer Scroll (con JS) --- */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Añadir retrasos con clases helper */
+.animate-on-scroll.delay-1.is-visible { transition-delay: 0.15s; }
+.animate-on-scroll.delay-2.is-visible { transition-delay: 0.3s; }
+.animate-on-scroll.delay-3.is-visible { transition-delay: 0.45s; }
+.animate-on-scroll.delay-4.is-visible { transition-delay: 0.6s; }
+
+/* Animaciones Hero Iniciales (sin JS) */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+    opacity: 0; /* Inicialmente oculto */
+    animation: fadeInUp 1s ease-out forwards; /* forwards mantiene el estado final */
+}
+.animate-fade-in-up.delay-1 { animation-delay: 0.3s; }
+.animate-fade-in-up.delay-2 { animation-delay: 0.6s; }
+
+
+/* --- Media Queries (Responsividad) --- */
+
+/* Tabletas y pantallas pequeñas */
+@media (max-width: 992px) {
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2.2rem; }
+
+    .container { padding: 0 1.5rem; }
+
+    .tech-container { grid-template-columns: 1fr; }
+    .tech-image { margin-bottom: 2rem; order: -1; } /* Poner imagen arriba */
+    .tech-content h2.section-title { text-align: center; }
+     .tech-content h2.section-title::after { left: 50%; transform: translateX(-50%); width: 30%;}
+
+
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+    :root { --navbar-height: 60px; }
+
+    html { font-size: 15px; } /* Ajustar base */
+
+    h1 { font-size: 2.5rem; }
+    .hero-content p { font-size: 1.1rem; }
+
+    .nav-links {
+        display: none; /* Ocultar links */
+        position: absolute;
+        top: var(--navbar-height);
+        left: 0;
+        width: 100%;
+        background-color: var(--secondary-color); /* Fondo sólido para el menú */
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 0;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.3);
+    }
+    .nav-links.active {
+        display: flex; /* Mostrar al activar */
+    }
+
+    .nav-links li {
+        margin: 0.8rem 0;
+        margin-left: 0; /* Resetear margen */
+        width: 100%;
+        text-align: center;
+    }
+    .nav-links a {
+        padding: 0.8rem 0;
+        display: block; /* Ocupar todo el ancho */
+    }
+    .nav-links a.nav-cta {
+        margin: 1rem 0 0 0;
+    }
+
+    .menu-toggle {
+        display: block; /* Mostrar botón hamburguesa */
+    }
+
+    .destinos-grid { grid-template-columns: 1fr; } /* Una columna */
+    .experiencias-flex { flex-direction: column; align-items: center; }
+    .experiencia-item { flex-basis: auto; width: 90%; max-width: 350px;} /* Ancho completo con margen */
+
+    .footer-container {
+        grid-template-columns: 1fr; /* Una columna */
+        text-align: center;
+    }
+     .footer-links h4, .footer-social h4, .footer-contact h4 { margin-top: 1rem; }
+     .footer-social a { margin: 0 0.5rem;}
+     .footer-links ul li a:hover { padding-left: 0;}
+}
+
+@media (max-width: 480px) {
+     html { font-size: 14px; }
+     h1 { font-size: 2rem; }
+     h2 { font-size: 1.8rem;}
+     .container { padding: 0 1rem; }
+     .cta-button { padding: 0.7rem 1.5rem; font-size: 0.9rem;}
+     .reserva-form { gap: 1rem;}
+     #scrollTopBtn { right: 15px; bottom: 15px; padding: 8px 12px; font-size: 1.3rem; }
+}
+/* --- NUEVOS ESTILOS: Panorama Horizontal Section --- */
+.panorama-section {
+    padding: 6rem 0 0 0; /* Padding superior normal, padding inferior lo gestiona .panorama-container */
+    /* background-color: var(--secondary-color); */ /* Ya en .dark-section */
+    overflow: hidden; /* Evitar barras de scroll extrañas durante el efecto */
+}
+
+.panorama-section .container {
+    margin-bottom: 3rem; /* Espacio entre título y el contenedor del efecto */
+    position: relative; /* Necesario si pones título DENTRO del container con altura */
+    z-index: 2; /* Asegura que el título esté sobre las imágenes si hay solapamiento */
+}
+
+
+.panorama-container {
+    height: 300vh; /* CLAVE: Define cuánta altura vertical consume la sección */
+    position: relative; /* Necesario para que el sticky funcione correctamente */
+    z-index: 1; /* Asegura que el container estructure bien, bajo el título si éste tiene z-index */
+    /* background-color: #101010; */ /* Fondo si quieres uno distinto al body */
+}
+
+.panorama-sticky-wrapper {
+    position: sticky; /* Hace que este div se pegue al top: 0 */
+    top: 0;
+    width: 100%;
+    height: 100vh; /* Ocupa toda la altura del viewport mientras está pegado */
+    overflow: hidden; /* Oculta la parte del .panorama-track que está fuera del viewport */
+     /* background-color: rgba(0,0,0,0.5); */ /* Debug: ver dónde está el sticky */
+}
+
+.panorama-track {
+    display: flex; /* Pone las slides en fila horizontal */
+    flex-wrap: nowrap; /* Evita que las slides salten a la siguiente línea */
+    width: calc(4 * 100vw); /* CLAVE: Ancho total del track. (Número de slides * 100vw). Adjusta si usas padding/gap */
+                            /* Ejemplo: 4 slides, cada una queremos que ocupe 100vw --> width: 400vw */
+    height: 100%; /* Ocupa toda la altura del sticky wrapper */
+    will-change: transform; /* Hint para el navegador, ayuda a la optimización de la animación */
+    /* debug */
+    /* border: 2px dashed red; */
+}
+
+.panorama-slide {
+    width: 100vw; /* Cada slide ocupa el ancho del viewport (CLAVE para la fórmula de JS) */
+    height: 100%; /* Ocupa la altura completa */
+    flex-shrink: 0; /* Impide que las slides se encojan si no hay espacio */
+    /* padding: 0 1rem; */ /* Opcional: si quieres espacio entre imágenes */
+    /* debug */
+    /* border: 2px solid blue; */
+    display: flex; /* Para centrar contenido si es necesario, aunque la imagen ya lo cubre */
+    justify-content: center;
+    align-items: center;
+}
+
+.panorama-slide img {
+    width: 100%; /* La imagen llena su contenedor (.panorama-slide) */
+    height: 100%;
+    object-fit: cover; /* Asegura que la imagen cubra sin distorsionarse, puede cortar bordes */
+    display: block; /* Evita espacio extra debajo de la imagen */
+}
+
+
+/* --- Ajustes Responsive para el efecto horizontal --- */
+@media (max-width: 768px) {
+    /* En móviles o pantallas pequeñas, el efecto puede ser torpe. */
+    /* Es mejor revertir a un scroll horizontal normal (aunque menos 'espectacular') */
+
+    .panorama-container {
+        height: auto; /* Altura normal, no consume espacio vertical extra */
+    }
+
+    .panorama-sticky-wrapper {
+        position: static; /* No sticky */
+        height: auto; /* Altura según contenido */
+        overflow-x: auto; /* Habilita scroll horizontal nativo */
+        overflow-y: hidden; /* Evita scroll vertical no deseado */
+        -webkit-overflow-scrolling: touch; /* Mejora el scroll en iOS */
+        /* Oculta la barra de scroll nativa si se desea (solo visual, scroll aún funciona) */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    }
+     .panorama-sticky-wrapper::-webkit-scrollbar { /* Chrome, Safari and Opera */
+        display: none;
+    }
+
+    .panorama-track {
+        /* Mantener display flex, flex-wrap: nowrap */
+         width: auto; /* Ajustar el ancho automáticamente */
+         height: 80vh; /* Darle una altura fija o fluida que se vea bien en móvil */
+    }
+
+    .panorama-slide {
+        width: 90vw; /* Que cada slide no ocupe el 100%, deje ver un poco de la siguiente */
+        height: 100%; /* Altura del track */
+        margin-right: 1rem; /* Espacio entre slides */
+        flex-shrink: 0; /* Asegura que mantengan su ancho */
+    }
+
+     /* Eliminar margen derecho del último slide si añadiste margin-right */
+     .panorama-slide:last-child {
+         margin-right: 0;
+     }
+
+     /* Ajustes de título/subtítulo si son necesarios */
+     .panorama-section .container {
+        margin-bottom: 1.5rem; /* Menos espacio en móvil */
+     }
+}
+    </style>
+</head>
+<body>
+
+    <!-- Navegación Pegajosa -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#hero" class="logo">IVACOL <span class="logo-highlight">OFICIAL</span></a>
+            <ul class="nav-links">
+                <li><a href="#destinos">Ingresar</a></li>
+                <li><a href="#experiencias">Nosotros</a></li>
+                <li><a href="#tecnologia">Contáctenos</a></li>
+                <li><a href="#reserva" class="cta-button nav-cta">Reservar Viaje</a></li>
+            </ul>
+            <button class="menu-toggle" aria-label="Toggle navigation">☰</button>
+        </div>
+    </nav>
+
+    <!-- Sección Hero - Impacto Visual -->
+    <!-- Sección Hero - Impacto Visual -->
+<header id="hero" class="hero-section">
+    <div class="video-background">
+        <!-- **** INICIO DE LA MODIFICACIÓN **** -->
+        <video playsinline autoplay muted loop poster="path/to/your/poster-image.jpg" id="bgvideo">
+            <!-- Proporciona diferentes formatos para compatibilidad -->
+            <!-- Cambia 'assets/space-background.webm' a la ruta REAL de tu video .webm (opcional pero recomendado) -->
+            <source src="assets/space-background.webm" type="video/webm">
+            <!-- Cambia 'assets/space-background.mp4' a la ruta REAL de tu video .mp4 -->
+            <source src="assets/space-background.mp4" type="video/mp4">
+            <!-- Mensaje por si el navegador no soporta video -->
+            Tu navegador no soporta la etiqueta de video.
+        </video>
+        <!-- **** FIN DE LA MODIFICACIÓN **** -->
+
+        <div class="video-overlay"></div> <!-- Mantenemos el overlay para la legibilidad del texto -->
+    </div>
+    <div class="hero-content">
+        <h1 class="animate-fade-in-up">El Universo Te Espera</h1>
+        <p class="animate-fade-in-up delay-1">Experimenta la última frontera con viajes espaciales de lujo diseñados para el explorador moderno.</p>
+        <a href="#reserva" class="cta-button hero-cta animate-fade-in-up delay-2">Inicia Tu Aventura Cósmica</a>
+    </div>
+    <a href="#destinos" class="scroll-down-indicator" aria-label="Scroll down">
+        <span></span>
+    </a>
+</header>
+
+    <main>
+        <!-- Sección Destinos -->
+        <section id="destinos" class="destinos-section content-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">Destinos Icónicos</h2>
+                <p class="section-subtitle animate-on-scroll delay-1">Donde los sueños cósmicos se hacen realidad.</p>
+                <div class="destinos-grid">
+                    <div class="destino-card animate-on-scroll delay-2">
+                        <img src="https://via.placeholder.com/400x300/1a1a2e/ffffff?text=Base+Lunar+Alpha" alt="Base Lunar Alpha">
+                        <div class="destino-info">
+                            <h3>Base Lunar Alpha</h3>
+                            <p>Camina sobre la Luna y contempla la Tierra desde nuestro exclusivo complejo lunar.</p>
+                            <a href="#" class="learn-more">Descubre Más</a>
+                        </div>
+                    </div>
+                    <div class="destino-card animate-on-scroll delay-3">
+                        <img src="https://via.placeholder.com/400x300/e94560/ffffff?text=Colonia+Marte+Uno" alt="Colonia Marte Uno">
+                        <div class="destino-info">
+                            <h3>Colonia Marte Uno</h3>
+                            <p>Sé pionero en el planeta rojo. Explora cañones y paisajes marcianos impresionantes.</p>
+                            <a href="#" class="learn-more">Descubre Más</a>
+                        </div>
+                    </div>
+                    <div class="destino-card animate-on-scroll delay-4">
+                        <img src="https://via.placeholder.com/400x300/4a4e69/ffffff?text=Estación+Orbital+Zenith" alt="Estación Orbital Zenith">
+                        <div class="destino-info">
+                            <h3>Estación Orbital Zenith</h3>
+                            <p>Flota en gravedad cero con vistas panorámicas del planeta azul. Lujo en órbita.</p>
+                            <a href="#" class="learn-more">Descubre Más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Experiencias -->
+        <section id="experiencias" class="experiencias-section content-section dark-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">Experiencias Inolvidables</h2>
+                <div class="experiencias-flex">
+                    <div class="experiencia-item animate-on-scroll delay-1">
+                        <i class="fas fa-user-astronaut fa-3x"></i> <!-- Necesitas Font Awesome -->
+                        <!-- O usa un SVG/Imagen -->
+                        <h3>Paseos Espaciales</h3>
+                        <p>Flota libremente en el vacío, conectado únicamente a la maravilla del cosmos.</p>
+                    </div>
+                    <div class="experiencia-item animate-on-scroll delay-2">
+                        <i class="fas fa-shuttle-space fa-3x"></i>
+                        <h3>Vuelos Suborbitales</h3>
+                        <p>Siente la fuerza G y contempla la curvatura de la Tierra en un viaje rápido y emocionante.</p>
+                    </div>
+                    <div class="experiencia-item animate-on-scroll delay-3">
+                        <i class="fas fa-moon fa-3x"></i>
+                        <h3>Exploración Rover</h3>
+                        <p>Conduce vehículos de última generación sobre la superficie lunar o marciana.</p>
+                    </div>
+                    <div class="experiencia-item animate-on-scroll delay-4">
+                         <i class="fas fa-utensils fa-3x"></i>
+                        <h3>Gastronomía Cero-G</h3>
+                        <p>Disfruta de comidas gourmet diseñadas por chefs estrella, adaptadas a la microgravedad.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Tecnología -->
+        <section id="tecnologia" class="tecnologia-section content-section">
+            <div class="container tech-container">
+                <div class="tech-image animate-on-scroll">
+                    <img src="https://via.placeholder.com/500x400/1f2833/c5c6c7?text=Nave+Estelar+Odyssey" alt="Nave estelar de Starlight Adventures">
+                </div>
+                <div class="tech-content animate-on-scroll delay-1">
+                    <h2 class="section-title">Ingeniería de Vanguardia</h2>
+                    <p>Nuestra flota, liderada por la nave insignia "Odyssey", representa la cúspide de la ingeniería aeroespacial. Diseñadas para la seguridad, el confort y la eficiencia, nuestras naves incorporan:</p>
+                    <ul>
+                        <li>Propulsión ecológica de última generación.</li>
+                        <li>Sistemas de soporte vital redundantes y autónomos.</li>
+                        <li>Cabinas de lujo con ventanas panorámicas de visión completa.</li>
+                        <li>Inteligencia Artificial para optimización de rutas y seguridad a bordo.</li>
+                    </ul>
+                    <a href="#" class="cta-button secondary-cta">Conoce Nuestras Naves</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Reserva (Formulario Simplificado) -->
+        <section id="reserva" class="reserva-section content-section dark-section">
+            <div class="container">
+                <h2 class="section-title animate-on-scroll">Reserva Tu Lugar en las Estrellas</h2>
+                <p class="section-subtitle animate-on-scroll delay-1">Los viajes comienzan en $1,000,000. Plazas limitadas para la próxima misión.</p>
+                <form class="reserva-form animate-on-scroll delay-2">
+                    <div class="form-group">
+                        <input type="text" id="nombre" name="nombre" required placeholder="Nombre Completo">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" name="email" required placeholder="Correo Electrónico">
+                    </div>
+                    <div class="form-group">
+                        <select id="destino-interes" name="destino-interes">
+                            <option value="">Destino de Interés...</option>
+                            <option value="luna">Base Lunar Alpha</option>
+                            <option value="marte">Colonia Marte Uno</option>
+                            <option value="orbita">Estación Orbital Zenith</option>
+                            <option value="suborbital">Vuelo Suborbital</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="cta-button submit-button">Solicitar Información</button>
+                </form>
+                 <p class="form-disclaimer animate-on-scroll delay-3">Uno de nuestros asesores de viajes cósmicos se pondrá en contacto contigo.</p>
+            </div>
+        </section>
+            <!-- Sección Tecnología -->
+
+<!-- NUEVA SECCIÓN: Panorama Horizontal al Scroll -->
+<section id="panorama" class="panorama-section content-section dark-section">
+    <div class="container"> <!-- Contenedor normal para título y subtítulo -->
+         <h2 class="section-title animate-on-scroll">Vistas Inigualables</h2>
+         <p class="section-subtitle animate-on-scroll delay-1">Contempla la majestad del cosmos como nunca antes.</p>
+    </div>
+
+    <!-- Contenedor especial para el efecto de scroll horizontal -->
+    <!-- Este contenedor DEBE tener mucha altura para que haya scroll vertical que traducir -->
+    <div class="panorama-container">
+        <!-- Este contenedor se pegará arriba (sticky) mientras el anterior se scrollea -->
+        <div class="panorama-sticky-wrapper">
+            <!-- Este es el track que se moverá horizontalmente -->
+            <div class="panorama-track">
+                <!-- Cada div .panorama-slide es una 'pantalla' en la que te detienes virtualmente -->
+                <div class="panorama-slide">
+                     <img src="../../../static/images/ELIVA.png" alt="Nebulosa Omega">
+                </div>
+                <div class="panorama-slide">
+                     <img src="https://via.placeholder.com/1200x700/34495e/ffffff?text=VISTA+2%3A+Galaxia+Andrómeda" alt="Galaxia Andrómeda">
+                </div>
+                <div class="panorama-slide">
+                     <img src="https://via.placeholder.com/1200x700/95a5a6/ffffff?text=VISTA+3%3A+Amanecer+Terrestre" alt="Amanecer Terrestre desde órbita">
+                </div>
+                 <div class="panorama-slide">
+                     <img src="https://via.placeholder.com/1200x700/bdc3c7/ffffff?text=VISTA+4%3A+Campo+de+Estrellas" alt="Campo de Estrellas">
+                </div>
+                <!-- Añade más .panorama-slide para más imágenes/vistas -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- FIN NUEVA SECCIÓN -->
+
+<!-- Sección Reserva -->
+<section id="reserva" class="reserva-section content-section dark-section">
+...
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="container footer-container">
+            <div class="footer-logo">
+                Starlight <span class="logo-highlight">Adventures</span>
+                <p>© <span id="current-year"></span> Todos los derechos reservados.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Explora</h4>
+                <ul>
+                    <li><a href="#destinos">Destinos</a></li>
+                    <li><a href="#experiencias">Experiencias</a></li>
+                    <li><a href="#tecnologia">Tecnología</a></li>
+                    <li><a href="#">Prensa</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Síguenos</h4>
+                <!-- Reemplaza # con tus enlaces reales -->
+                <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <div class="footer-contact">
+                 <h4>Contacto</h4>
+                 <p>info@starlightadventures.space</p>
+                 <p>+1 (555) KOSMOS-0</p>
+            </div>
+        </div>
+         <div class="container footer-bottom">
+             <p>Una iniciativa de Exploración Interplanetaria S.A.</p>
+        </div>
+    </footer>
+
+    <!-- Botón para volver arriba (opcional) -->
+    <button id="scrollTopBtn" title="Volver Arriba">↑</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- Navbar Scroll Effect ---
+            const navbar = document.querySelector('.navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) { // Cambia el estilo después de scrollear un poco
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        
+            // --- Mobile Menu Toggle ---
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            if (menuToggle && navLinks) { // Check if elements exist
+              menuToggle.addEventListener('click', () => {
+                  navLinks.classList.toggle('active');
+                  // Cambia el ícono de hamburguesa a 'X' y viceversa (opcional)
+                  if (navLinks.classList.contains('active')) {
+                      menuToggle.innerHTML = '✕'; // Usa un caracter X
+                  } else {
+                      menuToggle.innerHTML = '☰'; // Caracter de hamburguesa
+                  }
+              });
+        
+              // Cerrar menú al hacer clic en un enlace (para SPAs o navegación en la misma página)
+              navLinks.querySelectorAll('a').forEach(link => {
+                  link.addEventListener('click', () => {
+                      if (navLinks.classList.contains('active')) {
+                          navLinks.classList.remove('active');
+                          menuToggle.innerHTML = '☰';
+                      }
+                  });
+              });
+            }
+        
+            // --- Smooth Scrolling for Anchor Links ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if(targetElement) {
+                        const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                        const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navbarHeight;
+        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        
+            // --- Scroll Animations using Intersection Observer ---
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+        
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target); // Animación solo una vez
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger cuando el 10% del elemento sea visible
+                // rootMargin: "-50px" // Opcional: ajusta el área de disparo
+            });
+        
+            animatedElements.forEach(el => {
+                observer.observe(el);
+            });
+        
+        
+            // --- Scroll Top Button ---
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+        
+            window.onscroll = function() {
+                // Muestra el botón cuando el scroll baja más de 300px
+                if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                    if(scrollTopBtn) scrollTopBtn.style.display = "block";
+                } else {
+                     if(scrollTopBtn) scrollTopBtn.style.display = "none";
+                }
+            };
+             // Scroll suave al hacer clic en el botón
+            if (scrollTopBtn) {
+              scrollTopBtn.addEventListener('click', () => {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+              });
+            }
+        
+            // --- Update Footer Year ---
+            const currentYearSpan = document.getElementById('current-year');
+            if(currentYearSpan) {
+                currentYearSpan.textContent = new Date().getFullYear();
+            }
+        
+        
+            // --- Opcional: Parallax ligero para el Hero ---
+            // window.addEventListener('scroll', function() {
+            //     const hero = document.querySelector('.hero-section');
+            //     if(hero) {
+            //        const scrollPosition = window.pageYOffset;
+            //        // Mueve el fondo más lento que el scroll
+            //        hero.style.backgroundPositionY = scrollPosition * 0.4 + 'px';
+            //        // Ajusta si usas video o múltiples capas
+            //     }
+            // });
+             // Nota: El parallax con JS puede impactar el rendimiento, la opción CSS
+             // `background-attachment: fixed;` es más simple pero diferente efecto.
+             // El ejemplo CSS usa una animación sutil de zoom en lugar de parallax de scroll.
+        
+        });
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // ... (Código de Navbar Scroll Effect, Mobile Menu Toggle, Smooth Scrolling) ...
+        
+            // --- Scroll Animations using Intersection Observer ---
+            // ... (Código existente para animaciones on scroll) ...
+        
+        
+            // --- NUEVO CÓDIGO: Parallax Horizontal con Scroll Vertical ---
+            const panoramaContainer = document.querySelector('.panorama-container');
+            const panoramaTrack = document.querySelector('.panorama-track');
+        
+            // Asegúrate de que los elementos existen antes de intentar manejarlos
+            if (panoramaContainer && panoramaTrack) {
+                // Esta función calcula y aplica la transformación horizontal
+                const updatePanoramaScroll = () => {
+                    // Obtenemos la posición del contenedor principal con mucha altura
+                    const containerRect = panoramaContainer.getBoundingClientRect();
+        
+                    // Obtenemos la altura del viewport
+                    const viewportHeight = window.innerHeight;
+        
+                    // Calculamos cuánto del contenedor ha pasado por la parte superior del viewport.
+                    // Si top es 0, está justo en la parte superior. Si es negativo, ya se ha scrolleado más allá.
+                    const scrolledIn = -containerRect.top;
+        
+                    // El rango total de scroll vertical que nos interesa es la altura del contenedor menos la altura del viewport.
+                    // Cuando containerRect.top va de 0 a -(panoramaContainer.offsetHeight - viewportHeight)
+                    const scrollRange = panoramaContainer.offsetHeight - viewportHeight;
+        
+                    // Calculamos el progreso del scroll como un porcentaje (de 0 a 1).
+                    // Clampimos el valor entre 0 y 1 para asegurarnos de que la animación solo ocurre en ese rango.
+                    const scrollPercent = Math.max(0, Math.min(1, scrolledIn / scrollRange));
+        
+                    // Calculamos la distancia total que el panorama track necesita moverse horizontalmente.
+                    // Es el ancho total del track menos el ancho del viewport (lo que cabe en una 'pantalla').
+                    const totalTrackWidth = panoramaTrack.offsetWidth;
+                    const viewportWidth = window.innerWidth; // O la anchura del sticky wrapper si es diferente
+                    const maxHorizontalMove = totalTrackWidth - viewportWidth;
+        
+                    // Calculamos cuánto se debe mover horizontalmente basado en el porcentaje de scroll vertical.
+                    // Movemos de 0 a -maxHorizontalMove (izquierda)
+                    const currentHorizontalPosition = scrollPercent * maxHorizontalMove;
+        
+                    // Aplicamos la transformación al track.
+                    // Usamos transform: translateX negativo para mover hacia la izquierda.
+                    // Añadir 'px' al final para asegurar que es una medida en píxeles.
+                     panoramaTrack.style.transform = `translateX(-${currentHorizontalPosition}px)`;
+                    // Alternativamente, si tus slides tienen ancho fijo (ej 100vw), podrías usar vw:
+                    // const numSlides = panoramaTrack.children.length;
+                    // const totalVWMove = (numSlides - 1) * 100; // Move de 0vw a -(numSlides-1)*100vw
+                    // panoramaTrack.style.transform = `translateX(-${scrollPercent * totalVWMove}vw)`;
+                    // La versión en PX es más robusta si los anchos de slides o gaps no son múltiplos perfectos de 100vw.
+                };
+        
+                // Optimizamos ejecutando la actualización en el evento 'scroll' usando requestAnimationFrame
+                // para asegurar que se haga antes del repintado del navegador.
+                let ticking = false; // Bandera para controlar requestAnimationFrame
+        
+                window.addEventListener('scroll', () => {
+                    if (!ticking) {
+                        window.requestAnimationFrame(() => {
+                            updatePanoramaScroll();
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                });
+        
+                // Ejecutar al cargar la página y al redimensionar (para recalcular posiciones)
+                updatePanoramaScroll();
+                window.addEventListener('resize', updatePanoramaScroll); // Recalcular en resize
+        
+            } // Fin de la comprobación si panoramaContainer y panoramaTrack existen
+        
+        
+            // --- Scroll Top Button ---
+            // ... (Código existente para Scroll Top) ...
+        
+            // --- Update Footer Year ---
+            // ... (Código existente para Update Footer Year) ...
+        
+             // --- Opcional: Parallax ligero para el Hero ---
+             // ... (Código existente comentado o eliminado) ...
+        
+        
+        }); // Fin de DOMContentLoaded
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profundidades de Xylos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;700&family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-blue: #030a1c;
+            --mid-blue: #0a1931;
+            --light-blue-glow: #63d2ff;
+            --magenta-glow: #ff00ff;
+            --green-glow: #39ff14;
+            --text-color: #e0e7ff;
+            --font-title: 'Comfortaa', cursive;
+            --font-body: 'Raleway', sans-serif;
+            --blur-intensity: 5px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background-color: var(--deep-blue);
+            color: var(--text-color);
+            line-height: 1.7;
+            overflow-x: hidden;
+            min-height: 100vh; /* Asegura que el parallax tenga espacio */
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* --- PARALLAX BACKGROUND --- */
+        #parallax-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -2;
+            overflow: hidden; /* Muy importante para que las capas no generen scroll */
+        }
+        
+        .parallax-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .layer-bg { /* Capa más lejana - puede ser un degradado sutil o imagen muy oscura */
+            background: radial-gradient(circle, var(--mid-blue) 0%, var(--deep-blue) 70%);
+            z-index: 1;
+        }
+        
+        .layer-mid { /* Capa media - sutiles formas de plantas o rocas distantes */
+            /* background-image: url('path/to/distant-flora.png'); */ /* Necesitarías una imagen PNG transparente */
+            opacity: 0.4;
+            filter: blur(calc(var(--blur-intensity) / 2));
+            z-index: 2;
+        }
+        /* Ejemplo de flora distante - necesitarías imágenes SVG o PNG */
+        .distant-flora {
+            position: absolute;
+            opacity: 0.6;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .flora-1 { background-image: url('https://www.transparentpng.com/thumb/seaweed/green-seaweed-transparent-background-sKqjX2.png'); width: 150px; height: 300px; bottom: 0; left: 10%; animation: sway 10s infinite alternate ease-in-out; }
+        .flora-2 { background-image: url('https://www.transparentpng.com/thumb/seaweed/aquarium-seaweed-transparent-Lp7ZFL.png'); width: 100px; height: 250px; bottom: -20px; right: 15%; animation: sway 12s infinite alternate-reverse ease-in-out; }
+        
+        
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+        
+        .layer-fore { /* Capa cercana - flora más definida */
+            /* background-image: url('path/to/foreground-flora.png'); */
+            opacity: 0.6;
+            filter: blur(calc(var(--blur-intensity) / 4));
+            z-index: 4;
+        }
+        .foreground-flora {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .flora-3 { background-image: url('https://www.transparentpng.com/thumb/seaweed/beautiful-seaweed-transparent-Jm5cIs.png'); width: 250px; height: 400px; bottom: -50px; left: 20%; animation: swayStrong 8s infinite alternate ease-in-out; }
+        
+        
+        @keyframes sway {
+            from { transform: rotate(-5deg) translateX(-5px); }
+            to { transform: rotate(5deg) translateX(5px); }
+        }
+        @keyframes swayStrong {
+            from { transform: rotate(-8deg) translateX(-10px); }
+            to { transform: rotate(8deg) translateX(10px); }
+        }
+        
+        /* --- HEADER --- */
+        #main-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(3, 10, 28, 0.8), rgba(3, 10, 28, 0)); /* Transparente abajo */
+            transition: background-color 0.3s ease;
+        }
+        #main-header.scrolled {
+            background-color: rgba(3, 10, 28, 0.9);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+        }
+        
+        #main-header .logo {
+            font-family: var(--font-title);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--light-blue-glow);
+            text-shadow: 0 0 8px var(--light-blue-glow), 0 0 15px var(--light-blue-glow);
+        }
+        
+        #main-header nav ul {
+            list-style: none;
+            display: flex;
+        }
+        #main-header nav ul li {
+            margin-left: 2.5rem;
+        }
+        #main-header nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: var(--font-title);
+            font-size: 1.1rem;
+            transition: color 0.3s, text-shadow 0.3s;
+        }
+        #main-header nav ul li a:hover {
+            color: var(--magenta-glow);
+            text-shadow: 0 0 5px var(--magenta-glow);
+        }
+        
+        /* --- MAIN CONTENT WRAPPER (para que el contenido scrollee sobre el fondo fijo) --- */
+        #content-wrapper {
+            position: relative; /* O absolute si es necesario */
+            z-index: 10; /* Sobre las capas de parallax, debajo del header */
+            padding-top: 100vh; /* Para empezar el contenido debajo de la vista inicial del hero */
+            background-color: transparent; /* El fondo lo da el parallax */
+        }
+        
+        
+        /* --- SECTIONS --- */
+        .content-section {
+            padding: 6rem 5% 4rem;
+            position: relative; /* Para z-index si es necesario */
+            min-height: 70vh;
+            background-color: rgba(10, 25, 49, 0.7); /* Un poco de fondo para legibilidad */
+            margin-bottom: 2rem; /* Espacio entre secciones */
+            border-top: 1px solid rgba(100, 210, 255, 0.2);
+            border-bottom: 1px solid rgba(100, 210, 255, 0.2);
+        }
+        /* Alternar color de fondo ligeramente para más dinamismo */
+        .content-section:nth-child(even) {
+            background-color: rgba(3, 10, 28, 0.75);
+        }
+        
+        
+        #hero {
+            min-height: 100vh; /* El hero "ocupa" la primera vista */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: transparent; /* El parallax es el fondo */
+            margin-top: -100vh; /* Truco para que se superponga al espacio reservado por content-wrapper */
+            border-top: none;
+            border-bottom: none; /* La primera sección no necesita bordes de separación */
+        }
+        .hero-text h1 {
+            font-family: var(--font-title);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            color: #fff;
+            text-shadow: 0 0 10px var(--light-blue-glow), 0 0 20px var(--light-blue-glow), 0 0 30px var(--magenta-glow);
+            margin-bottom: 1rem;
+            animation: pulseText 4s infinite alternate;
+        }
+        @keyframes pulseText {
+            from { text-shadow: 0 0 10px var(--light-blue-glow), 0 0 20px var(--light-blue-glow), 0 0 30px var(--magenta-glow); }
+            to { text-shadow: 0 0 15px var(--light-blue-glow), 0 0 30px var(--magenta-glow), 0 0 40px var(--green-glow); }
+        }
+        .hero-text p {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            color: var(--text-color);
+            opacity: 0.9;
+        }
+        .cta-button {
+            font-family: var(--font-title);
+            background: linear-gradient(45deg, var(--magenta-glow), var(--light-blue-glow));
+            color: var(--deep-blue);
+            padding: 0.8rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--magenta-glow), 0 0 25px var(--light-blue-glow);
+            display: inline-block;
+            border: none;
+        }
+        .cta-button:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 0 20px var(--magenta-glow), 0 0 35px var(--light-blue-glow), 0 0 10px #fff;
+        }
+        
+        /* Luz del ratón */
+        #mouse-light {
+            position: fixed; /* O absolute si se confina al hero */
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(100, 210, 255, 0.15) 0%, rgba(100, 210, 255, 0) 60%);
+            border-radius: 50%;
+            pointer-events: none; /* Para que no interfiera con los clics */
+            transform: translate(-50%, -50%); /* Centrar en el cursor */
+            transition: transform 0.1s ease-out, background 0.1s ease-out; /* Movimiento suave */
+            z-index: 5; /* Sobre las capas de parallax pero debajo del contenido */
+            mix-blend-mode: screen; /* Interesante efecto de mezcla */
+        }
+        
+        
+        .content-section h2 {
+            font-family: var(--font-title);
+            font-size: clamp(2rem, 5vw, 3rem);
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--light-blue-glow);
+            text-shadow: 0 0 8px var(--light-blue-glow);
+        }
+        .intro-text {
+            font-size: 1.1rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3rem auto;
+            opacity: 0.9;
+        }
+        .discover-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+        .discover-item {
+            background-color: rgba(10, 25, 49, 0.5);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(100, 210, 255, 0.2);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .discover-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(100, 210, 255, 0.3);
+        }
+        .discover-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .icon-glow { /* Efecto de brillo constante para iconos */
+            animation: pulseIcon 2s infinite alternate;
+        }
+        @keyframes pulseIcon {
+            from { text-shadow: 0 0 5px var(--green-glow), 0 0 10px var(--green-glow); }
+            to { text-shadow: 0 0 10px var(--green-glow), 0 0 20px var(--green-glow), 0 0 5px #fff; }
+        }
+        .discover-item h3 {
+            font-family: var(--font-title);
+            color: var(--green-glow);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        
+        /* --- SPECIES GALLERY --- */
+        .species-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem; /* Aumentado para dar espacio al efecto tilt */
+            margin-top: 3rem;
+            perspective: 1500px; /* Perspectiva para las tarjetas 3D */
+        }
+        
+        .species-card {
+            background-color: var(--mid-blue);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            /* Para vanilla-tilt.js, las transformaciones se aplicarán vía JS */
+            /* Si lo hicieras solo con CSS: transform-style: preserve-3d; transition: transform 0.1s; */
+            will-change: transform; /* Optimización para animaciones de transform */
+            border: 1px solid rgba(100, 210, 255, 0.3);
+        }
+        /* .species-card:hover { */
+            /* transform: translateZ(20px) rotateX(5deg) rotateY(5deg); */ /* Efecto 3D en hover solo con CSS */
+        /* } */
+        
+        .species-image {
+            width: 100%;
+            height: 250px;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 3px solid var(--magenta-glow);
+            transition: transform 0.5s ease-out;
+        }
+        .species-card:hover .species-image {
+            transform: scale(1.05);
+        }
+        
+        .species-info {
+            padding: 1.5rem;
+        }
+        .species-info h3 {
+            font-family: var(--font-title);
+            color: var(--magenta-glow);
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 5px var(--magenta-glow);
+        }
+        .species-info p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+        
+        /* Exploration Zone */
+        .exploration-zone {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: rgba(3,10,28,0.5);
+            border-radius: 10px;
+            border: 1px solid var(--light-blue-glow);
+        }
+        .glowing-orb-container {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px; /* Contenedor para la animación del orbe */
+        }
+        .glowing-orb {
+            width: 80px;
+            height: 80px;
+            background-color: var(--light-blue-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 20px var(--light-blue-glow),
+                        0 0 40px var(--light-blue-glow),
+                        0 0 60px var(--magenta-glow),
+                        0 0 80px var(--magenta-glow),
+                        inset 0 0 10px #fff;
+            animation: floatOrb 5s infinite ease-in-out, pulseOrbColor 10s infinite alternate;
+        }
+        
+        @keyframes floatOrb {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        @keyframes pulseOrbColor {
+            0% { background-color: var(--light-blue-glow); box-shadow: 0 0 20px var(--light-blue-glow), 0 0 40px var(--light-blue-glow), 0 0 60px var(--magenta-glow), 0 0 80px var(--magenta-glow), inset 0 0 10px #fff; }
+            50% { background-color: var(--green-glow); box-shadow: 0 0 20px var(--green-glow), 0 0 40px var(--green-glow), 0 0 60px var(--light-blue-glow), 0 0 80px var(--light-blue-glow), inset 0 0 10px #fff; }
+            100% { background-color: var(--magenta-glow); box-shadow: 0 0 20px var(--magenta-glow), 0 0 40px var(--magenta-glow), 0 0 60px var(--green-glow), 0 0 80px var(--green-glow), inset 0 0 10px #fff; }
+        }
+        
+        
+        /* --- FOOTER --- */
+        #main-footer {
+            background-color: var(--deep-blue);
+            text-align: center;
+            padding: 2.5rem 5%;
+            border-top: 2px solid var(--mid-blue);
+            position: relative; /* Asegurar que está en el flujo normal y no afectado por fixed del parallax */
+            z-index: 10;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            #main-header {
+                flex-direction: column;
+                padding: 1rem 5%;
+            }
+            #main-header nav ul {
+                margin-top: 0.5rem;
+            }
+            #main-header nav ul li {
+                margin: 0 1rem;
+            }
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            .content-section {
+                padding: 4rem 5% 3rem;
+            }
+            .species-gallery, .discover-grid {
+                grid-template-columns: 1fr; /* Una columna en móviles */
+            }
+            /* Podríamos desactivar animaciones pesadas en móviles o el parallax */
+            /* #parallax-container { display: none; }
+            body { background: radial-gradient(circle, var(--mid-blue) 0%, var(--deep-blue) 70%); } */
+        }
+    </style>
+</head>
+<body>
+    <div id="parallax-container">
+        <div class="parallax-layer layer-bg" data-speed="0.1"></div> <!-- Fondo más lejano -->
+        <div class="parallax-layer layer-mid" data-speed="0.3">
+            <!-- Elementos de flora distantes aquí -->
+            <div class="distant-flora flora-1"></div>
+            <div class="distant-flora flora-2"></div>
+        </div>
+        <canvas id="particle-canvas"></canvas> <!-- Partículas luminosas -->
+        <div class="parallax-layer layer-fore" data-speed="0.7">
+            <!-- Elementos de flora/criaturas más cercanas aquí -->
+            <div class="foreground-flora flora-3"></div>
+        </div>
+    </div>
+
+    <header id="main-header">
+        <div class="logo">XYLOS</div>
+        <nav>
+            <ul>
+                <li><a href="#discover">Descubrir</a></li>
+                <li><a href="#species">Especies</a></li>
+                <li><a href="#explore">Explorar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="content-wrapper">
+        <section id="hero" class="content-section">
+            <div class="hero-text">
+                <h1>Un Viaje a las Profundidades Bio-Luminiscentes</h1>
+                <p>Explora Xylos, un mundo acuático donde la vida resplandece en la oscuridad abisal.</p>
+                <a href="#discover" class="cta-button">Sumergirse</a>
+            </div>
+            <div id="mouse-light"></div>
+        </section>
+
+        <section id="discover" class="content-section">
+            <h2>El Misterio Luminoso</h2>
+            <p class="intro-text">En las profundidades sin sol de Xylos, un ecosistema vibrante prospera gracias a la energía química y la bioluminiscencia. Cada criatura y planta es una obra de arte natural.</p>
+            <div class="discover-grid">
+                <div class="discover-item">
+                    <div class="discover-icon icon-glow">✨</div>
+                    <h3>Flora Etérea</h3>
+                    <p>Corales que pulsan con luz propia y algas que trazan senderos luminosos.</p>
+                </div>
+                <div class="discover-item">
+                    <div class="discover-icon icon-glow">💡</div>
+                    <h3>Fauna Espectral</h3>
+                    <p>Peces con patrones hipnóticos y medusas que danzan como fantasmas brillantes.</p>
+                </div>
+                <div class="discover-item">
+                    <div class="discover-icon icon-glow">🌀</div>
+                    <h3>Ecosistemas Ocultos</h3>
+                    <p>Ventos hidrotermales que sustentan comunidades únicas en el abismo.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="species" class="content-section">
+            <h2>Especies Notables de Xylos</h2>
+            <div class="species-gallery">
+                <div class="species-card" data-tilt>
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/400x300/?jellyfish,glow');"></div>
+                    <div class="species-info">
+                        <h3>Medusa Astral</h3>
+                        <p>Flota grácilmente, emitiendo un suave resplandor azulado que hipnotiza a sus presas.</p>
+                    </div>
+                </div>
+                <div class="species-card" data-tilt>
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/400x300/?anglerfish,deepsea');"></div>
+                    <div class="species-info">
+                        <h3>Anguila Críptica</h3>
+                        <p>Utiliza señuelos bioluminiscentes para atraer a incautos en la penumbra.</p>
+                    </div>
+                </div>
+                <div class="species-card" data-tilt>
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/400x300/?bioluminescent,coral');"></div>
+                    <div class="species-info">
+                        <h3>Coral Fulgurante</h3>
+                        <p>Colonias masivas que crean arrecifes de luz, pilares del ecosistema xylosiano.</p>
+                    </div>
+                </div>
+                 <div class="species-card" data-tilt>
+                    <div class="species-image" style="background-image: url('https://source.unsplash.com/random/400x300/?deep,sea,creature');"></div>
+                    <div class="species-info">
+                        <h3>Abisal Espectro</h3>
+                        <p>Una criatura sigilosa que se mimetiza con las sombras, revelando destellos iridiscentes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="explore" class="content-section">
+            <h2>Explora el Abismo</h2>
+            <div class="exploration-zone">
+                <p>Sumérgete más profundo y descubre los secretos que Xylos aún guarda. Cada rincón es un nuevo misterio.</p>
+                <!-- Aquí podríamos tener un mini-juego o una galería interactiva más adelante -->
+                <div class="glowing-orb-container">
+                    <div class="glowing-orb"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="main-footer">
+        <p>© 2023 Bio-Exploraciones Xylos. Iluminando lo desconocido.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const parallaxContainer = document.getElementById('parallax-container');
+            const layers = document.querySelectorAll('.parallax-layer');
+            const particleCanvas = document.getElementById('particle-canvas');
+            const ctx = particleCanvas.getContext('2d');
+            const mouseLight = document.getElementById('mouse-light');
+            const mainHeader = document.getElementById('main-header');
+        
+            // --- PARALLAX EFFECT ---
+            // Solo aplicamos parallax si no es un dispositivo táctil o es pantalla grande (evitar problemas de rendimiento en móviles)
+            const isTouchDevice = () => 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+            if (!isTouchDevice() || window.innerWidth > 768) {
+                window.addEventListener('scroll', () => {
+                    let scrollY = window.pageYOffset;
+                    layers.forEach(layer => {
+                        const speed = layer.dataset.speed;
+                        // Mover más rápido para crear un efecto de "alejamiento" al hacer scroll hacia abajo
+                        // Si queremos que los elementos cercanos se muevan "más" que los lejanos, el speed del lejano debe ser menor
+                        const yPos = -(scrollY * speed);
+                        layer.style.transform = `translateY(${yPos}px)`;
+                    });
+                });
+            } else {
+                 // Si es táctil o pequeño, podríamos fijar las capas o simplificar
+                layers.forEach(layer => layer.style.transform = 'translateY(0px)');
+            }
+        
+        
+            // --- PARTICLE CANVAS ---
+            let particlesArray;
+        
+            function setupCanvas() {
+                particleCanvas.width = parallaxContainer.offsetWidth; // Usar el contenedor parallax para el tamaño
+                particleCanvas.height = parallaxContainer.offsetHeight;
+            }
+            setupCanvas();
+            window.addEventListener('resize', setupCanvas);
+        
+            class Particle {
+                constructor(x, y, directionX, directionY, size, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.directionX = directionX;
+                    this.directionY = directionY;
+                    this.size = size;
+                    this.color = color;
+                    this.baseAlpha = Math.random() * 0.3 + 0.1; // Más tenue
+                    this.alpha = this.baseAlpha;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = this.alpha;
+                    ctx.fill();
+                    ctx.globalAlpha = 1; // Reset alpha
+                }
+                update() {
+                    if (this.x + this.size > particleCanvas.width || this.x - this.size < 0) {
+                        this.directionX = -this.directionX;
+                    }
+                    if (this.y + this.size > particleCanvas.height || this.y - this.size < 0) {
+                        this.directionY = -this.directionY;
+                    }
+                    this.x += this.directionX;
+                    this.y += this.directionY;
+        
+                    // Efecto de "parpadeo" o cambio de opacidad
+                    this.alpha = this.baseAlpha + Math.sin(Date.now() * 0.001 + this.x) * (this.baseAlpha * 0.5);
+        
+        
+                    this.draw();
+                }
+            }
+        
+            function initParticles() {
+                particlesArray = [];
+                let numberOfParticles = (particleCanvas.width * particleCanvas.height) / 9000; // Densidad
+                numberOfParticles = Math.min(numberOfParticles, 100); // Límite máximo
+                const colors = [
+                    'rgba(99, 210, 255, 0.7)', // light-blue-glow
+                    'rgba(255, 0, 255, 0.6)',   // magenta-glow
+                    'rgba(57, 255, 20, 0.5)'    // green-glow
+                ];
+        
+                for (let i = 0; i < numberOfParticles; i++) {
+                    let size = Math.random() * 2 + 0.5; // Más pequeñas
+                    let x = Math.random() * (particleCanvas.width - size * 2) + size;
+                    let y = Math.random() * (particleCanvas.height - size * 2) + size;
+                    let directionX = (Math.random() * 0.4) - 0.2; // Movimiento más lento
+                    let directionY = (Math.random() * 0.4) - 0.2;
+                    let color = colors[Math.floor(Math.random() * colors.length)];
+                    particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                }
+            }
+        
+            function animateParticles() {
+                ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+                for (let i = 0; i < particlesArray.length; i++) {
+                    particlesArray[i].update();
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            initParticles();
+            animateParticles();
+            window.addEventListener('resize', () => { // Re-init on resize
+                setupCanvas();
+                initParticles();
+            });
+        
+        
+            // --- MOUSE LIGHT EFFECT ---
+            if (!isTouchDevice()) { // Solo para no táctiles
+                document.addEventListener('mousemove', (e) => {
+                    // Queremos que la luz se mueva relativo al viewport, no al documento scrolleado
+                    mouseLight.style.left = e.clientX + 'px';
+                    mouseLight.style.top = e.clientY + 'px';
+        
+                    // Sutil efecto de "lag" o "pop" al moverse rápido
+                    // Podríamos cambiar el tamaño del gradiente radial aquí para hacerlo más dinámico
+                });
+                document.body.addEventListener('mouseleave', () => {
+                     mouseLight.style.background = 'radial-gradient(circle, rgba(100, 210, 255, 0) 0%, rgba(100, 210, 255, 0) 60%)';
+                });
+                 document.body.addEventListener('mouseenter', () => {
+                     mouseLight.style.background = 'radial-gradient(circle, rgba(100, 210, 255, 0.15) 0%, rgba(100, 210, 255, 0) 60%)';
+                });
+            } else {
+                mouseLight.style.display = 'none'; // Ocultar en táctiles
+            }
+        
+        
+            // --- HEADER SCROLL EFFECT ---
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    mainHeader.classList.add('scrolled');
+                } else {
+                    mainHeader.classList.remove('scrolled');
+                }
+            });
+
+            const tiltElements = document.querySelectorAll("[data-tilt]");
+            if (tiltElements.length > 0 && typeof VanillaTilt !== 'undefined') {
+                VanillaTilt.init(tiltElements, {
+                    max: 15,       // Grados máximos de inclinación
+                    speed: 400,    // Velocidad de la animación
+                    glare: true,   // Añade un efecto de reflejo
+                    "max-glare": 0.3 // Intensidad del reflejo
+                });
+            } else if (tiltElements.length > 0) {
+                console.warn("VanillaTilt no está definido. Asegúrate de que la librería esté cargada.");
+            }
+        
+        
+            // --- INTERSECTION OBSERVER FOR CONTENT SECTIONS (Animación de entrada) ---
+            const animatedSections = document.querySelectorAll('.content-section:not(#hero)'); // Excluimos el hero
+        
+            const sectionObserverOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 // 15% visible
+            };
+        
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = `fadeInUp 0.8s ease-out forwards`;
+                        // Dejar de observar una vez animado, si no se necesita re-animar
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, sectionObserverOptions);
+        
+            animatedSections.forEach(section => {
+                section.style.opacity = '0'; // Inicialmente oculto para la animación
+                sectionObserver.observe(section);
+            });
+        
+            // Añadir Keyframes para fadeInUp directamente en JS si no queremos ponerlo en CSS
+            const styleSheet = document.createElement("style");
+            styleSheet.innerText = `
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(50px) scale(0.98);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0) scale(1);
+                    }
+                }
+            `;
+            document.head.appendChild(styleSheet);
+        
+        });
+    </script>
+            
+    // --- VANILLA-TILT.JS for 3D Card Effect ---
+    // Asegúrate de haber incluido la librería en el HTML:
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.2/vanilla-tilt.min.js"></script>
+</body>
+</html>

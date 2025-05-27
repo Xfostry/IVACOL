@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorador Galáctico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0a0f1e; /* Azul noche oscuro */
+            --secondary-color: #1a2344; /* Azul más claro para contraste */
+            --accent-color: #00ffff; /* Cyan brillante para acentos */
+            --text-color: #e0e0e0; /* Gris claro para texto */
+            --glow-color: #7df9ff; /* Un cyan más claro para brillos */
+            --font-orbitron: 'Orbitron', sans-serif;
+            --font-roboto: 'Roboto', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-roboto);
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden; /* Evitar scroll horizontal */
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        #starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Detrás de todo el contenido */
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(10, 15, 30, 0.85); /* Fondo semi-transparente */
+            backdrop-filter: blur(10px); /* Efecto de desenfoque para navegadores modernos */
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1rem 5%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
+        }
+        
+        header.scrolled {
+            background-color: rgba(26, 35, 68, 0.95); /* Más opaco al hacer scroll */
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        nav .logo {
+            font-family: var(--font-orbitron);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-shadow: 0 0 5px var(--accent-color), 0 0 10px var(--accent-color);
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+        }
+        
+        nav ul li {
+            margin-left: 2rem;
+        }
+        
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-family: var(--font-orbitron);
+            font-size: 1rem;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: var(--accent-color);
+            text-shadow: 0 0 3px var(--accent-color);
+        }
+        
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+        
+        main {
+            padding-top: 80px; /* Altura del header */
+        }
+        
+        .parallax-section {
+            position: relative;
+            background-attachment: fixed; /* Efecto parallax básico */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 70vh; /* Altura mínima para secciones con parallax */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        #hero {
+            min-height: 100vh; /* La sección de héroe ocupa toda la pantalla */
+            /* background-image: url('hero-background.jpg'); */ /* Opcional: imagen de fondo si no te gusta el starfield solo */
+            /* Para el ejemplo, dejaremos que el starfield sea el fondo principal */
+            padding-top: 80px; /* Para que el contenido no quede debajo del header fijo */
+        }
+        
+        .hero-content {
+            z-index: 1; /* Por encima del fondo parallax si hubiera imagen */
+            padding: 2rem;
+            background: rgba(10, 15, 30, 0.5); /* Un ligero fondo para legibilidad */
+            border-radius: 10px;
+            max-width: 800px;
+        }
+        
+        .hero-content h1 {
+            font-family: var(--font-orbitron);
+            font-size: 3.5rem;
+            color: #fff;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color);
+            animation: glowPulse 3s infinite alternate;
+        }
+        
+        @keyframes glowPulse {
+            from { text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color); }
+            to { text-shadow: 0 0 15px var(--accent-color), 0 0 30px var(--accent-color), 0 0 5px #fff; }
+        }
+        
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+        
+        .cta-button {
+            font-family: var(--font-orbitron);
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.8rem 2rem;
+            text-decoration: none;
+            border-radius: 50px; /* Píldora */
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
+            display: inline-block;
+        }
+        
+        .cta-button:hover {
+            background-color: var(--glow-color);
+            color: #000;
+            box-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color), 0 0 5px #fff;
+            transform: scale(1.05) translateY(-2px);
+        }
+        
+        .content-section {
+            padding: 4rem 5%;
+            text-align: center;
+        }
+        
+        /* Sección Estrellas con overlay para texto legible sobre posible fondo parallax*/
+        #stars.parallax-section .section-overlay {
+            background-color: rgba(10, 15, 30, 0.7); /* Overlay oscuro para legibilidad */
+            padding: 3rem 2rem;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        
+        .content-section h2 {
+            font-family: var(--font-orbitron);
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--accent-color);
+        }
+        
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .card {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3), 0 0 15px var(--glow-color);
+        }
+        
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            border-bottom: 3px solid var(--accent-color);
+        }
+        
+        .card h3 {
+            font-family: var(--font-orbitron);
+            color: var(--accent-color);
+            padding: 1rem 1rem 0.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .card p {
+            padding: 0 1rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        footer {
+            background-color: var(--secondary-color);
+            text-align: center;
+            padding: 2rem 5%;
+            margin-top: 3rem;
+            border-top: 3px solid var(--accent-color);
+        }
+        
+        footer p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* --- Modal Styles --- */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8); /* Fondo oscuro semitransparente */
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            animation: fadeInModal 0.3s ease-out;
+        }
+        
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: var(--secondary-color);
+            margin: 10% auto;
+            padding: 30px;
+            border: 1px solid var(--accent-color);
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 0 30px var(--glow-color);
+            animation: slideInModal 0.4s ease-out;
+        }
+        
+        @keyframes slideInModal {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close-button {
+            color: var(--accent-color);
+            float: right;
+            font-size: 32px;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        
+        .close-button:hover,
+        .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            text-shadow: 0 0 5px var(--glow-color);
+        }
+        
+        #modal-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 2px solid var(--accent-color);
+        }
+        
+        #modal-name {
+            font-family: var(--font-orbitron);
+            color: var(--accent-color);
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+        
+        #modal-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                position: absolute;
+                top: 70px; /* Altura del header */
+                left: -100%; /* Oculto fuera de la pantalla */
+                width: 100%;
+                background-color: rgba(10, 15, 30, 0.95);
+                padding: 1rem 0;
+                transition: left 0.3s ease-in-out;
+            }
+        
+            /* Para un menú hamburguesa (no implementado aquí pero útil saberlo) */
+            /* nav ul.active { left: 0; } */
+        
+            nav ul li {
+                margin: 1rem 0;
+                text-align: center;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            .hero-content p {
+                font-size: 1rem;
+            }
+        
+            .content-section h2 {
+                font-size: 2rem;
+            }
+        
+            .card-container {
+                grid-template-columns: 1fr; /* Una columna en móviles */
+            }
+        
+            .modal-content {
+                margin: 15% auto;
+                width: 90%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            nav .logo {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* Efecto sutil de aparición para secciones */
+        .content-section {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        .content-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="starfield"></canvas>
+
+    <header>
+        <nav>
+            <div class="logo">GALAXIA X</div>
+            <ul>
+                <li><a href="#hero">Inicio</a></li>
+                <li><a href="#planets">Planetas</a></li>
+                <li><a href="#stars">Estrellas</a></li>
+                <li><a href="#nebulae">Nebulosas</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="parallax-section">
+            <div class="hero-content">
+                <h1>Descubre las Maravillas del Cosmos</h1>
+                <p>Embárcate en un viaje visual a través de galaxias distantes y fenómenos celestes.</p>
+                <a href="#planets" class="cta-button">Explorar Ahora</a>
+            </div>
+        </section>
+
+        <section id="planets" class="content-section">
+            <h2>Planetas Fascinantes</h2>
+            <div class="card-container">
+                <div class="card" data-name="Aethel" data-description="Un gigante gaseoso con anillos multicolores y lunas heladas." data-image="https://via.placeholder.com/400x300/FF6347/FFFFFF?text=Planeta+Aethel">
+                    <img src="https://via.placeholder.com/400x300/FF6347/FFFFFF?text=Planeta+Aethel" alt="Planeta Aethel">
+                    <h3>Planeta Aethel</h3>
+                    <p>Un gigante gaseoso con anillos multicolores.</p>
+                </div>
+                <div class="card" data-name="Zephyr" data-description="Un mundo rocoso con una atmósfera rica en oxígeno y vastos océanos líquidos." data-image="https://via.placeholder.com/400x300/4682B4/FFFFFF?text=Planeta+Zephyr">
+                    <img src="https://via.placeholder.com/400x300/4682B4/FFFFFF?text=Planeta+Zephyr" alt="Planeta Zephyr">
+                    <h3>Planeta Zephyr</h3>
+                    <p>Mundo acuático con potencial para la vida.</p>
+                </div>
+                <div class="card" data-name="Ignis Prime" data-description="Un planeta volcánico cubierto de lava fundida y géiseres de azufre." data-image="https://via.placeholder.com/400x300/FFA500/000000?text=Ignis+Prime">
+                    <img src="https://via.placeholder.com/400x300/FFA500/000000?text=Ignis+Prime" alt="Ignis Prime">
+                    <h3>Ignis Prime</h3>
+                    <p>Planeta volcánico de fuego y azufre.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="stars" class="content-section parallax-section">
+            <div class="section-overlay">
+                <h2>Estrellas Deslumbrantes</h2>
+                <div class="card-container">
+                    <div class="card" data-name="Solara" data-description="Una supergigante azul masiva, miles de veces más luminosa que nuestro Sol." data-image="https://via.placeholder.com/400x300/00FFFF/000000?text=Estrella+Solara">
+                        <img src="https://via.placeholder.com/400x300/00FFFF/000000?text=Estrella+Solara" alt="Estrella Solara">
+                        <h3>Estrella Solara</h3>
+                        <p>Supergigante azul, una fuente de poder.</p>
+                    </div>
+                    <div class="card" data-name="Pulsarion" data-description="Una estrella de neutrones que emite haces de radiación a medida que rota rápidamente." data-image="https://via.placeholder.com/400x300/DA70D6/FFFFFF?text=Pulsarion">
+                        <img src="https://via.placeholder.com/400x300/DA70D6/FFFFFF?text=Pulsarion" alt="Pulsarion">
+                        <h3>Pulsarion X-1</h3>
+                        <p>Un faro cósmico pulsante.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="nebulae" class="content-section">
+            <h2>Nebulosas Místicas</h2>
+            <div class="card-container">
+                <div class="card" data-name="Velo Espectral" data-description="Una vasta nube de gas y polvo interestelar donde nacen nuevas estrellas." data-image="https://via.placeholder.com/400x300/8A2BE2/FFFFFF?text=Velo+Espectral">
+                    <img src="https://via.placeholder.com/400x300/8A2BE2/FFFFFF?text=Velo+Espectral" alt="Nebulosa Velo Espectral">
+                    <h3>Velo Espectral</h3>
+                    <p>Cuna de estrellas con colores etéreos.</p>
+                </div>
+                 <div class="card" data-name="Ojo Cósmico" data-description="Una nebulosa planetaria formada por las capas exteriores de una estrella moribunda." data-image="https://via.placeholder.com/400x300/32CD32/FFFFFF?text=Ojo+Cósmico">
+                    <img src="https://via.placeholder.com/400x300/32CD32/FFFFFF?text=Ojo+Cósmico" alt="Nebulosa Ojo Cósmico">
+                    <h3>Ojo Cósmico</h3>
+                    <p>El último suspiro de una estrella.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2023 Explorador Galáctico. Todos los derechos reservados.</p>
+        <p>Un viaje alucinante por el cosmos.</p>
+    </footer>
+
+    <!-- Modal Structure -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">×</span>
+            <img id="modal-image" src="" alt="Imagen del objeto celeste">
+            <h2 id="modal-name"></h2>
+            <p id="modal-description"></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const starfield = document.getElementById('starfield');
+            const ctx = starfield.getContext('2d');
+            const header = document.querySelector('header');
+        
+            // Starfield Animation
+            function resizeCanvas() {
+                starfield.width = window.innerWidth;
+                starfield.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+        
+            let stars = [];
+            const numStars = 300;
+        
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * starfield.width,
+                    y: Math.random() * starfield.height,
+                    radius: Math.random() * 1.5 + 0.5, // Estrellas de diferente tamaño
+                    alpha: Math.random() * 0.5 + 0.5,  // Opacidad variada
+                    dx: (Math.random() - 0.5) * 0.2,    // Movimiento sutil en X
+                    dy: (Math.random() - 0.5) * 0.2     // Movimiento sutil en Y
+                });
+            }
+        
+            function drawStars() {
+                ctx.clearRect(0, 0, starfield.width, starfield.height);
+                ctx.fillStyle = 'white';
+                stars.forEach(star => {
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.globalAlpha = star.alpha;
+                    ctx.fill();
+        
+                    // Actualizar posición para el próximo frame
+                    star.x += star.dx;
+                    star.y += star.dy;
+        
+                    // Reposicionar estrellas si salen de la pantalla
+                    if (star.x < 0) star.x = starfield.width;
+                    if (star.x > starfield.width) star.x = 0;
+                    if (star.y < 0) star.y = starfield.height;
+                    if (star.y > starfield.height) star.y = 0;
+                });
+                ctx.globalAlpha = 1; // Reset alpha
+            }
+        
+            function animateStars() {
+                drawStars();
+                requestAnimationFrame(animateStars);
+            }
+            animateStars();
+        
+            // Header scroll effect
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+        
+            // Modal Functionality
+            const modal = document.getElementById('modal');
+            const modalImage = document.getElementById('modal-image');
+            const modalName = document.getElementById('modal-name');
+            const modalDescription = document.getElementById('modal-description');
+            const closeModalButton = document.querySelector('.close-button');
+            const cards = document.querySelectorAll('.card');
+        
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    modalImage.src = card.dataset.image || card.querySelector('img').src;
+                    modalName.textContent = card.dataset.name || card.querySelector('h3').textContent;
+                    modalDescription.textContent = card.dataset.description || "Más información próximamente.";
+                    modal.style.display = 'block';
+                });
+            });
+        
+            closeModalButton.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+        
+            window.addEventListener('click', (event) => {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        
+            // Intersection Observer for fade-in sections
+            const sections = document.querySelectorAll('.content-section');
+            const sectionObserverOptions = {
+                root: null, // relative to document viewport
+                rootMargin: '0px',
+                threshold: 0.1 // 10% of item is visible
+            };
+        
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once visible
+                    }
+                });
+            }, sectionObserverOptions);
+        
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+        
+            // Parallax effect for sections with background images (like #stars if you add one)
+            // This is a simple version. For more advanced parallax, consider libraries or more JS.
+            // Ensure #stars has a background-image in CSS for this to be visually apparent
+            // For example: #stars { background-image: url('path/to/stars-bg.jpg'); }
+            // The current `background-attachment: fixed;` provides a basic parallax.
+            // If you want a JS-driven parallax:
+            /*
+            window.addEventListener('scroll', () => {
+                const parallaxSections = document.querySelectorAll('.parallax-section[style*="background-image"]'); // only target those with actual image
+                parallaxSections.forEach(section => {
+                    let offset = window.pageYOffset;
+                    // Check if section is in view (simple check)
+                    if (section.offsetTop < window.innerHeight + offset && section.offsetTop + section.offsetHeight > offset) {
+                        section.style.backgroundPositionY = (offset - section.offsetTop) * 0.5 + 'px'; // Adjust 0.5 for speed
+                    }
+                });
+            });
+            */
+            // Nota: El `background-attachment: fixed;` en CSS ya da un buen efecto parallax.
+            // La versión JS de arriba es una alternativa o complemento si necesitas más control.
+            // Para este ejemplo, el `background-attachment: fixed` para #stars (si tuviera su propia imagen de fondo)
+            // o el starfield global es suficiente.
+        
+        });
+    </script>
+</body>
+</html>
