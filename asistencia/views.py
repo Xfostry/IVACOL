@@ -67,7 +67,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login # Renombrar login para evitar conflicto
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -87,8 +86,9 @@ def login_view(request):
                  # messages.error(request, 'Usuario o contraseña incorrectos.')
                  pass # Dejar que el re-renderizado muestre el error del form
         else:
-            # Formulario inválido (ej: campos vacíos si no validaste en cliente, u otros errore            # Los errores ya están en el objeto 'form'
-             messages.error(request, 'Por favor corrige los errores indicados.') 
+            # Formulario inválido (ej: campos vacíos si no validaste en cliente, u otros errores)
+            # Los errores ya están en el objeto 'form'
+             messages.error(request, 'Por favor corrige los errores indicados.') # Mensaje genérico opcional
     else:
         form = AuthenticationForm() # Formulario vacío para GET
 

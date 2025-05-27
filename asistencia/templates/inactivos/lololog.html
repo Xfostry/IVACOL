@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Estelar</title>
+    <link rel="stylesheet" href="style_register.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset básico y fuentes */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif; /* Fuente más suave */
+    min-height: 100vh; /* Asegura altura mínima */
+    padding: 40px 20px; /* Espacio por si el form es muy alto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #0f0f1a; /* Azul muy oscuro base */
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(100, 100, 200, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(150, 100, 200, 0.1) 0%, transparent 40%),
+        /* Pequeños puntos como estrellas */
+        radial-gradient(circle at 10% 10%, white 0.5px, transparent 1px),
+        radial-gradient(circle at 50% 50%, white 0.5px, transparent 1px),
+        radial-gradient(circle at 90% 20%, white 0.5px, transparent 1px),
+        radial-gradient(circle at 30% 80%, white 0.5px, transparent 1px),
+        radial-gradient(circle at 70% 40%, white 0.5px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 50px 50px, 70px 70px, 60px 60px, 80px 80px, 90px 90px; /* Tamaños para las estrellas */
+    background-repeat: repeat;
+    color: #d0d0e0; /* Color de texto base gris claro */
+    overflow-x: hidden; /* Evitar scroll horizontal */
+    animation: twinkle 15s linear infinite alternate; /* Animación sutil de fondo */
+}
+
+@keyframes twinkle {
+  from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  to { background-position: 10px 5px, -10px -5px, 5px 5px, -5px -5px, 10px -5px, -10px 5px, 5px -10px; }
+}
+
+
+.register-container {
+    width: 100%;
+    max-width: 550px; /* Ancho máximo del formulario */
+    display: flex;
+    justify-content: center;
+}
+
+.register-form {
+    background: rgba(26, 26, 46, 0.8); /* Fondo oscuro semi-transparente */
+    padding: 35px 45px;
+    border-radius: 12px;
+    border: 1px solid rgba(120, 120, 220, 0.2);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    text-align: center;
+    width: 100%;
+}
+
+.register-form h2 {
+    color: #c0d8ff; /* Azul pálido */
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 2em;
+}
+
+.register-form .subtitle {
+    color: #a0a0c0;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+    font-weight: 300;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+    position: relative; /* Para icono de validación */
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 7px;
+    color: #b0c0e0;
+    font-size: 0.85em;
+    font-weight: 400;
+}
+
+.input-group label i {
+    margin-right: 8px;
+    color: #8a9fd0;
+    width: 16px;
+    text-align: center;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 11px 15px;
+    padding-right: 40px; /* Espacio para el icono de validación */
+    border: 1px solid rgba(100, 100, 180, 0.3);
+    background-color: rgba(15, 15, 30, 0.6);
+    border-radius: 7px;
+    color: #e0e0e0;
+    font-size: 0.95em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
+}
+
+.input-group input::placeholder {
+    color: #778;
+    font-weight: 300;
+}
+
+.input-group input:focus {
+    border-color: #a0b8ff;
+    box-shadow: 0 0 8px rgba(160, 184, 255, 0.4);
+}
+
+/* Icono de Validación */
+.validation-icon {
+    position: absolute;
+    right: 12px;
+    top: 38px; /* Ajustar según altura del input y label */
+    font-size: 1.1em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.validation-icon.valid {
+    color: #77cc77; /* Verde suave */
+    opacity: 1;
+}
+.validation-icon.invalid {
+    color: #ff8888; /* Rojo suave */
+    opacity: 1;
+}
+
+/* Password Strength Meter */
+.password-strength {
+    height: 8px;
+    background-color: rgba(0, 0, 10, 0.5);
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+    position: relative;
+}
+.strength-bar {
+    height: 100%;
+    width: 0%; /* Inicialmente vacío */
+    background-color: #ff6b6b; /* Débil */
+    border-radius: 4px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+}
+.strength-text {
+    position: absolute;
+    left: 10px;
+    top: -2px;
+    font-size: 0.7em;
+    color: #ccc;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.input-group input:focus + .password-strength .strength-text {
+    opacity: 1;
+}
+
+
+.submit-button {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 7px;
+    background: linear-gradient(45deg, #5f76e8, #a0b8ff); /* Gradiente suave azul */
+    color: #0a0a1a; /* Texto oscuro para contraste */
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px; /* Espacio antes del botón */
+}
+
+.submit-button:hover {
+    background: linear-gradient(45deg, #6a82f0, #b0c8ff);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(95, 118, 232, 0.4);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 8px rgba(95, 118, 232, 0.3);
+}
+
+.submit-button i {
+    transition: transform 0.5s ease;
+}
+.submit-button:hover i {
+    transform: rotate(360deg);
+}
+
+/* Mensajes generales del formulario */
+.form-message {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    display: none; /* Oculto por defecto */
+    text-align: center;
+}
+.form-message.success {
+    background-color: rgba(80, 200, 80, 0.2);
+    color: #aaffaa;
+    border: 1px solid rgba(80, 200, 80, 0.4);
+    display: block;
+}
+.form-message.error {
+    background-color: rgba(200, 80, 80, 0.2);
+    color: #ffaaaa;
+    border: 1px solid rgba(200, 80, 80, 0.4);
+    display: block;
+}
+
+
+.extra-links {
+    margin-top: 25px;
+    font-size: 0.9em;
+    color: #a0a0c0;
+}
+
+.extra-links a {
+    color: #a0b8ff;
+    text-decoration: none;
+    font-weight: 600;
+    margin-left: 5px;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.extra-links a:hover {
+    color: #c0d8ff;
+    text-shadow: 0 0 4px rgba(160, 184, 255, 0.5);
+}
+
+/* Estilos para inputs inválidos */
+.input-group input.invalid {
+    border-color: #ff8888;
+    box-shadow: 0 0 8px rgba(255, 100, 100, 0.4);
+}
+
+
+/* Responsive */
+@media (max-width: 600px) {
+    body {
+        padding: 20px 10px;
+        align-items: flex-start; /* Alinear arriba en pantallas pequeñas */
+    }
+    .register-form {
+        padding: 25px 20px;
+    }
+    .register-form h2 {
+        font-size: 1.8em;
+    }
+    .input-group input {
+        padding: 10px 12px;
+         padding-right: 35px;
+    }
+     .validation-icon {
+        top: 35px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <form id="register-form" class="register-form">
+            <h2>Registrar Usuario</h2>
+            <p class="subtitle">Crea tu cuenta para estar al día con tu declaración</p>
+
+            <div class="input-group">
+                <label for="fullname"><i class="fas fa-user"></i> Nombre Completo</label>
+                <input type="text" id="fullname" name="fullname" placeholder="Ej: Juan Manuel Rodriguez" required>
+                <span class="validation-icon"></span>
+            </div>
+
+            <div class="input-group">
+                <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label>
+                <input type="email" id="email" name="email" placeholder="tu.correo@gmail.com" required>
+                <span class="validation-icon"></span>
+            </div>
+
+            <div class="input-group">
+                <label for="password"><i class="fas fa-lock"></i> Contraseña</label>
+                <input type="password" id="password" name="password" placeholder="Crea una clave segura" required>
+                 <div class="password-strength">
+                    <div class="strength-bar"></div>
+                    <span class="strength-text"></span>
+                </div>
+                <span class="validation-icon"></span>
+            </div>
+
+             <div class="input-group">
+                <label for="phone"><i class="fas fa-phone"></i> Número de Teléfono</label>
+                <input type="tel" id="phone" name="phone" placeholder="3456781890">
+                <span class="validation-icon"></span>
+            </div>
+
+            <div class="input-group">
+                <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección</label>
+                <input type="text" id="address" name="address" placeholder="Calle 85c 70-5">
+                <span class="validation-icon"></span>
+            </div>
+
+             <div class="input-group">
+                <label for="city"><i class="fas fa-city"></i> Ciudad</label>
+                <input type="text" id="city" name="city" placeholder="Bogotá">
+                <span class="validation-icon"></span>
+            </div>
+
+            <button type="submit" id="register-button" class="submit-button">
+                Completar Registro <i class="fas fa-star-of-life"></i>
+            </button>
+
+            <p id="form-message" class="form-message"></p>
+
+            <div class="extra-links">
+                <span>¿Ya tienes una cuenta?</span> <a href="index.html">Inicia Sesión</a>
+            </div>
+        </form>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const registerForm = document.getElementById('register-form');
+        const fullnameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const phoneInput = document.getElementById('phone');
+        const addressInput = document.getElementById('address');
+        const cityInput = document.getElementById('city');
+        const registerButton = document.getElementById('register-button');
+        const formMessage = document.getElementById('form-message');
+    
+        // Elementos para fortaleza de contraseña
+        const strengthBar = registerForm.querySelector('.strength-bar');
+        const strengthText = registerForm.querySelector('.strength-text');
+    
+        // --- Validación en tiempo real (básica) ---
+    
+        function validateField(input) {
+            const group = input.closest('.input-group');
+            const icon = group.querySelector('.validation-icon');
+            let isValid = input.checkValidity(); // Usa validación HTML5 básica
+    
+            // Validación específica de email
+            if (input.type === 'email' && input.value.length > 0) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                isValid = emailRegex.test(input.value);
+            }
+    
+            // Validación específica de teléfono (muy simple: solo números y +)
+            if (input.type === 'tel' && input.value.length > 0) {
+                const phoneRegex = /^[+\d\s]+$/;
+                 // Permitimos campo vacío si no es required, pero si hay algo, que sea válido
+                isValid = phoneRegex.test(input.value) || input.value === '';
+                 if (!input.required && input.value === '') isValid = true;
+            }
+    
+            // Quitar clases previas
+            input.classList.remove('invalid');
+            icon.classList.remove('fa-check-circle', 'fa-times-circle', 'valid', 'invalid');
+            icon.className = 'validation-icon fas'; // Reset clase base
+    
+            if (input.value.length === 0 && !input.required) {
+                 // Campo opcional vacío es válido, no mostrar icono
+            } else if (isValid) {
+                icon.classList.add('fa-check-circle', 'valid');
+            } else if (input.value.length > 0) { // Mostrar error solo si hay contenido inválido
+                input.classList.add('invalid');
+                icon.classList.add('fa-times-circle', 'invalid');
+            }
+    
+            return isValid || (input.value.length === 0 && !input.required);
+        }
+    
+        // Añadir listeners para validación al perder foco o escribir
+        [fullnameInput, emailInput, passwordInput, phoneInput, addressInput, cityInput].forEach(input => {
+            input.addEventListener('blur', () => validateField(input));
+            // Opcional: validar mientras escribe (puede ser molesto para algunos campos)
+            // input.addEventListener('input', () => validateField(input));
+        });
+    
+         // --- Indicador de Fortaleza de Contraseña ---
+        passwordInput.addEventListener('input', () => {
+            const password = passwordInput.value;
+            let strength = 0;
+            let text = 'Débil';
+            let color = '#ff6b6b'; // Rojo suave
+    
+            if (password.length >= 8) strength++;
+            if (password.match(/[A-Z]/)) strength++;
+            if (password.match(/[a-z]/)) strength++;
+            if (password.match(/[0-9]/)) strength++;
+            if (password.match(/[^A-Za-z0-9]/)) strength++; // Símbolos
+    
+            const percentage = (strength / 5) * 100;
+            strengthBar.style.width = `${percentage}%`;
+    
+            if (strength <= 2) {
+                text = 'Débil';
+                color = '#ff6b6b'; // Rojo
+            } else if (strength === 3) {
+                text = 'Media';
+                color = '#ffa500'; // Naranja
+            } else if (strength === 4) {
+                text = 'Fuerte';
+                color = '#90ee90'; // Verde claro
+            } else {
+                text = 'Muy Fuerte';
+                color = '#77dd77'; // Verde más intenso
+            }
+    
+            strengthBar.style.backgroundColor = color;
+            strengthText.textContent = text;
+            validateField(passwordInput); // Revalidar contraseña con su lógica
+        });
+    
+    
+        // --- Manejo del Envío del Formulario ---
+        registerForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Evitar envío real
+    
+            // Limpiar mensaje global
+            formMessage.textContent = '';
+            formMessage.className = 'form-message'; // Reset clase
+    
+            // Validar todos los campos obligatorios al intentar enviar
+            let isFormValid = true;
+            [fullnameInput, emailInput, passwordInput].forEach(input => { // Solo los requeridos aquí
+                 if (!validateField(input)) {
+                     isFormValid = false;
+                 }
+             });
+             // Validar opcionales si tienen contenido
+             [phoneInput, addressInput, cityInput].forEach(input => {
+                 if (input.value.length > 0 && !validateField(input)) {
+                     isFormValid = false;
+                 }
+             });
+    
+    
+            if (isFormValid) {
+                // Simulación de registro exitoso
+                showMessage('Registro completado con éxito. ¡Bienvenido/a!', 'success');
+                registerButton.disabled = true;
+                registerButton.style.opacity = '0.7';
+                registerButton.style.cursor = 'default';
+    
+                 // Aquí enviarías los datos al servidor (usando fetch, por ejemplo)
+                 const formData = {
+                     fullname: fullnameInput.value,
+                     email: emailInput.value,
+                     password: passwordInput.value, // ¡NUNCA enviar contraseña así en producción! Hashear en servidor.
+                     phone: phoneInput.value,
+                     address: addressInput.value,
+                     city: cityInput.value
+                 };
+                 console.log("Datos a enviar (simulado):", formData);
+    
+                // Opcional: Limpiar formulario después de un tiempo o redirigir
+                // setTimeout(() => {
+                //    registerForm.reset();
+                //    // O redirigir: window.location.href = 'login.html';
+                // }, 3000);
+    
+            } else {
+                showMessage('Por favor, corrige los campos marcados en rojo.', 'error');
+            }
+        });
+    
+        function showMessage(message, type) {
+            formMessage.textContent = message;
+            formMessage.className = `form-message ${type}`; // Añade 'success' o 'error'
+        }
+    });
+</script>
+</body>
+</html>

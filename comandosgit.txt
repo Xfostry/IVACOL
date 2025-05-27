@@ -1,0 +1,8 @@
+git config --global user.email "correo"
+git config --global user.name "nombre de GIT"
+git init=iniciar
+status= estado actual
+git add .= alista todos los archivos para subirlos a git
+git commit -m <"mensaje">
+git remote add origin <link>
+git push -u origin <rama>
