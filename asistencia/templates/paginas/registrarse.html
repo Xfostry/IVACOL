@@ -17,11 +17,10 @@
 <body class="light-mode"> <!-- Puedes añadir 'light-mode' o 'dark-mode' para probar -->
 <br>
     <div class="register-container">
-        <h2>Registrar Usuario</h2>
+        <form id="register-form" class="register-form" method="post" action="{% url 'registrarse' %}" novalidate>
+            {% csrf_token %}
+            <h2>Registrar Usuario</h2>
             <p class="subtitle">Crea tu cuenta para estar al día con tu declaración</p>
-<<<<<<< HEAD
-        {% include "formularioIng" %}
-=======
 
             <!-- Mensajes Django -->
             {% if messages %}
@@ -50,7 +49,6 @@
             <div class="extra-links"> <a href="{% url "solicitarContra" %}">¿Olvidaste tu contraseña?</a> </div>
 
         </form>
->>>>>>> 4bb449f2d9e0f379f0c963e4dd54cca1ff2d354a
     </div>
 {% endblock %}
 {% block "piePagina" %} {% endblock "piePagina" %}
