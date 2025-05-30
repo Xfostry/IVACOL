@@ -67,7 +67,74 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login # Renombrar login para evitar conflicto
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-def login_view(request):
+from .forms import LoginForm
+
+
+
+def user_login(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            user = authenticate(
+                request,
+                username=cd["username"],
+                password=cd["password"]
+            )
+            if user is not None:
+                if user.is_active:
+                    auth_login(request, user)
+                    return redirect('paginaPrincipal') 
+                else:
+                    messages.error(request, "Usuario inactivo")
+            else:
+                messages.error(request, "Credenciales inválidas")
+        #si falla validación del form o de las credenciales se renderiza de nuevo con errores
+    else:
+        form = LoginForm()
+
+    return render(request, "paginas/login.html", {"form": form})
+
+
+def historial_facturas(request):
+    """
+    Muestra el historial de facturas del usuario logueado, más recientes primero.
+    """
+    # Filtrar solo las facturas del usuario autenticado
+    facturas_usuario = FacturaSubida.objects.filter(usuario=request.user).order_by('-fecha_subida')
+    context = {
+        'facturas': facturas_usuario,
+        'titulo_pagina': 'Historial de Facturas Subidas'
+    }
+    return render(request, 'paginas/historial_facturas.html', context)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -112,7 +179,7 @@ def historial_facturas(request):
       #  'facturas': facturas_usuario,
        # 'titulo_pagina': 'Historial de Facturas Subidas'
     # }
-    return render(request, 'paginas/historial_facturas.html')
+    return render(request, 'paginas/historial_facturas.html')"""
 
 
 

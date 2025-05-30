@@ -7,367 +7,105 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block titulo %} Acceder a tu cuenta {% endblock %}</title>
-    {# <link rel="stylesheet" href="style.css"> CSS específico si lo tienes #}
-    <!-- Font Awesome para iconos (Opcional) -->
+    <!-- Font Awesome para iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        /* Aquí van exactamente tus estilos actuales, sin cambios */
         /* Reset básico y fuentes */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-html {
-    height: 100%;
-    margin: 0;
-    padding-top: 60px; /* Ajusta según la altura de tu navbar fija */
-}
-
-body {
-    font-family: 'Roboto', sans-serif;
-    min-height: calc(100vh - 60px); /* Altura mínima para llenar la ventana menos la navbar */
-    display: flex; /* Usar flex para centrar el contenedor principal en la página */
-    justify-content: center;
-    align-items: center; /* Centrar el wrapper verticalmente si hay espacio extra */
-    color: #e0e0e0;
-    background: linear-gradient(-45deg, #0b001a, #1a0033, #0d0d2e, #001f3f);
-    background-size: 400% 400%;
-    animation: cosmicGradient 25s ease infinite;
-    padding: 20px; /* Añadir algo de padding general al body */
-    box-sizing: border-box; /* Incluir padding en el cálculo de altura/ancho */
-    transition: background-color 0.3s ease, border-color 0.3s ease; 
-}
-
-/* Animación para el gradiente */
-@keyframes cosmicGradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Contenedor principal de las columnas */
-.login-container-wrapper {
-    display: flex; /* <--- CLAVE: Habilita Flexbox para los hijos directos */
-    flex-wrap: wrap; /* Permite que las columnas se ajusten en pantallas pequeñas */
-    justify-content: center; /* Centra las columnas horizontalmente si hay espacio */
-    align-items: flex-start; /* Alinea las columnas en la parte SUPERIOR */
-    gap: 30px; /* Espacio entre las columnas */
-    width: 100%; /* Ocupa el ancho disponible, limitado por max-width */
-    max-width: 950px; /* Ancho máximo total para ambas columnas + gap */
-    margin-top: 20px; /* Margen opcional */
-    margin-bottom: 20px;
-    /* border: 1px dashed red; /* Descomenta para ver los límites del wrapper */
-}
-
-
-/* Estilos comunes para ambas columnas (formulario y derecha) */
-.login-form, .column-right {
-    background: rgba(10, 10, 30, 0.75);
-    padding: 40px;
-    border-radius: 15px;
-    border: 1px solid rgba(100, 100, 220, 0.3);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
-                inset 0 0 15px rgba(100, 150, 255, 0.1);
-    backdrop-filter: blur(5px);
-    /* Eliminado: width: 100%; <-- QUITAMOS ESTO */
-    /* Flexbox ahora gestionará el ancho basado en el contenido y max-width */
-    animation: floatForm 6s ease-in-out infinite alternate; /* Animación flotante sutil */
-    /* border: 1px dashed cyan; /* Descomenta para ver los límites de cada columna */
-}
-
-
-.login-form {
-    max-width: 500px; /* Ancho máximo del formulario */
-    text-align: center;
-    order: 1;
-    flex-shrink: 0; /* Opcional */
-}
-
-.column-right {
-    max-width: 400px; /* Ancho máximo de la columna derecha */
-    text-align: left;
-    order: 2; /* Columna derecha a la derecha en pantallas grandes */
-    flex-shrink: 0; /* Evita que se encoja si no hay mucho espacio (opcional) */
-}
-
-@keyframes floatForm {
-    from { transform: translateY(-5px); }
-    to { transform: translateY(5px); }
-}
-
-
-.login-form h2 {
-    font-family: 'Orbitron', sans-serif; /* Fuente más futurista/cósmica */
-    color: #9dceff; /* Azul claro neón */
-    margin-bottom: 10px;
-    font-size: 2.2em;
-    text-shadow: 0 0 8px rgba(157, 206, 255, 0.7);
-}
-
-.login-form .subtitle {
-    color: #a0a0c0;
-    margin-bottom: 30px;
-    font-size: 0.9em;
-    font-weight: 300;
-}
-
-.input-group {
-    margin-bottom: 25px;
-    text-align: left;
-    position: relative; /* Para posicionar el icono */
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #b0c4de; /* Azul acero claro */
-    font-size: 0.9em;
-    font-weight: 400;
-}
-
-.input-group label i {
-    margin-right: 8px;
-    color: #7f9ae0; /* Icono un poco más brillante */
-    width: 15px; /* Alineación */
-    text-align: center;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 12px 15px;
-    border: 1px solid rgba(100, 100, 220, 0.4);
-    background-color: rgba(0, 0, 10, 0.5); /* Fondo del input muy oscuro */
-    border-radius: 8px;
-    color: #e0e0e0;
-    font-size: 1em;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    outline: none; /* Quitar borde de focus por defecto */
-}
-/* Asegurarse que los inputs de Django también reciban estos estilos */
-input[type="text"], input[type="password"] {
-     width: 100%;
-    padding: 12px 15px;
-    border: 1px solid rgba(100, 100, 220, 0.4);
-    background-color: rgba(0, 0, 10, 0.5); /* Fondo del input muy oscuro */
-    border-radius: 8px;
-    color: #e0e0e0;
-    font-size: 1em;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    outline: none; /* Quitar borde de focus por defecto */
-    box-sizing: border-box; /* Importante si Django no lo añade */
-}
-
-
-input::placeholder { /* Aplicar a todos los inputs */
-    color: #777;
-    font-style: italic;
-    font-weight: 300;
-}
-
-input:focus { /* Aplicar a todos los inputs */
-    border-color: #9dceff; /* Borde azul brillante al enfocar */
-    box-shadow: 0 0 10px rgba(157, 206, 255, 0.5); /* Resplandor al enfocar */
-}
-
-.portal-button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(45deg, #4a00e0, #8e2de2); /* Gradiente violeta/azul */
-    color: white;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.1em;
-    font-weight: 700;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden; /* Para contener el brillo */
-    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s, opacity 0.3s;
-    display: flex; /* Para alinear texto e icono */
-    justify-content: center;
-    align-items: center;
-    gap: 10px; /* Espacio entre texto e icono */
-    animation: pulseButton 2s infinite ease-in-out; /* Animación pulsante */
-}
-/* Estilo para botón deshabilitado */
-.portal-button:disabled {
-    background: linear-gradient(45deg, #6c5b94, #8a6ca2); /* Gradiente más apagado */
-    cursor: wait;
-    opacity: 0.7;
-    animation: none; /* Detener animación pulsante */
-    transform: none; /* No levantar al pasar el ratón */
-    box-shadow: none; /* Sin sombra */
-}
-.portal-button:not(:disabled):hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(142, 45, 226, 0.6);
-}
-.portal-button:not(:disabled):active {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(142, 45, 226, 0.5);
-}
-
-/* Animación pulsante para el botón */
-@keyframes pulseButton {
-    0% { box-shadow: 0 0 5px rgba(142, 45, 226, 0.5); }
-    50% { box-shadow: 0 0 20px rgba(157, 206, 255, 0.8); } /* Brillo más azulado en el pulso */
-    100% { box-shadow: 0 0 5px rgba(142, 45, 226, 0.5); }
-}
-
-.button-icon {
-    display: inline-block;
-    transition: transform 0.3s ease;
-}
-
-.portal-button:not(:disabled):hover .button-icon {
-    transform: rotate(15deg) scale(1.1); /* El cohete se inclina un poco al pasar el ratón */
-}
-
-.server-error-message, .client-error-message {
-    margin-top: 15px;
-    padding: 10px;
-    border-radius: 5px;
-    font-size: 0.9em;
-    background-color: rgba(255, 50, 50, 0.2);
-    color: #ffaaaa;
-    border: 1px solid rgba(255, 50, 50, 0.5);
-    text-align: left; /* Alinear texto de error a la izquierda */
-}
-
-/* Ocultar mensaje de error del cliente por defecto */
-.client-error-message {
-    display: none;
-}
-
-.extra-links {
-    margin-top: 25px;
-    font-size: 0.85em;
-}
-
-.extra-links a {
-    color: #9dceff;
-    text-decoration: none;
-    margin: 0 10px;
-    transition: color 0.3s ease, text-shadow 0.3s ease;
-}
-
-.extra-links a:hover {
-    color: #fff;
-    text-shadow: 0 0 5px rgba(157, 206, 255, 0.7);
-}
-
-/* Clases para JS (animación shake) */
-.shake-error {
-    animation: shake 0.4s ease-in-out;
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25%, 75% { transform: translateX(-6px); }
-   50% { transform: translateX(6px); }
-}
-
-/* Estilos específicos columna derecha */
-.column-right h2 {
-    font-family: 'Orbitron', sans-serif;
-    color: #b0c4de;
-    font-size: 1.6em;
-    margin-bottom: 20px;
-    text-shadow: 0 0 5px rgba(176, 196, 222, 0.5);
-}
-
-.info-list {
-    list-style: none;
-    padding: 0;
-}
-
-.info-list li {
-    margin-bottom: 20px;
-}
-
-.info-list h4 {
-    font-family: 'Roboto', sans-serif;
-    color: #c0d8ff;
-    font-size: 1.1em;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.info-list p {
-    color: #a0b0d0;
-    font-size: 0.9em;
-    line-height: 1.5;
-    padding-left: 28px; /* Alinea el párrafo con el texto del h4 (después del icono) */
-}
-
-
-/* --- RESPONSIVE --- */
-@media (max-width: 850px) { /* Punto de quiebre para apilar */
-    .login-container-wrapper {
-        flex-direction: column; /* Apila las columnas */
-        align-items: center; /* Centra las columnas horizontalmente cuando están apiladas */
-        max-width: 500px; /* Ancho máximo en modo columna */
-        gap: 30px; /* Mantiene el espacio vertical */
-    }
-     .login-form, .column-right {
-        order: 0; /* Resetear orden para flujo natural vertical */
-        max-width: 100%; /* Ocupan el ancho completo del contenedor padre */
-        /* width: 100%; <-- No es necesario si max-width: 100% está activo */
-    }
-    /* No es necesario el margin-top extra si gap ya está definido */
-}
-
-@media (max-width: 500px) {
-    .login-form, .column-right {
-        padding: 30px 25px; /* Menos padding en pantallas muy pequeñas */
-    }
-    .login-form h2 {
-        font-size: 1.8em;
-    }
-     body {
-         padding-top: 5px; /* Menos padding si la navbar es más pequeña o no es fija */
-         align-items: flex-start; /* Alinear arriba para mejor scroll en móviles */
-    }
-    .login-container-wrapper {
-         margin-top: 5px;
-    }
-}
-
-.navbar {
-    transition: background-color 0.3s ease, border-color 0.3s ease; 
-}
-
-/* Estilos para los mensajes de error de Django */
-.errorlist {
-    list-style-type: none;
-    padding: 0;
-    margin: 5px 0 0 0; /* Reducido margen superior */
-    color: #ffaaaa;
-    font-size: 0.85em;
-    text-align: left;
-}
-.errorlist li {
-    padding: 2px 0;
-}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; margin: 0; padding-top: 60px; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            min-height: calc(100vh - 60px);
+            display: flex; justify-content: center; align-items: center;
+            color: #e0e0e0;
+            background: linear-gradient(-45deg, #0b001a, #1a0033, #0d0d2e, #001f3f);
+            background-size: 400% 400%;
+            animation: cosmicGradient 25s ease infinite;
+            padding: 20px; transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        @keyframes cosmicGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .login-container-wrapper { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 30px; width: 100%; max-width: 950px; margin:20px 0; }
+        .login-form, .column-right {
+            background: rgba(10, 10, 30, 0.75); padding: 40px; border-radius: 15px;
+            border: 1px solid rgba(100, 100, 220, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(100, 150, 255, 0.1);
+            backdrop-filter: blur(5px);
+            animation: floatForm 6s ease-in-out infinite alternate;
+        }
+        .login-form { max-width: 500px; text-align: center; order: 1; flex-shrink: 0; }
+        .column-right { max-width: 400px; text-align: left; order: 2; flex-shrink: 0; }
+        @keyframes floatForm { from { transform: translateY(-5px);} to { transform: translateY(5px);} }
+        .login-form h2 { font-family:'Orbitron'; color:#9dceff; margin-bottom:10px; font-size:2.2em; text-shadow:0 0 8px rgba(157,206,255,0.7); }
+        .login-form .subtitle { color:#a0a0c0; margin-bottom:30px; font-size:0.9em; font-weight:300; }
+        .input-group { margin-bottom:25px; text-align:left; position:relative; }
+        .input-group label { display:block; margin-bottom:8px; color:#b0c4de; font-size:0.9em; font-weight:400; }
+        .input-group label i { margin-right:8px; color:#7f9ae0; width:15px; text-align:center; }
+        .input-group input {
+            width:100%; padding:12px 15px; border:1px solid rgba(100,100,220,0.4);
+            background-color:rgba(0,0,10,0.5); border-radius:8px; color:#e0e0e0;
+            font-size:1em; transition:border-color 0.3s ease,box-shadow 0.3s ease; outline:none;
+        }
+        input[type="text"], input[type="password"] { box-sizing:border-box; }
+        input::placeholder { color:#777; font-style:italic; font-weight:300; }
+        input:focus { border-color:#9dceff; box-shadow:0 0 10px rgba(157,206,255,0.5); }
+        .portal-button {
+            width:100%; padding:15px; border:none; border-radius:8px;
+            background:linear-gradient(45deg,#4a00e0,#8e2de2);
+            color:white; font-family:'Orbitron'; font-size:1.1em; font-weight:700;
+            cursor:pointer; position:relative; overflow:hidden;
+            display:flex; justify-content:center; align-items:center; gap:10px;
+            animation:pulseButton 2s infinite ease-in-out;
+        }
+        .portal-button:disabled {
+            background:linear-gradient(45deg,#6c5b94,#8a6ca2); cursor:wait; opacity:0.7; animation:none; transform:none; box-shadow:none;
+        }
+        .portal-button:not(:disabled):hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(142,45,226,0.6); }
+        .portal-button:not(:disabled):active { transform:translateY(-1px); box-shadow:0 4px 10px rgba(142,45,226,0.5); }
+        @keyframes pulseButton { 0%{box-shadow:0 0 5px rgba(142,45,226,0.5);}50%{box-shadow:0 0 20px rgba(157,206,255,0.8);}100%{box-shadow:0 0 5px rgba(142,45,226,0.5);} }
+        .button-icon { display:inline-block; transition:transform 0.3s ease; }
+        .portal-button:not(:disabled):hover .button-icon { transform:rotate(15deg) scale(1.1); }
+        .server-error-message, .client-error-message {
+            margin-top:15px; padding:10px; border-radius:5px; font-size:0.9em;
+            background-color:rgba(255,50,50,0.2); color:#ffaaaa; border:1px solid rgba(255,50,50,0.5); text-align:left;
+        }
+        .client-error-message { display:none; }
+        .extra-links { margin-top:25px; font-size:0.85em; }
+        .extra-links a { color:#9dceff; text-decoration:none; margin:0 10px; transition:color 0.3s ease,text-shadow 0.3s ease; }
+        .extra-links a:hover { color:#fff; text-shadow:0 0 5px rgba(157,206,255,0.7); }
+        .shake-error { animation:shake 0.4s ease-in-out; }
+        @keyframes shake { 0%,100%{transform:translateX(0);}25%,75%{transform:translateX(-6px);}50%{transform:translateX(6px);} }
+        .column-right h2 { font-family:'Orbitron'; color:#b0c4de; font-size:1.6em; margin-bottom:20px; text-shadow:0 0 5px rgba(176,196,222,0.5); }
+        .info-list { list-style:none; padding:0; }
+        .info-list li { margin-bottom:20px; }
+        .info-list h4 { font-family:'Roboto'; color:#c0d8ff; font-size:1.1em; margin-bottom:5px; display:flex; align-items:center; gap:8px; }
+        .info-list p { color:#a0b0d0; font-size:0.9em; line-height:1.5; padding-left:28px; }
+        @media (max-width:850px) {
+            .login-container-wrapper { flex-direction:column; align-items:center; max-width:500px; gap:30px; }
+            .login-form, .column-right { order:0; max-width:100%; }
+        }
+        @media (max-width:500px) {
+            .login-form, .column-right { padding:30px 25px; }
+            .login-form h2 { font-size:1.8em; }
+            body { padding-top:5px; align-items:flex-start; }
+            .login-container-wrapper { margin-top:5px; }
+        }
+        .navbar { transition:background-color 0.3s ease,border-color 0.3s ease; }
+        .errorlist { list-style:none; padding:0; margin:5px 0 0; color:#ffaaaa; font-size:0.85em; text-align:left; }
+        .errorlist li { padding:2px 0; }
     </style>
 </head>
 <body>
-    {# --- Contenedor Wrapper Principal --- #}
     <div class="login-container-wrapper">
-
-        {# --- Columna Izquierda (Formulario) --- #}
-        <div class="login-form"> {# Usamos la clase existente como contenedor de esta columna #}
-            <form id="login-form" method="post" action="{% url 'login' %}"> {# Quitamos la clase login-form del form para evitar duplicidad de estilos #}
+        <div class="login-form">
+            <form id="login-form" method="post" action="{% url 'login' %}">
                 {% csrf_token %}
                 <h2>Iniciar Sesión</h2>
                 <p class="subtitle">Introduce tus datos de usuario</p>
 
-                {# Mostrar errores generales del formulario enviados por Django #}
                 {% if form.non_field_errors %}
                     <div class="server-error-message">
                         {% for error in form.non_field_errors %}
@@ -375,65 +113,46 @@ input:focus { /* Aplicar a todos los inputs */
                         {% endfor %}
                     </div>
                 {% endif %}
-                {# Mostrar mensajes del framework de mensajes de Django #}
                 {% if messages %}
                     {% for message in messages %}
-                    <div class="server-error-message {{ message.tags }}">
-                        {{ message }}
-                    </div>
+                        <div class="server-error-message {{ message.tags }}">{{ message }}</div>
                     {% endfor %}
                 {% endif %}
-                 {# Mensaje de error para validación del cliente (JS) #}
-                 <p id="client-error-message" class="client-error-message" role="alert"></p>
+                <p id="client-error-message" class="client-error-message" role="alert"></p>
 
                 <div class="input-group">
-                    <label for="id_username"><i class="fas fa-user-astronaut"></i> Usuario</label> {# Usar for="id_username" si Django lo genera así #}
-                    {# Renderizar campo del form de Django (preferido) #}
-                    {% if form.username %}
-                         {{ form.username }}
-                    {% else %}
-                        {# Fallback a input manual si no se usa form Django #}
-                         <input type="text" id="username" name="username" placeholder="Nombre" required value="{{ request.POST.username|default:'' }}">
-                    {% endif %}
-                    {# Mostrar errores específicos del campo username #}
+                    <label for="id_username"><i class="fas fa-user-astronaut"></i> Usuario</label>
+                    {{ form.username }}
                     {% if form.username.errors %}
                         <ul class="errorlist">
-                        {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
+                            {% for error in form.username.errors %}<li>{{ error }}</li>{% endfor %}
                         </ul>
                     {% endif %}
                 </div>
 
                 <div class="input-group">
-                    <label for="id_password"><i class="fas fa-key"></i> Contraseña</label> {# Usar for="id_password" #}
-                     {% if form.password %}
-                        {{ form.password }}
-                     {% else %}
-                        <input type="password" id="password" name="password" placeholder="abcd1234" required>
-                     {% endif %}
-                     {% if form.password.errors %}
-                         <ul class="errorlist">
-                         {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
-                         </ul>
+                    <label for="id_password"><i class="fas fa-key"></i> Contraseña</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <ul class="errorlist">
+                            {% for error in form.password.errors %}<li>{{ error }}</li>{% endfor %}
+                        </ul>
                     {% endif %}
                 </div>
-                {# boton temporal #}
-                <a href="{% url "paginaPrincipal" %}" id="login-button" class="portal-button">
+
+                <!-- Botón de envío conectado -->
+                <button type="submit" id="login-button" class="portal-button">
                     <span class="button-text">Confirmar</span>
                     <span class="button-icon"><i class="fas fa-rocket"></i></span>
-                </a>
-                {# Botón de envío del formulario q sirve con el codigo #}
-                {# <button type="button" id="login-button" class="portal-button"> #}
-                    {# <span class="button-text">Confirmar</span> #}
-                    {# <span class="button-icon"><i class="fas fa-rocket"></i></span> #}
-                {# </button>  #}
+                </button>
+
                 <div class="extra-links">
-                    <a href="{% url "solicitarContra" %}">¿Olvidaste tu contraseña?</a><br><br>
-                    <a href="{% url "registrarse" %}">Registrarse</a><br><br>
+                    <a href="{% url 'solicitarContra' %}">¿Olvidaste tu contraseña?</a><br><br>
+                    <a href="{% url 'registrarse' %}">Registrarse</a><br><br>
                 </div>
             </form>
-        </div> {# Fin div.login-form (columna izquierda) #}
+        </div>
 
-        {# --- Columna Derecha --- #}
         <div class="column-right">
             <h2>¡Estás a un solo paso de tomar control de tu vida financiera!</h2><br>
             <ul class="info-list">
@@ -450,81 +169,53 @@ input:focus { /* Aplicar a todos los inputs */
                     <p>Puedes acceder a tu información y ver reportes en cualquier momento.</p>
                 </li>
             </ul>
-        </div> {# Fin div.column-right #}
-
-    </div> {# Fin div.login-container-wrapper #}
+        </div>
+    </div>
 
 {% endblock %}
-
-{# Bloque piePagina se deja vacío como en tu original #}
 {% block piePagina %}{% endblock %}
-
-{# Script al final #}
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const loginForm = document.getElementById('login-form'); // El <form> en sí
+    const loginForm = document.getElementById('login-form');
     const clientErrorMessage = document.getElementById('client-error-message');
     const loginButton = document.getElementById('login-button');
-
-    // Intentar obtener los inputs por su atributo 'name' que es más fiable que ID con Django forms
     const actualUsernameInput = loginForm.querySelector('input[name="username"]');
     const actualPasswordInput = loginForm.querySelector('input[name="password"]');
 
-    // --- Añadir placeholders si no los puso Django (útil si no personalizas el widget) ---
     if (actualUsernameInput && !actualUsernameInput.placeholder) {
         actualUsernameInput.placeholder = 'Nombre de usuario';
     }
     if (actualPasswordInput && !actualPasswordInput.placeholder) {
         actualPasswordInput.placeholder = 'Contraseña';
     }
-    // --- Asegurar IDs estándar si los necesitas para algo más (CSS específico, etc.) ---
-     if (actualUsernameInput && !actualUsernameInput.id) {
-         actualUsernameInput.id = 'id_username'; // ID común en Django
+    if (actualUsernameInput && !actualUsernameInput.id) {
+         actualUsernameInput.id = 'id_username';
     }
-     if (actualPasswordInput && !actualPasswordInput.id) {
-         actualPasswordInput.id = 'id_password'; // ID común en Django
+    if (actualPasswordInput && !actualPasswordInput.id) {
+         actualPasswordInput.id = 'id_password';
     }
-     // --- Fin Añadir atributos ---
 
     loginForm.addEventListener('submit', (event) => {
-        // Limpiar mensaje de error del cliente anterior
         clientErrorMessage.textContent = '';
         clientErrorMessage.style.display = 'none';
-        // Quitar animación previa si la hubo del elemento padre (el div .login-form)
         loginForm.parentElement.classList.remove('shake-error');
 
-        const username = actualUsernameInput ? actualUsernameInput.value.trim() : '';
-        const password = actualPasswordInput ? actualPasswordInput.value.trim() : '';
+        const username = actualUsernameInput?.value.trim() || '';
+        const password = actualPasswordInput?.value.trim() || '';
 
-        // 1. Validación básica del lado del cliente (solo campos vacíos)
-        if (username === '' || password === '') {
-            event.preventDefault(); // Prevenir envío SOLO si falla validación cliente
-            showClientError('Por favor, ingresa tu usuario y contraseña.');
-             // Aplicar shake al contenedor del formulario, no al form mismo
+        if (!username || !password) {
+            event.preventDefault();
+            clientErrorMessage.textContent = 'Por favor, ingresa tu usuario y contraseña.';
+            clientErrorMessage.style.display = 'block';
             loginForm.parentElement.classList.add('shake-error');
-            return; // Detener
+            return;
         }
 
-        // 2. Si la validación básica pasa, deshabilitar botón y permitir envío al servidor.
         loginButton.disabled = true;
-        loginButton.querySelector('.button-text').textContent = 'Procesando...'; // Feedback visual
+        loginButton.querySelector('.button-text').textContent = 'Procesando...';
         loginButton.style.cursor = 'wait';
-
-        // El formulario se enviará a Django...
     });
-
-    function showClientError(message) {
-        clientErrorMessage.textContent = message;
-        clientErrorMessage.style.display = 'block';
-
-         // Quitar la clase shake después de la animación
-         setTimeout(() => {
-             if(loginForm.parentElement) {
-                loginForm.parentElement.classList.remove('shake-error');
-             }
-        }, 500); // Duración un poco mayor que la animación
-    }
 });
 </script>
 {% endblock %}

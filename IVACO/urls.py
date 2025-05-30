@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from asistencia import views
+from asistencia.views import user_login
 
 # Tambien para ver las fotos en el crud
 from django.conf import settings
@@ -31,7 +32,7 @@ urlpatterns = [
     path('index/', views.inicio, name='index'),
     path('nosotros/', views.nosotros, name='nosotros'),
     path('presentacion/', views.presentacion, name='presentacion'), 
-    path('login/', views.login, name='login'),
+    #path('login/', views.login, name='login'), Es
     path('registrarse/', views.registrarse, name='registrarse'),
     path('crud/', views.crud, name='crud'),
     path('contactenos/', views.contactenos, name='contactenos'),
@@ -46,5 +47,7 @@ urlpatterns = [
     path('graficas/', views.graficas, name='graficas'),
     path('leerFacturas/', views.leerFacturas, name='leerFacturas'),
     path('notificaciones/', views.notificaciones, name='notificaciones'),
-    path('facturasAdmin/', views.facturasAdmin, name='facturasAdmin')
+    path('facturasAdmin/', views.facturasAdmin, name='facturasAdmin'),
+    path("amdin/", admin.site.urls),
+    path('login/', user_login, name='login'),
 ]
