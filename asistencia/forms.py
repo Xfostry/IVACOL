@@ -4,7 +4,7 @@ from django import forms
 
 class usuarioForm(forms.ModelForm):
     class Meta:
-            model = usuario
+        model = usuario
         fields = "__all__"
 
 
