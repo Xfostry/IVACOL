@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 #agregado
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from .models import usuario
+from .models import usuario, FacturaSubida
 from .forms import usuarioForm
 
 def inicio(request):

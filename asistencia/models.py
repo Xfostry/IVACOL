@@ -40,9 +40,11 @@ class Administrador(models.Model):
     def __str__(self):
         return self.nombre
 
-def __str__(self):
-        return str(self.id) + " " + self.nombre + " " + self.apellido
-    
-def delete(self, using = None, keep_parents = False):
-    self.foto.storage.delete(self.foto.name)
-    super().delete()
+class FacturaSubida(models.Model):
+    usuario = models.ForeignKey(usuario, on_delete=models.CASCADE, related_name='facturas_subidas')
+    archivo = models.FileField(upload_to='facturas/')
+    fecha_subida = models.DateTimeField(auto_now_add=True)
+    descripcion = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Factura de {self.usuario.nombres} subida el {self.fecha_subida}"
