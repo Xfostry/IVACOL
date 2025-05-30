@@ -1,18 +1,32 @@
 from django.db import models
 
-# Create your models here.
+from django.db import models
 
+# Modelos para el sistema IVACOL
 
-#toca crear las cosas como en el sql (usuarios, facturas, etc)
-
-class estudiante(models.Model):
+class Persona(models.Model):
     id = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=50, verbose_name="Nombre")
-    apellido = models.CharField(max_length=50, verbose_name="Apellido")
-    foto = models.ImageField(upload_to='fotos/', verbose_name="Foto", null=True)
-    clase=models.TextField(verbose_name="Clase", null=True)
-    direccion = models.CharField(max_length=50, verbose_name="Dirección", blank=True, null=True)
-    fechaIngreso = models.DateField(verbose_name="Fecha Ingreso", blank=True, null=True)
+    nombres = models.CharField(max_length=100, verbose_name="Nombres")
+    apellidos = models.CharField(max_length=100, verbose_name="Apellidos")
+    tipo_documento = models.CharField(max_length=20, verbose_name="Tipo de Documento")
+    no_documento = models.CharField(max_length=20, unique=True, verbose_name="Número de Documento")
+    genero = models.CharField(max_length=20, verbose_name="Género")
+    ciudad = models.CharField(max_length=50, verbose_name="Ciudad")
+    numero = models.CharField(max_length=20, verbose_name="Número de Contacto")
+    correo = models.EmailField(max_length=100, unique=True, verbose_name="Correo")
+    direccion = models.CharField(max_length=100, verbose_name="Dirección")
+
+    def __str__(self):
+        return f"{self.nombres} {self.apellidos} ({self.no_documento})"
+
+class Administrador(models.Model):
+    id = models.AutoField(primary_key=True)
+    persona = models.OneToOneField(Persona, on_delete=models.CASCADE, related_name="administrador")
+    usuario = models.CharField(max_length=50, unique=True, verbose_name="Usuario")
+    contrasena = models.CharField(max_length=255, verbose_name="Contraseña")
+
+    def __str__(self):
+        return self.nombre
 
 def __str__(self):
         return str(self.id) + " " + self.nombre + " " + self.apellido

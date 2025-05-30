@@ -50,4 +50,5 @@ urlpatterns = [
     path('facturasAdmin/', views.facturasAdmin, name='facturasAdmin'),
     path("amdin/", admin.site.urls),
     path('login/', user_login, name='login'),
+
 ]
