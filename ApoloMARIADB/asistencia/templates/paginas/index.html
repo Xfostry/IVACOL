@@ -1,0 +1,30 @@
+{% extends "plantilla.html" %}
+
+{% block titulo %} Apolo {% endblock %}
+
+{% block contenido %}
+    <!-- bs5-card-head-foot -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Sistema de ASISTENCIA 3069239</h5>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title text-center">Estudiantes</h4>
+            <p class="card-text text-justify">
+                Bienvenido al sistema de asistencia. Aquí podrás gestionar la asistencia de los estudiantes de manera eficiente y sencilla.
+            </p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">Carlos María Pérez Florez</li>
+                <li class="list-group-item">María Fernanda Gómez López</li>
+                <li class="list-group-item">Juan Carlos Rodríguez Díaz</li>
+                <li class="list-group-item">Laura Patricia Martínez Ruiz</li>
+                <li class="list-group-item">Pedro Antonio García Torres</li>
+            </ul>
+            <a class="btn btn-success mt-3" href="{% url 'estudiantes' %}">Ver más detalles</a>
+        </div>
+        <div class="card-footer text-muted text-center">
+            <small>Última actualización: Mayo 7 de 2025</small>
+        </div>
+    </div>
+{% endblock %}
+

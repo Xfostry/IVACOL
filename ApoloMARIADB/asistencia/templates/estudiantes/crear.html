@@ -1,0 +1,22 @@
+{% extends "plantilla.html" %}
+
+{% block titulo %} Crear {% endblock %}
+
+{% block contenido %} 
+
+    <!-- bs5-card-hesd-foot -->
+    <div class="card">
+        <div class="card-header">Crear Estudiante</div>
+        <div class="card-body">
+            <h4 class="card-title">Datos del Estudiante</h4>
+            <p class="card-text">Estos son los datos de los estudiantes para asistencia</p>
+
+            {% include 'estudiantes/formulario.html' %}
+
+        </div>
+        </div>
+    </div>
+    
+
+{% endblock %}
+

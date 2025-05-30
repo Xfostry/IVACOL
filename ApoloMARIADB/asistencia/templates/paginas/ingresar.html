@@ -1,0 +1,67 @@
+{% extends "plantilla.html" %}
+
+{% block titulo %} Ingreso {% endblock %}
+
+{% block contenido %}
+    <h3>Ingreso de usuarios</h3>
+    <!-- bs5-card-head-foot -->
+    <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Sistema de Ingreso</h5>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title text-center">Seleccione su Rol</h4>
+            <p class="card-text text-center">
+                Por favor, seleccione si desea ingresar como estudiante o como profesor.
+            </p>
+            <div class="d-flex justify-content-around mt-4">
+                <button class="btn btn-success" onclick="showForm('student')">Ingresar como Estudiante</button>
+                <button class="btn btn-info" onclick="showForm('teacher')">Ingresar como Profesor</button>
+            </div>
+            <div id="studentForm" class="card p-3 mt-4" style="display: none;">
+                <h5>Estudiante</h5>
+                <form>
+                    <div class="mb-3">
+                        <label for="studentUsername" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="studentUsername" name="username" required autocomplete="off">
+                    </div>
+                    <div class="mb-3">
+                        <label for="studentPassword" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="studentPassword" name="password" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-success">Ingresar</button>
+                </form>
+            </div>
+            <div id="teacherForm" class="card p-3 mt-4" style="display: none;">
+                <h5>Profesor</h5>
+                <form>
+                    <div class="mb-3">
+                        <label for="teacherUsername" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="teacherUsername" name="username" required autocomplete="off">
+                    </div>
+                    <div class="mb-3">
+                        <label for="teacherPassword" class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="teacherPassword" name="password" required autocomplete="off">
+                    </div>
+                    <button type="submit" class="btn btn-info">Ingresar</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-footer text-muted text-center">
+            <small>Seleccione la opción adecuada para continuar.</small>
+        </div>
+    </div>
+
+    <script>
+        function showForm(role) {
+            document.getElementById('studentForm').style.display = 'none';
+            document.getElementById('teacherForm').style.display = 'none';
+            
+            if (role === 'student') {
+                document.getElementById('studentForm').style.display = 'block';
+            } else if (role === 'teacher') {
+                document.getElementById('teacherForm').style.display = 'block';
+            }
+        }
+    </script>
+{% endblock %}
