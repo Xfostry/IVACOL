@@ -1,6 +1,19 @@
 from django.db import models
 
 # Modelos para el sistema IVACOL
+class usuario(models.Model):
+    id = models.AutoField(primary_key=True, help_text='identificador del usuario')
+    nombres = models.CharField(max_length=100, help_text='nombre del usuario')
+    apellidos = models.CharField(max_length=100, help_text='apellido del usuario')
+    idtipodocumento = models.IntegerField(help_text='identificador del tipo de documento')
+    nodocumento = models.CharField(max_length=20, unique=True, help_text='numero de documento')
+    idgenero = models.IntegerField(help_text='identificador de genero')
+    idciudad = models.IntegerField(help_text='identificador de la ciudad')
+    numero = models.CharField(max_length=20, help_text='numero de contacto')
+    correo = models.EmailField(max_length=100, unique=True, help_text='correo del usuario')
+    contrasena = models.CharField(max_length=255, help_text='contrasena encriptada')
+    direccion = models.CharField(max_length=100, help_text='direccion del usuario')
+    idrol = models.IntegerField(help_text='identificador del rol')
 
 class Persona(models.Model):
     id = models.AutoField(primary_key=True)
