@@ -146,7 +146,45 @@ def historial_facturas(request):
 
 
 
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.shortcuts import render, redirect
 
+def registrarse(request):
+    if request.method == 'POST':
+        fullname = request.POST['fullname']
+        email = request.POST['email']
+        doc_type = request.POST['doc_type']
+        doc_number = request.POST['doc_number']
+        gender = request.POST['gender']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+        phone = request.POST['phone']
+        address = request.POST['address']
+        city = request.POST['city']
+
+        # Validaciones básicas (puedes agregar más)
+        if password != confirm_password:
+            messages.error(request, 'Las contraseñas no coinciden.')
+            return redirect('registrarse')
+        if User.objects.filter(username=doc_number).exists():
+            messages.error(request, 'Ya existe un usuario con ese número de documento.')
+            return redirect('registrarse')
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Ya existe un usuario con ese correo electrónico.')
+            return redirect('registrarse')
+
+        user = User.objects.create_user(
+            username=doc_number,
+            email=email,
+            password=password,
+            first_name=fullname
+        )
+
+        messages.success(request, 'Usuario registrado exitosamente. Ahora puedes iniciar sesión.')
+        return redirect('login')
+
+    return render(request, 'paginas/registrarse.html')
 
 
 

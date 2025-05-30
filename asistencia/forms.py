@@ -1,13 +1,14 @@
 #esto es para cuando ya este el models.py y para agregar en los views
 
 from django import forms
-from .models import usuario
+from .models import estudiante
 
 
-class usuarioForm(forms.ModelForm):
+class estudianteForm(forms.ModelForm):
     class Meta:
-        model = usuario
+        model = estudiante
         fields = "__all__"
+
 
 class LoginForm(forms.Form):  # antes: forms.form
     username = forms.CharField(
