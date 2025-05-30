@@ -1,0 +1,29 @@
+{% extends "plantilla.html" %}
+
+{% block titulo %} Editar {% endblock %}
+
+{% block contenido %} 
+
+<section>
+    <div class="card text-white bg-danger mb-4 shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">Información Adicional</h4>
+            <p class="card-text">Proporcione detalles adicionales , como intereses, actividades extracurriculares o notas importantes.</p>
+        </div>
+    </div>
+</section>
+
+<!-- bs5-card-header-footer -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">Editar Usuario</div>
+    <div class="card-body">
+
+        <a href="{% url 'InicioAdm' %}" class="btn btn-danger">Cancelar</a>
+        
+        {% include 'ingresos/formularioIng.html' %}
+        
+    </div>
+    </div>
+</div>
+
+{% endblock %}

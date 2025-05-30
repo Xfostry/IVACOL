@@ -17,38 +17,9 @@
 <body class="light-mode"> <!-- Puedes añadir 'light-mode' o 'dark-mode' para probar -->
 <br>
     <div class="register-container">
-        <form id="register-form" class="register-form" method="post" action="{% url 'registrarse' %}" novalidate>
-            {% csrf_token %}
-            <h2>Registrar Usuario</h2>
+        <h2>Registrar Usuario</h2>
             <p class="subtitle">Crea tu cuenta para estar al día con tu declaración</p>
-
-            <!-- Mensajes Django -->
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="form-message {% if message.tags %}{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}{% endif %}" style="display: block;">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-            <!-- Mensaje JS -->
-            <p id="form-message" class="form-message"></p>
-
-             <!-- [ ... RESTO DEL CONTENIDO DEL FORMULARIO HTML SIN CAMBIOS ... ] -->
-            <div class="input-group"> <label for="fullname"><i class="fas fa-user"></i> Nombre Completo</label> <input type="text" id="fullname" name="fullname" placeholder="Ej: Juan Manuel Rodriguez" required> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label> <input type="email" id="email" name="email" placeholder="tu.correo@example.com" required> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="doc_type"><i class="fas fa-id-card"></i> Tipo de Documento</label> <select id="doc_type" name="doc_type" required> <option value="" selected disabled>Seleccione una opción</option> <option value="CC">Cédula de Ciudadanía (CC)</option> <option value="CE">Cédula de Extranjería (CE)</option> <option value="PEP">Permiso Especial de Permanencia (PEP)</option> <option value="PPT">Permiso por Protección Temporal (PPT)</option> <option value="RUT">Registro Único Tributario (RUT)</option> <option value="NIT">Número de Identificación Tributaria (NIT)</option> </select> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="doc_number"><i class="fas fa-hashtag"></i> Número de Documento</label> <input type="text" id="doc_number" name="doc_number" placeholder="Ingrese el número sin puntos ni comas" required> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="gender"><i class="fas fa-venus-mars"></i> Género</label> <select id="gender" name="gender" required> <option value="" selected disabled>Selecciona tu género</option> <option value="masculino">Masculino</option> <option value="femenino">Femenino</option> <option value="otro">Otro</option> <option value="no_especificado">Prefiero no decir</option> </select> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="password"><i class="fas fa-lock"></i> Contraseña</label> <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required> <div class="password-strength"> <div class="strength-bar"></div> <span class="strength-text"></span> </div> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="confirm_password"><i class="fas fa-lock-open"></i> Confirmar Contraseña</label> <input type="password" id="confirm_password" name="confirm_password" placeholder="Repite la contraseña" required> <span class="validation-icon fas"></span> <div id="password_error" class="password-error-message">Las contraseñas no coinciden</div> </div>
-            <div class="input-group"> <label for="phone"><i class="fas fa-phone"></i> Número de Teléfono</label> <input type="tel" id="phone" name="phone" placeholder="Ej: 3001234567" required> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección </label> <input type="text" id="address" name="address" placeholder="Ej: Calle 10 # 20-30 Apto 101" required> <span class="validation-icon fas"></span> </div>
-            <div class="input-group"> <label for="city"><i class="fas fa-city"></i> Ciudad </label> <input type="text" id="city" name="city" placeholder="Ej: Bogotá D.C."required> <span class="validation-icon fas"></span> </div>
-            <button type="submit" id="register-button" class="submit-button"> Completar Registro <i class="fas fa-user-plus"></i> </button>
-            <div class="extra-links"> <span>¿Ya tienes una cuenta?</span><a href="{% url "login" %}">Inicia Sesión</a> </div>
-            <div class="extra-links"> <a href="{% url "solicitarContra" %}">¿Olvidaste tu contraseña?</a> </div>
-
-        </form>
+        {% include "formularioIng" %}
     </div>
 {% endblock %}
 {% block "piePagina" %} {% endblock "piePagina" %}

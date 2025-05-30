@@ -48,6 +48,13 @@ urlpatterns = [
     path('leerFacturas/', views.leerFacturas, name='leerFacturas'),
     path('notificaciones/', views.notificaciones, name='notificaciones'),
     path('facturasAdmin/', views.facturasAdmin, name='facturasAdmin'),
-    path("amdin/", admin.site.urls),
+    path('CrudAdm/', views.CrudAdm, name='CrudAdm'),
+    path('UsuariosAdm/', views.UsuariosAdm, name='UsuariosAdm'),
+    path('InicioAdm/', views.InicioAdm, name='InicioAdm'),
+    path('CrearAdm/', views.CrearAdm, name='CrearAdm'),
+    path('editarAdm/<int:id>', views.editarAdm, name='editarAdm'),
+    path('eliminarAdm/<int:id>', views.eliminarAdm, name='eliminarAdm'),
     path('login/', user_login, name='login'),
 ]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

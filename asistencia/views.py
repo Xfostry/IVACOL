@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 #agregado
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from .models import usuario
+from .forms import usuarioForm
 
 def inicio(request):
     return render(request, 'paginas/index.html')
@@ -62,6 +64,40 @@ def notificaciones(request):
 
 def facturasAdmin(request):
     return render (request,'paginas/facturasAdmin.html')
+
+def UsuariosAdm(request):
+    usuarios = usuario.objects.all()
+    return render(request, 'ingresos/InicioAdm.html', {'usuarios':usuarios})
+def CrudAdm(request):
+    Usuario = usuario.objects.get(id=id) #la E es no mas para q sea una variable diferente editar
+    formulario = usuarioForm(request.POST or None, request.FILES or None, instance=Usuario)
+    if formulario.is_valid() and request.POST:
+        formulario.save()
+        return redirect('CrudAdm')
+    return render(request, 'ingresos/crudAdm.html', {'formulario':formulario})
+
+def InicioAdm(request):
+    usuarios = usuario.objects.all()
+    return render (request,'ingresos/InicioAdm.html', {'usuarios': usuarios})
+
+def editarAdm(request, id):
+    UsuarioE = usuario.objects.get(id=id) #la E es no mas para q sea una variable diferente editar
+    formulario = usuarioForm(request.POST or None, request.FILES or None, instance=UsuarioE)
+    if formulario.is_valid() and request.POST:
+        formulario.save()
+        return redirect('InicioAdm')
+    return render(request, 'ingresos/editarAdm.html', {'formulario':formulario})
+
+def eliminarAdm(request, id):
+    usuario.objects.get(id=id).delete()
+    return redirect('InicioAdm')
+
+def CrearAdm(request):
+    formulario = usuarioForm(request.POST or None, request.FILES or None)
+    if formulario.is_valid():
+        formulario.save()
+        return redirect('InicioAdm')
+    return render(request, 'ingresos/crearAdm.html', {'formulario':formulario})
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login # Renombrar login para evitar conflicto
