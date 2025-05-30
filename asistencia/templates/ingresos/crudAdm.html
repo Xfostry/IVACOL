@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD de Administradores Avanzado</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 95%; /* Aumentamos un poco para más campos */
+            max-width: 1100px; /* Aumentamos max-width */
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="tel"],
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box; /* Importante para que el padding no aumente el tamaño total */
+        }
+        
+        #searchInput {
+            flex-grow: 1;
+            min-width: 200px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary { background-color: #3498db; color: white; }
+        .btn-primary:hover { background-color: #2980b9; }
+        .btn-danger { background-color: #e74c3c; color: white; }
+        .btn-danger:hover { background-color: #c0392b; }
+        .btn-warning { background-color: #f1c40f; color: #333; }
+        .btn-warning:hover { background-color: #f39c12; }
+        .btn-secondary { background-color: #95a5a6; color: white; }
+        .btn-secondary:hover { background-color: #7f8c8d; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        tr:hover { background-color: #f9f9f9; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px; /* Un poco menos para acomodar más contenido */
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 650px; /* Más ancho para más campos */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeInModal 0.3s ease-out;
+            max-height: 90vh; /* Evita que el modal sea más alto que la pantalla */
+            overflow-y: auto; /* Scroll si el contenido es mucho */
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .modal-header h2 { margin: 0; color: #2c3e50; }
+        .close-button { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-button:hover, .close-button:focus { color: black; text-decoration: none; }
+
+        .input-group { /* Adaptado de tu HTML */
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+        }
+        .input-group label i {
+            margin-right: 8px;
+            color: #3498db;
+        }
+        .input-group input[type="text"],
+        .input-group input[type="email"],
+        .input-group input[type="password"],
+        .input-group input[type="tel"],
+        .input-group select {
+            width: 100%; /* Usa 100% y box-sizing */
+            padding-right: 30px; /* Espacio para el icono de validación si lo usas */
+        }
+        .input-group .validation-icon { /* Oculto por defecto */
+            position: absolute;
+            right: 10px;
+            top: calc(50% + 10px); /* Ajusta según altura de label + input */
+            transform: translateY(-50%);
+            display: none; 
+        }
+        .input-group input:required:valid ~ .validation-icon.fas::after {
+            content: '\f00c'; /* check icon */
+            font-family: "Font Awesome 6 Free"; font-weight: 900;
+            color: green;
+            display: inline;
+        }
+        .input-group input:required:invalid:not(:placeholder-shown) ~ .validation-icon.fas::after {
+            content: '\f00d'; /* times icon */
+            font-family: "Font Awesome 6 Free"; font-weight: 900;
+            color: red;
+            display: inline;
+        }
+        /* Muestra el icono de validación cuando el campo ha sido tocado y tiene contenido */
+        .input-group input.touched:required:valid ~ .validation-icon { display: inline-block; }
+        .input-group input.touched:required:invalid ~ .validation-icon { display: inline-block; }
+
+
+        .password-strength {
+            height: 5px;
+            background-color: #eee;
+            border-radius: 3px;
+            margin-top: 5px;
+            display: none; /* Lo mostraremos con JS */
+        }
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            background-color: red;
+            border-radius: 3px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+        .strength-text {
+            font-size: 0.8em;
+            margin-top: 3px;
+            display: block;
+            text-align: right;
+            color: #777;
+        }
+        .password-error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none; /* Oculto por defecto */
+        }
+
+        .form-actions {
+            text-align: right;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .form-actions button { margin-left: 10px; }
+
+        @media screen and (max-width: 768px) {
+            .controls { flex-direction: column; }
+            #searchInput { width: 100%; margin-bottom: 10px; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead tr { position: absolute; top: -9999px; left: -9999px; }
+            tr { border: 1px solid #ccc; margin-bottom:10px; }
+            td { 
+                border: none; border-bottom: 1px solid #eee; 
+                position: relative; padding-left: 45% !important; /* Important para sobreescribir */
+                white-space: normal; text-align: left;
+            }
+            td:before { 
+                position: absolute; top: 12px; left: 12px;
+                width: 40%; padding-right: 10px; 
+                white-space: nowrap; text-align: left; font-weight: bold;
+            }
+            td:nth-of-type(1):before { content: "ID"; }
+            td:nth-of-type(2):before { content: "Nombre"; }
+            td:nth-of-type(3):before { content: "Email"; }
+            td:nth-of-type(4):before { content: "Rol"; }
+            td:nth-of-type(5):before { content: "Acciones"; }
+            .actions-cell button { margin-bottom: 5px; display: block; width: 100%; }
+            .modal-content { width: 95%; max-height: 85vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Panel de Administración de Usuarios</h1>
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Buscar por nombre, email o N° Doc...">
+            <button id="addUserBtn" class="btn-primary"><i class="fas fa-plus"></i> Agregar Usuario</button>
+        </div>
+
+        <table id="userTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre Completo</th>
+                    <th>Email</th>
+                    <th>N° Documento</th>
+                    <th>Rol</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Filas se insertarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Agregar Usuario</h2>
+                <span class="close-button">×</span>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                
+                <div class="input-group"> <label for="fullname"><i class="fas fa-user"></i> Nombre Completo</label> <input type="text" id="fullname" name="fullname" placeholder="Ej: Juan Manuel Rodriguez" required> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="email"><i class="fas fa-envelope"></i> Correo Electrónico</label> <input type="email" id="email" name="email" placeholder="tu.correo@example.com" required> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="doc_type"><i class="fas fa-id-card"></i> Tipo de Documento</label> <select id="doc_type" name="doc_type" required> <option value="" selected disabled>Seleccione una opción</option> <option value="CC">Cédula de Ciudadanía (CC)</option> <option value="CE">Cédula de Extranjería (CE)</option> <option value="PEP">Permiso Especial de Permanencia (PEP)</option> <option value="PPT">Permiso por Protección Temporal (PPT)</option> <option value="RUT">Registro Único Tributario (RUT)</option> <option value="NIT">Número de Identificación Tributaria (NIT)</option> </select> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="doc_number"><i class="fas fa-hashtag"></i> Número de Documento</label> <input type="text" id="doc_number" name="doc_number" placeholder="Ingrese el número sin puntos ni comas" required> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="gender"><i class="fas fa-venus-mars"></i> Género</label> <select id="gender" name="gender" required> <option value="" selected disabled>Selecciona tu género</option> <option value="masculino">Masculino</option> <option value="femenino">Femenino</option> <option value="otro">Otro</option> <option value="no_especificado">Prefiero no decir</option> </select> <span class="validation-icon fas"></span> </div>
+                
+                <div class="input-group"> <label for="userRole"><i class="fas fa-user-shield"></i> Rol del Usuario</label> <select id="userRole" name="userRole" required> <option value="" selected disabled>Seleccione un rol</option> <option value="Administrador">Administrador</option> <option value="Editor">Editor</option> <option value="Visitante">Visitante</option> </select> <span class="validation-icon fas"></span> </div>
+
+                <div class="input-group"> <label for="password"><i class="fas fa-lock"></i> Contraseña</label> <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres"> <!-- No 'required' en edit --> <div class="password-strength"> <div class="strength-bar"></div> <span class="strength-text"></span> </div> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="confirm_password"><i class="fas fa-lock-open"></i> Confirmar Contraseña</label> <input type="password" id="confirm_password" name="confirm_password" placeholder="Repite la contraseña"> <!-- No 'required' en edit --> <span class="validation-icon fas"></span> <div id="password_error" class="password-error-message">Las contraseñas no coinciden</div> </div>
+                
+                <div class="input-group"> <label for="phone"><i class="fas fa-phone"></i> Número de Teléfono</label> <input type="tel" id="phone" name="phone" placeholder="Ej: 3001234567" required> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="address"><i class="fas fa-map-marker-alt"></i> Dirección </label> <input type="text" id="address" name="address" placeholder="Ej: Calle 10 # 20-30 Apto 101"> <span class="validation-icon fas"></span> </div>
+                <div class="input-group"> <label for="city"><i class="fas fa-city"></i> Ciudad </label> <input type="text" id="city" name="city" placeholder="Ej: Bogotá D.C."> <span class="validation-icon fas"></span> </div>
+
+                <div class="form-actions">
+                    <button type="button" id="cancelBtn" class="btn-secondary">Cancelar</button>
+                    <button type="submit" id="saveBtn" class="btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let users = [
+            { id: 1, fullname: 'Ana María López', email: 'ana.lopez@example.com', doc_type: 'CC', doc_number: '12345678', gender: 'femenino', role: 'Administrador', password_hash: 'hashed_pw1', phone: '3001112233', address: 'Calle Falsa 123', city: 'Bogotá' },
+            { id: 2, fullname: 'Carlos José Ruiz', email: 'carlos.ruiz@example.com', doc_type: 'CE', doc_number: '87654321', gender: 'masculino', role: 'Editor', password_hash: 'hashed_pw2', phone: '3109998877', address: 'Avenida Siempre Viva 742', city: 'Medellín' }
+        ];
+        let nextId = 3;
+        let editingUserId = null;
+
+        // DOM Selectors
+        const userTableBody = document.querySelector('#userTable tbody');
+        const addUserBtn = document.getElementById('addUserBtn');
+        const userModal = document.getElementById('userModal');
+        const closeModalBtn = document.querySelector('.close-button');
+        const userForm = document.getElementById('userForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const searchInput = document.getElementById('searchInput');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Form Inputs
+        const userIdInput = document.getElementById('userId');
+        const fullnameInput = document.getElementById('fullname');
+        const emailInput = document.getElementById('email');
+        const docTypeInput = document.getElementById('doc_type');
+        const docNumberInput = document.getElementById('doc_number');
+        const genderInput = document.getElementById('gender');
+        const userRoleInput = document.getElementById('userRole');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+        const phoneInput = document.getElementById('phone');
+        const addressInput = document.getElementById('address');
+        const cityInput = document.getElementById('city');
+        const passwordErrorMsg = document.getElementById('password_error');
+
+        // "Touched" logic for better UX with validation icons
+        const formInputsForTouched = userForm.querySelectorAll('input[required], select[required]');
+        formInputsForTouched.forEach(input => {
+            input.addEventListener('blur', () => input.classList.add('touched'));
+            input.addEventListener('input', () => { // Also add touched on input if not already
+                 if (!input.classList.contains('touched')) {
+                    input.classList.add('touched');
+                 }
+            });
+        });
+
+        // --- Functions ---
+        const renderTable = (filter = '') => {
+            userTableBody.innerHTML = '';
+            const searchTerm = filter.toLowerCase().trim();
+            
+            const filteredUsers = users.filter(user => 
+                user.fullname.toLowerCase().includes(searchTerm) || 
+                user.email.toLowerCase().includes(searchTerm) ||
+                user.doc_number.toLowerCase().includes(searchTerm) ||
+                user.role.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredUsers.length === 0) {
+                 const row = userTableBody.insertRow();
+                 const cell = row.insertCell();
+                 cell.colSpan = 6; // Ajustado al número de columnas
+                 cell.textContent = users.length === 0 ? "No hay usuarios registrados." : "No se encontraron usuarios con ese criterio.";
+                 cell.style.textAlign = "center";
+                 cell.style.padding = "20px";
+                 cell.style.fontStyle = "italic";
+            }
+
+            filteredUsers.forEach(user => {
+                const row = userTableBody.insertRow();
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.fullname}</td>
+                    <td>${user.email}</td>
+                    <td>${user.doc_type} ${user.doc_number}</td>
+                    <td>${user.role}</td>
+                    <td class="actions-cell">
+                        <button class="btn-warning edit-btn" data-id="${user.id}"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="btn-danger delete-btn" data-id="${user.id}"><i class="fas fa-trash"></i> Eliminar</button>
+                    </td>
+                `;
+            });
+        };
+
+        const openModal = (user = null) => {
+            userForm.reset();
+            passwordErrorMsg.style.display = 'none';
+            // Reset 'touched' state for inputs
+            formInputsForTouched.forEach(input => input.classList.remove('touched'));
+            // Make passwords non-required by default, adjust if new user
+            passwordInput.required = false;
+            confirmPasswordInput.required = false;
+
+            if (user) { // Editing
+                modalTitle.textContent = 'Editar Usuario';
+                editingUserId = user.id;
+                userIdInput.value = user.id;
+                fullnameInput.value = user.fullname;
+                emailInput.value = user.email;
+                docTypeInput.value = user.doc_type;
+                docNumberInput.value = user.doc_number;
+                genderInput.value = user.gender;
+                userRoleInput.value = user.role;
+                phoneInput.value = user.phone || ''; // Handle undefined
+                addressInput.value = user.address || '';
+                cityInput.value = user.city || '';
+                // No pre-llenar contraseñas por seguridad
+                passwordInput.placeholder = "Dejar en blanco para no cambiar";
+                confirmPasswordInput.placeholder = "Dejar en blanco para no cambiar";
+            } else { // Adding
+                modalTitle.textContent = 'Agregar Usuario';
+                editingUserId = null;
+                userIdInput.value = '';
+                passwordInput.required = true; // Contraseña es requerida para nuevos usuarios
+                confirmPasswordInput.required = true;
+                passwordInput.placeholder = "Mínimo 8 caracteres";
+                confirmPasswordInput.placeholder = "Repite la contraseña";
+            }
+            userModal.style.display = 'flex';
+            fullnameInput.focus(); // Focus on the first field
+        };
+
+        const closeModal = () => {
+            userModal.style.display = 'none';
+            userForm.reset();
+            passwordErrorMsg.style.display = 'none';
+            editingUserId = null;
+            // Reset 'touched' state for inputs
+            formInputsForTouched.forEach(input => input.classList.remove('touched'));
+        };
+
+        const saveUser = (event) => {
+            event.preventDefault();
+            
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Validar contraseñas si se están estableciendo/cambiando
+            if (password || confirmPassword || editingUserId === null) { // Validar si se ingresó algo en pw o es nuevo user
+                if (password !== confirmPassword) {
+                    passwordErrorMsg.textContent = 'Las contraseñas no coinciden.';
+                    passwordErrorMsg.style.display = 'block';
+                    confirmPasswordInput.focus();
+                    return;
+                }
+                 if (editingUserId === null && (!password || password.length < 8)) { // Requerir para nuevo usuario y longitud mínima
+                    passwordErrorMsg.textContent = 'La contraseña es obligatoria y debe tener al menos 8 caracteres.';
+                    passwordErrorMsg.style.display = 'block';
+                    passwordInput.focus();
+                    return;
+                }
+                if (password && password.length > 0 && password.length < 8) { // Solo si se intenta cambiar, validar longitud
+                    passwordErrorMsg.textContent = 'La contraseña debe tener al menos 8 caracteres.';
+                    passwordErrorMsg.style.display = 'block';
+                    passwordInput.focus();
+                    return;
+                }
+
+            }
+            passwordErrorMsg.style.display = 'none';
+
+            const userData = {
+                fullname: fullnameInput.value.trim(),
+                email: emailInput.value.trim(),
+                doc_type: docTypeInput.value,
+                doc_number: docNumberInput.value.trim(),
+                gender: genderInput.value,
+                role: userRoleInput.value,
+                phone: phoneInput.value.trim(),
+                address: addressInput.value.trim(),
+                city: cityInput.value.trim(),
+                // No guardar contraseñas en texto plano, idealmente se hashean en backend.
+                // Para este demo, si se provee password, se actualiza (conceptual_password_hash).
+            };
+
+            if (editingUserId) {
+                const userIndex = users.findIndex(u => u.id === editingUserId);
+                if (userIndex > -1) {
+                    users[userIndex] = { ...users[userIndex], ...userData };
+                    if (password) { // Solo actualizar "hash" si se proveyó una nueva contraseña
+                        users[userIndex].password_hash = `hashed_${password}_${Date.now()}`; // Simulación de hash
+                    }
+                }
+            } else {
+                users.push({ 
+                    id: nextId++, 
+                    ...userData,
+                    password_hash: `hashed_${password}_${Date.now()}` // Simulación de hash
+                });
+            }
+            
+            renderTable(searchInput.value);
+            closeModal();
+        };
+
+        const handleEdit = (id) => {
+            const userToEdit = users.find(user => user.id === id);
+            if (userToEdit) {
+                openModal(userToEdit);
+            }
+        };
+        
+        const handleDelete = (id) => {
+            const userName = users.find(u => u.id === id)?.fullname || `ID ${id}`;
+            if (confirm(`¿Estás seguro de que quieres eliminar al usuario "${userName}"?`)) {
+                users = users.filter(user => user.id !== id);
+                renderTable(searchInput.value);
+            }
+        };
+
+        // --- Event Listeners ---
+        addUserBtn.addEventListener('click', () => openModal());
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (event) => {
+            if (event.target === userModal) closeModal();
+        });
+        userForm.addEventListener('submit', saveUser);
+
+        userTableBody.addEventListener('click', (event) => {
+            const targetButton = event.target.closest('button');
+            if (!targetButton) return;
+
+            if (targetButton.classList.contains('edit-btn')) {
+                const userId = parseInt(targetButton.dataset.id);
+                handleEdit(userId);
+            }
+            if (targetButton.classList.contains('delete-btn')) {
+                const userId = parseInt(targetButton.dataset.id);
+                handleDelete(userId);
+            }
+        });
+        
+        searchInput.addEventListener('input', (event) => {
+            renderTable(event.target.value);
+        });
+
+        // Password confirmation check (real-time-ish)
+        confirmPasswordInput.addEventListener('input', () => {
+            if (passwordInput.value !== confirmPasswordInput.value && confirmPasswordInput.value !== '') {
+                passwordErrorMsg.textContent = 'Las contraseñas no coinciden.';
+                passwordErrorMsg.style.display = 'block';
+            } else {
+                passwordErrorMsg.style.display = 'none';
+            }
+        });
+        passwordInput.addEventListener('input', () => { // also check if confirm has value
+             if (confirmPasswordInput.value !== '' && passwordInput.value !== confirmPasswordInput.value) {
+                passwordErrorMsg.textContent = 'Las contraseñas no coinciden.';
+                passwordErrorMsg.style.display = 'block';
+            } else if (passwordInput.value === confirmPasswordInput.value) {
+                 passwordErrorMsg.style.display = 'none';
+            }
+        });
+
+        // --- Initialization ---
+        renderTable(); 
+    });
+    </script>
+</body>
+</html>
