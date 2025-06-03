@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect
-#agregado
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth.models import User
 from .models import usuario, FacturaSubida
 from .forms import usuarioForm
+from django.contrib.auth import logout
+from django.shortcuts import redirect
 
+def user_logout(request):
+    logout(request)
+    return redirect('login')  # Cambia 'login' por el nombre de tu url de login si es diferente
 def inicio(request):
     return render(request, 'paginas/index.html')
 
@@ -47,18 +52,23 @@ def cambiarContra(request):
 def confirmarContra(request):
     return render (request,'paginas/confirmarContraseña.html')
 
+@login_required
 def paginaPrincipal(request):
     return render (request,'paginas/paginaPrincipal.html')
 
+@login_required
 def perfil(request):
     return render (request,'paginas/perfil.html')
 
+@login_required
 def graficas(request):
     return render (request,'paginas/graficas.html')
 
+@login_required
 def leerFacturas(request):
     return render (request,'paginas/leerFacturas.html')
 
+@login_required
 def notificaciones(request):
     return render (request,'paginas/notificaciones.html')
 

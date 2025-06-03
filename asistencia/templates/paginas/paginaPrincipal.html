@@ -139,7 +139,7 @@
 <br><br>
     <main class="container">
         <section class="welcome-section">
-            <h2>Bienvenido, Deiby Rodriguez!</h2>
+            <h2>Bienvenido, {{ user.get_full_name|default:user.username }}!</h2>
             <p>Gestiona tus facturas y calcula tu IVA fácilmente.</p>
         </section>
 
