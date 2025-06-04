@@ -184,8 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const actualPasswordInput = loginForm.querySelector('input[name="password"]');
 
     if (actualUsernameInput && !actualUsernameInput.placeholder) {
-        actualUsernameInput.placeholder = 'Nombre de usuario';
+        actualUsernameInput.placeholder = 'Documento';
     }
+
+    // Cambiar etiquetas visibles de nombre/correo/usuario a Documento
+    const usernameLabels = document.querySelectorAll('label[for="username"], label[for="id_username"]');
+    usernameLabels.forEach(label => {
+        label.textContent = 'Documento';
+    });
     if (actualPasswordInput && !actualPasswordInput.placeholder) {
         actualPasswordInput.placeholder = 'Contraseña';
     }
