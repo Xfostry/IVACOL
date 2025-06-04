@@ -58,7 +58,12 @@ def paginaPrincipal(request):
 
 @login_required
 def perfil(request):
-    return render (request,'paginas/perfil.html')
+    from .models import usuario
+    try:
+        usuario_obj = usuario.objects.get(nodocumento=request.user.username)
+    except usuario.DoesNotExist:
+        usuario_obj = None
+    return render(request, 'paginas/perfil.html', {'usuario': usuario_obj})
 
 @login_required
 def graficas(request):
@@ -189,6 +194,23 @@ def registrarse(request):
             email=email,
             password=password,
             first_name=fullname
+        )
+
+        # Crear el usuario en el modelo personalizado
+        from .models import usuario
+        usuario.objects.create(
+            nombres=fullname,
+            apellidos="",  # Si tienes un campo para apellidos separado, sepáralo de fullname
+            idtipodocumento=1,  # Ajusta según tu lógica de tipos de documento
+            nodocumento=doc_number,
+            idgenero=1,  # Ajusta según tu lógica de géneros
+            idciudad=1,  # Ajusta según tu lógica de ciudades
+            numero=phone,
+            correo=email,
+            contrasena=password,  # Lo ideal es guardar la contraseña encriptada o dejarla vacía aquí
+            direccion=address,
+            idrol=2,  # Ajusta según tu lógica de roles
+            # fechaIngreso se puede dejar en blanco o poner la fecha actual
         )
 
         messages.success(request, 'Usuario registrado exitosamente. Ahora puedes iniciar sesión.')

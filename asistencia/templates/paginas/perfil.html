@@ -306,33 +306,33 @@ body.dark-mode .btn-secondary:hover {
     <div class="profile-page-wrapper">
         <div class="profile-card" id="profile-card">
             <div class="profile-header">
-                <h1 class="user-name display-field" id="display-user-fullname">Deiby Rodriguez Avila</h1>
-                <input type="text" class="edit-input user-name" id="input-user-fullname" aria-label="Nombre completo">
+                <h1 class="user-name display-field" id="display-user-fullname">{{ usuario.nombres }} {{ usuario.apellidos }}</h1>
+                <input type="text" class="edit-input user-name" id="input-user-fullname" aria-label="Nombre completo" value="{{ usuario.nombres }} {{ usuario.apellidos }}">
 
-                <p class="user-role display-field" id="display-user-company">Programador</p>
-                <input type="text" class="edit-input user-role" id="input-user-company" aria-label="Rol o empresa">
+                <p class="user-role display-field" id="display-user-company">Usuario</p>
+                <input type="text" class="edit-input user-role" id="input-user-company" aria-label="Rol o empresa" value="Usuario">
             </div>
 
             <div class="profile-details">
                 <div class="detail-item" id="user-email-container">
                     <i class="fas fa-envelope"></i>
-                    <span class="display-field"><a href="mailto:deibyr@gmail.com" id="display-user-email-link">deibyr@gmail.com</a></span>
-                    <input type="email" class="edit-input" id="input-user-email" aria-label="Correo electrónico">
+                    <span class="display-field"><a href="mailto:{{ usuario.correo }}" id="display-user-email-link">{{ usuario.correo }}</a></span>
+                    <input type="email" class="edit-input" id="input-user-email" aria-label="Correo electrónico" value="{{ usuario.correo }}">
                 </div>
                 <div class="detail-item" id="user-phone-container">
                     <i class="fas fa-phone-alt"></i>
-                    <span class="display-field" id="display-user-phone">320 5681534</span>
-                    <input type="tel" class="edit-input" id="input-user-phone" aria-label="Teléfono">
+                    <span class="display-field" id="display-user-phone">{{ usuario.numero|default:'Sin teléfono' }}</span>
+                    <input type="tel" class="edit-input" id="input-user-phone" aria-label="Teléfono" value="{{ usuario.numero|default:'' }}">
                 </div>
                 <div class="detail-item" id="user-nif-container">
                      <i class="fas fa-id-card"></i>
-                     <span class="display-field"><strong>C.C:</strong> <span id="display-user-nif">1004345721</span></span>
-                     <input type="text" class="edit-input" id="input-user-nif" aria-label="NIF/CIF">
+                     <span class="display-field"><strong>C.C:</strong> <span id="display-user-nif">{{ usuario.nodocumento }}</span></span>
+                     <input type="text" class="edit-input" id="input-user-nif" aria-label="NIF/CIF" value="{{ usuario.nodocumento }}">
                 </div>
                  <div class="detail-item" id="user-address-container">
                     <i class="fas fa-map-marker-alt"></i>
-                    <span class="display-field" id="display-user-address">Calle 140c 94d 38</span>
-                     <input type="text" class="edit-input" id="input-user-address" aria-label="Dirección">
+                    <span class="display-field" id="display-user-address">{{ usuario.direccion|default:'Sin dirección' }}</span>
+                     <input type="text" class="edit-input" id="input-user-address" aria-label="Dirección" value="{{ usuario.direccion|default:'' }}">
                 </div>
                 <div class="detail-item" id="user-joined-container">
                     <i class="fas fa-calendar-alt"></i>
