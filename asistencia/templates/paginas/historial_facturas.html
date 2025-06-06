@@ -141,7 +141,7 @@
                     <th>Fecha</th>
                     <th class="numero-header">Número</th>
                     <th>Descripción</th>
-                    <th class="nit-header">NIT</th>       <!-- <<< NUEVA CABECERA NIT >>> -->
+                    <th class="nit-header">NIT</th>
                     <th>Categoría</th>
                     <th class="numero-header">Neto (COP)</th>
                     <th class="numero-header">IVA (19%) (COP)</th>
@@ -149,14 +149,33 @@
                     <th class="acciones-header">Acciones</th>
                 </tr>
             </thead>
-            <tbody id="tabla-historial-body">
-                <!-- Filas generadas por JS, ahora incluirán el NIT -->
+            <tbody>
+                {% if facturas %}
+                    {% for factura in facturas %}
+                        <tr>
+                            <td>{{ factura.fecha|date:"d/m/Y" }}</td>
+                            <td class="numero">{{ factura.numero }}</td>
+                            <td>{{ factura.descripcion }}</td>
+                            <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
+                            <td>{{ factura.categoria }}</td>
+                            <td class="numero">{{ factura.monto|floatformat:0 }}</td>
+                            <td class="numero">{{ factura.iva|floatformat:0 }}</td>
+                            <td class="numero">{{ factura.total|floatformat:0 }}</td>
+                            <td class="acciones-cell">
+                                {% if factura.id %}
+                                <form method="post" action="{% url 'borrar_factura' factura.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-button-historial delete" title="Borrar" onclick="return confirm('¿Seguro que deseas borrar esta factura?');">🗑️</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="9" style="text-align:center;">No hay facturas registradas.</td></tr>
+                {% endif %}
             </tbody>
         </table>
-    </div>
-
-    <div id="mensaje-vacio" class="mensaje-vacio oculto">
-        <p>No se encontraron datos de facturas guardados en este navegador.</p>
     </div>
 
 </div>

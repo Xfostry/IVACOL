@@ -42,9 +42,15 @@ class Administrador(models.Model):
 
 class FacturaSubida(models.Model):
     usuario = models.ForeignKey(usuario, on_delete=models.CASCADE, related_name='facturas_subidas')
-    archivo = models.FileField(upload_to='facturas/')
+    numero = models.CharField(max_length=50, default="")
+    nit = models.CharField(max_length=30, blank=True, null=True, default="")
+    fecha = models.DateField(default="2000-01-01")
+    categoria = models.CharField(max_length=50, default="Otros")
+    monto = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    tipo_monto = models.CharField(max_length=10, choices=[('neto', 'Neto'), ('total', 'Total')], default="neto")
+    archivo = models.FileField(upload_to='facturas/', blank=True, null=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)
     descripcion = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"Factura de {self.usuario.nombres} subida el {self.fecha_subida}"
+        return f"Factura {self.numero} de {self.usuario.nombres} subida el {self.fecha_subida}"

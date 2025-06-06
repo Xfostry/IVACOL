@@ -368,9 +368,15 @@
              closeBtn.onclick = function() { modal.style.display = "none"; invoiceForm.reset(); };
              window.onclick = function(event) { if (event.target == modal) { modal.style.display = "none"; invoiceForm.reset(); } };
          }
-         if (invoiceForm && modal) { /* Listener para submit del form */
-             invoiceForm.addEventListener('submit', function(event) {
+         if (invoiceForm && modal && !window.listenerFacturaAgregado) { /* Listener para submit del form */
+             window.listenerFacturaAgregado = true;
+             let enviandoFactura = false;
+             invoiceForm.addEventListener('submit', async function(event) {
                 event.preventDefault();
+                if (enviandoFactura) return;
+                enviandoFactura = true;
+                const submitBtn = invoiceForm.querySelector('button[type="submit"]');
+                if (submitBtn) submitBtn.disabled = true;
                 const dateInput = document.getElementById('invoice-date').value;
                 const numberInput = document.getElementById('invoice-number').value.trim();
                 const descriptionInput = document.getElementById('invoice-description').value.trim();
@@ -393,20 +399,27 @@
                  iva = parseFloat((neto * IVA_RATE).toFixed(2));
                  acumulado = parseFloat((neto + iva).toFixed(2));
 
-                 const newInvoice = { date: dateInput, numero: numberInput, label: descriptionInput, nit: nitInput, category: categoryInput, neto, iva, acumulado };
-                 facturasActuales.push(newInvoice);
-
+                 // Enviar al backend
+                 const formData = new FormData(invoiceForm);
                  try {
-                     localStorage.setItem(STORAGE_KEY_PRINCIPAL, JSON.stringify(facturasActuales));
-                     alert('¡Factura guardada!');
-                     actualizarResumenGeneral();
-                     actualizarTablaDetallada();
-                     modal.style.display = "none";
-                     invoiceForm.reset();
-                 } catch (storageError) {
-                     console.error("Error al guardar:", storageError);
-                     facturasActuales.pop(); // Revertir si falla
-                     alert(storageError.name === 'QuotaExceededError' ? 'Error: Almacenamiento lleno.' : 'Error al guardar.');
+                     const response = await fetch('/asistencia/subir_factura/', {
+                         method: 'POST',
+                         body: formData,
+                         credentials: 'include'
+                     });
+                     const result = await response.json();
+                     if (result.success) {
+                         modal.style.display = "none";
+                         invoiceForm.reset();
+                         setTimeout(function() {
+                             alert('¡Factura guardada en el servidor!');
+                         }, 100);
+                         // Opcional: actualizar la tabla desde el backend
+                     } else {
+                         alert('Error al guardar la factura: ' + (result.error || ''));
+                     }
+                 } catch (err) {
+                     alert('Error de red o servidor.');
                  }
              });
          }

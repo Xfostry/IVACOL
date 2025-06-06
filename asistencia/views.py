@@ -1,11 +1,54 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.models import User
 from .models import usuario, FacturaSubida
 from .forms import usuarioForm
 from django.contrib.auth import logout
 from django.shortcuts import redirect
+
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
+
+@csrf_exempt
+@login_required
+def subir_factura(request):
+    if request.method == 'POST':
+        try:
+            usuario_obj = usuario.objects.get(nodocumento=request.user.username)
+        except usuario.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Usuario no encontrado'}, status=400)
+
+        descripcion = request.POST.get('invoice-description', '')
+        numero = request.POST.get('invoice-number', '')
+        nit = request.POST.get('invoice-nit', '')
+        fecha = request.POST.get('invoice-date', '')
+        categoria = request.POST.get('invoice-category', '')
+        monto = request.POST.get('invoice-amount', '')
+        tipo_monto = request.POST.get('amount-type', 'neto')
+        archivo = request.FILES.get('invoice-file', None)
+
+        try:
+            monto_decimal = float(monto)
+        except Exception:
+            monto_decimal = 0
+
+        factura = FacturaSubida(
+            usuario=usuario_obj,
+            descripcion=descripcion,
+            numero=numero,
+            nit=nit,
+            fecha=fecha if fecha else None,
+            categoria=categoria,
+            monto=monto_decimal,
+            tipo_monto=tipo_monto,
+        )
+        if archivo:
+            factura.archivo = archivo
+        factura.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
 def user_logout(request):
     logout(request)
@@ -147,17 +190,48 @@ def user_login(request):
     return render(request, "paginas/login.html", {"form": form})
 
 
+@login_required
 def historial_facturas(request):
-    """
-    Muestra el historial de facturas del usuario logueado, más recientes primero.
-    """
-    # Filtrar solo las facturas del usuario autenticado
-    facturas_usuario = FacturaSubida.objects.filter(usuario=request.user).order_by('-fecha_subida')
+    from .models import usuario, FacturaSubida
+    try:
+        usuario_obj = usuario.objects.get(nodocumento=request.user.username)
+    except usuario.DoesNotExist:
+        usuario_obj = None
+
+    facturas_usuario = FacturaSubida.objects.filter(usuario=usuario_obj).order_by('-fecha_subida') if usuario_obj else []
+    facturas_context = []
+    for f in facturas_usuario:
+        iva = float(f.monto) * 0.19
+        total = float(f.monto) + iva
+        facturas_context.append({
+            'id': f.id,
+            'fecha': f.fecha,
+            'numero': f.numero,
+            'descripcion': f.descripcion,
+            'nit': f.nit,
+            'categoria': f.categoria,
+            'monto': f.monto,
+            'iva': iva,
+            'total': total,
+        })
     context = {
-        'facturas': facturas_usuario,
+        'facturas': facturas_context,
         'titulo_pagina': 'Historial de Facturas Subidas'
     }
     return render(request, 'paginas/historial_facturas.html', context)
+
+@login_required
+def borrar_factura(request, id):
+    from .models import usuario, FacturaSubida
+    try:
+        usuario_obj = usuario.objects.get(nodocumento=request.user.username)
+    except usuario.DoesNotExist:
+        return redirect('historial_facturas')
+    factura = get_object_or_404(FacturaSubida, usuario=usuario_obj, id=id)
+    if request.method == 'POST':
+        factura.delete()
+        return redirect('historial_facturas')
+    return redirect('historial_facturas')
 
 
 
@@ -234,58 +308,6 @@ def registrarse(request):
 
 
 
-
-
-
-
-
-
-"""def login_view(request):
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                auth_login(request, user)
-                # Redirigir a la página principal después del login exitoso
-                # Cambia 'nombre_url_dashboard' por el name de tu URL principal
-                return redirect('nombre_url_dashboard')
-            else:
-                # Usuario inválido (aunque is_valid pasó, authenticate falló)
-                 # AuthenticationForm maneja este error internamente, no se necesita mensaje extra usualmente.
-                 # Si usas un form personalizado, aquí pondrías:
-                 # messages.error(request, 'Usuario o contraseña incorrectos.')
-                 pass # Dejar que el re-renderizado muestre el error del form
-        else:
-            # Formulario inválido (ej: campos vacíos si no validaste en cliente, u otros errores)
-            # Los errores ya están en el objeto 'form'
-             messages.error(request, 'Por favor corrige los errores indicados.') # Mensaje genérico opcional
-    else:
-        form = AuthenticationForm() # Formulario vacío para GET
-
-    # Re-renderizar la misma plantilla con el formulario (que puede tener errores)
-    return render(request, 'IVACO/asistencia/templates/paginas/login.html', {'form': form})
-
-# Asegúrate de tener una URL mapeada a esta vista en urls.py
-# path('login/', views.login_view, name='login'),
-# Y una URL para el dashboard
-# path('dashboard/', views.dashboard_view, name='nombre_url_dashboard'),
-
-
- # Importa tu modelo
-
-# ¡Muy importante para la seguridad!
-def historial_facturas(request):
-    # Filtra las facturas para obtener solo las del usuario que ha iniciado sesión
-    # facturas_usuario = FacturaSubida.objects.filter(usuario=request.user).order_by('-fecha_subida') # Más recientes primero
-
-    # context = {
-      #  'facturas': facturas_usuario,
-       # 'titulo_pagina': 'Historial de Facturas Subidas'
-    # }
-    return render(request, 'paginas/historial_facturas.html')"""
 
 
 
