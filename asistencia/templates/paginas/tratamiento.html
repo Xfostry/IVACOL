@@ -1,0 +1,132 @@
+{% extends "plantilla.html" %}
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Tratamiento de Datos Personales</title>
+    <style>
+        body {
+            background: #181c24;
+            color: #e0e0e0;
+        }
+        .tratamiento-container {
+            max-width: 480px;
+            margin: 80px auto 0 auto;
+            background: #232a36;
+            border-radius: 12px;
+            box-shadow: 0 6px 32px rgba(0,0,0,0.33);
+            padding: 32px 28px 24px 28px;
+            font-family: inherit;
+        }
+        .tratamiento-container h2 {
+            text-align: center;
+            margin-top: 0;
+            font-size: 1.3em;
+            color: #fff;
+        }
+        .tratamiento-container p {
+            font-size: 1em;
+            line-height: 1.6;
+            margin-bottom: 22px;
+            color: #cfd8dc;
+        }
+        .mini-form {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .mini-form label {
+            margin-left: 8px;
+            font-size: 0.98em;
+            color: #b0bec5;
+        }
+        .mini-form input[type="checkbox"] {
+            margin-top: 2px;
+        }
+        .mini-form button {
+            margin-top: 18px;
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 28px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        /* Modal propio, sin clases globales */
+        #modal-confirmacion {
+            display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100vw; height: 100vh;
+            background: rgba(20,24,40,0.88);
+        }
+        #modal-confirmacion .modal-content {
+            background: #232a36; color: #e0e0e0; max-width: 370px; margin: 10% auto; padding: 28px 24px 18px 24px;
+            border-radius: 10px; position: relative; box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+            text-align: center;
+        }
+        #modal-confirmacion .close-button {
+            position: absolute; top: 10px; right: 18px; font-size: 2em; color: #90a4ae; cursor: pointer; font-weight: bold;
+        }
+        #modal-confirmacion button {
+            margin-top: 18px;
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 22px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="tratamiento-container">
+    <h2>Tratamiento de Datos Personales</h2>
+    <p>
+        Tus datos personales serán tratados conforme a la Ley 1581 de 2012 y normas concordantes. La información que proporciones será utilizada únicamente para la gestión de tu cuenta, el cumplimiento de obligaciones legales y la prestación de los servicios ofrecidos en esta plataforma.<br><br>
+        No compartiremos tu información con terceros sin tu consentimiento, salvo obligación legal. Puedes ejercer tus derechos de acceso, corrección, supresión y revocación contactándonos a través de los canales oficiales.<br><br>
+        Para más detalles, consulta nuestra política de privacidad completa disponible en el sitio web.
+    </p>
+    <form class="mini-form" id="form-tratamiento" autocomplete="off">
+        <div style="display: flex; align-items: flex-start;">
+            <input type="checkbox" id="acepto_datos" name="acepto_datos" required>
+            <label for="acepto_datos">He leído y acepto el tratamiento de mis datos personales.</label>
+        </div>
+        <button type="submit">Aceptar</button>
+    </form>
+</div>
+
+<!-- Modal de confirmación -->
+<div id="modal-confirmacion">
+    <div class="modal-content">
+        <span class="close-button" id="cerrar-modal">&times;</span>
+        <h3 style="margin-top:0;">¡Gracias!</h3>
+        <p>Has aceptado el tratamiento de tus datos personales.</p>
+        <button type="button" id="boton-cerrar-modal">Cerrar</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('form-tratamiento');
+    var modal = document.getElementById('modal-confirmacion');
+    var cerrarX = document.getElementById('cerrar-modal');
+    var cerrarBtn = document.getElementById('boton-cerrar-modal');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        window.location.href = '/registrarse/';
+    });
+    function cerrarModal() {
+        if (modal) modal.style.display = 'none';
+    }
+    if (cerrarX) cerrarX.onclick = cerrarModal;
+    if (cerrarBtn) cerrarBtn.onclick = cerrarModal;
+    window.addEventListener('click', function(e) {
+        if (modal && e.target === modal) cerrarModal();
+    });
+});
+</script>
+</body>
+</html>
+{% endblock %}

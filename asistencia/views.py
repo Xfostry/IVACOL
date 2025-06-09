@@ -74,6 +74,9 @@ def login(request):
 def registrarse(request):
     return render (request,'paginas/registrarse.html')
 
+def tratamiento(request):
+    return render (request,'paginas/tratamiento.html')
+
 def crud(request):
     return render (request,'paginas/crud.html')
 
