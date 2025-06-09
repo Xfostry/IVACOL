@@ -6,24 +6,40 @@
     <meta charset="UTF-8">
     <title>Tratamiento de Datos Personales</title>
     <style>
+        /* Fondo y estilo igual que login */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 100%; margin: 0; padding-top: 60px; }
         body {
-            background: #181c24;
+            font-family: 'Roboto', sans-serif;
+            min-height: calc(100vh - 60px);
+            display: flex; justify-content: center; align-items: center;
             color: #e0e0e0;
+            background: linear-gradient(-45deg, #0b001a, #1a0033, #0d0d2e, #001f3f);
+            background-size: 400% 400%;
+            animation: cosmicGradient 25s ease infinite;
+            padding: 20px; transition: background-color 0.3s ease, border-color 0.3s ease;
         }
+        @keyframes cosmicGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .tratamiento-container {
-            max-width: 480px;
-            margin: 80px auto 0 auto;
-            background: #232a36;
-            border-radius: 12px;
-            box-shadow: 0 6px 32px rgba(0,0,0,0.33);
-            padding: 32px 28px 24px 28px;
-            font-family: inherit;
+            max-width: 500px;
+            margin: 40px auto 0 auto;
+            background: rgba(10, 10, 30, 0.75);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(100, 150, 255, 0.1);
+            border: 1px solid rgba(100, 100, 220, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 40px 32px 28px 32px;
+            font-family: 'Roboto', sans-serif;
+            animation: floatForm 6s ease-in-out infinite alternate;
         }
+        @keyframes floatForm { from { transform: translateY(-5px);} to { transform: translateY(5px);} }
         .tratamiento-container h2 {
             text-align: center;
             margin-top: 0;
-            font-size: 1.3em;
-            color: #fff;
+            font-size: 2em;
+            color: #9dceff;
+            font-family: 'Orbitron', sans-serif;
+            text-shadow:0 0 8px rgba(157,206,255,0.7);
         }
         .tratamiento-container p {
             font-size: 1em;
@@ -39,22 +55,34 @@
         }
         .mini-form label {
             margin-left: 8px;
-            font-size: 0.98em;
-            color: #b0bec5;
+            font-size: 1em;
+            color: #b0c4de;
         }
         .mini-form input[type="checkbox"] {
             margin-top: 2px;
         }
         .mini-form button {
             margin-top: 18px;
-            background: #2980b9;
+            background: linear-gradient(45deg,#4a00e0,#8e2de2);
             color: #fff;
             border: none;
-            border-radius: 5px;
-            padding: 10px 28px;
-            font-size: 1em;
+            border-radius: 8px;
+            padding: 12px 32px;
+            font-size: 1.1em;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
             cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(142,45,226,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation:pulseButton 2s infinite ease-in-out;
         }
+        .mini-form button:disabled {
+            background:linear-gradient(45deg,#6c5b94,#8a6ca2); cursor:wait; opacity:0.7; animation:none; transform:none; box-shadow:none;
+        }
+        .mini-form button:not(:disabled):hover { transform:translateY(-3px); box-shadow:0 8px 20px rgba(142,45,226,0.6); }
+        .mini-form button:not(:disabled):active { transform:translateY(-1px); box-shadow:0 4px 10px rgba(142,45,226,0.5); }
+        @keyframes pulseButton { 0%{box-shadow:0 0 5px rgba(142,45,226,0.5);}50%{box-shadow:0 0 20px rgba(157,206,255,0.8);}100%{box-shadow:0 0 5px rgba(142,45,226,0.5);} }
         /* Modal propio, sin clases globales */
         #modal-confirmacion {
             display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100vw; height: 100vh;
