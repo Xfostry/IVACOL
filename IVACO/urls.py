@@ -35,6 +35,7 @@ urlpatterns = [
     #path('login/', views.login, name='login'), Es
     path('registrarse/', views.registrarse, name='registrarse'),
     path('tratamiento/', views.tratamiento, name='tratamiento'),
+    path('DeclaracionDatos/', views.DeclaracionDatos, name='DeclaracionDatos'),
     path('crud/', views.crud, name='crud'),
     path('contactenos/', views.contactenos, name='contactenos'),
     path('diccionario/', views.diccionario, name='diccionario'),

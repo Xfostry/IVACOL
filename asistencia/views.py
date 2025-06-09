@@ -77,6 +77,9 @@ def registrarse(request):
 def tratamiento(request):
     return render (request,'paginas/tratamiento.html')
 
+def DeclaracionDatos(request):
+    return render (request,'paginas/DeclaracionDatos.html')
+
 def crud(request):
     return render (request,'paginas/crud.html')
 
