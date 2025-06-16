@@ -6,7 +6,11 @@ from .models import usuario, FacturaSubida
 from .forms import usuarioForm
 from django.contrib.auth import logout
 from django.shortcuts import redirect
-
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login as auth_login # Renombrar login para evitar conflicto
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
+from .forms import LoginForm
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
@@ -79,7 +83,7 @@ def tratamiento(request):
 
 def DeclaracionDatos(request):
     return render (request,'paginas/DeclaracionDatos.html')
-
+@login_required
 def crud(request):
     return render (request,'paginas/crud.html')
 
@@ -162,13 +166,6 @@ def CrearAdm(request):
         formulario.save()
         return redirect('InicioAdm')
     return render(request, 'ingresos/crearAdm.html', {'formulario':formulario})
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login # Renombrar login para evitar conflicto
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages
-from .forms import LoginForm
-
 
 
 def user_login(request):
