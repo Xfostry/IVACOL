@@ -246,7 +246,19 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 
 def registrarse(request):
+    import requests
     if request.method == 'POST':
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': '6LeJ_2IrAAAAAK7R369_HJd3oOwNELHXwyfBfj12',
+            'response': recaptcha_response
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        if not result.get('success'):
+            messages.error(request, 'Captcha inválido. Intenta de nuevo.')
+            return render(request, 'paginas/registrarse.html')
+
         fullname = request.POST['fullname']
         email = request.POST['email']
         doc_type = request.POST['doc_type']
@@ -287,7 +299,7 @@ def registrarse(request):
             idciudad=1,  # Ajusta según tu lógica de ciudades
             numero=phone,
             correo=email,
-            contrasena=password,  # Lo ideal es guardar la contraseña encriptada o dejarla vacía aquí
+            contrasena=password,  # Lo ideal es guardar la contraseña encriptada o dejarla vacía aqu��
             direccion=address,
             idrol=2,  # Ajusta según tu lógica de roles
             # fechaIngreso se puede dejar en blanco o poner la fecha actual
