@@ -306,181 +306,163 @@ body.dark-mode .btn-secondary:hover {
     <div class="profile-page-wrapper">
         <div class="profile-card" id="profile-card">
             <div class="profile-header">
-                <h1 class="user-name display-field" id="display-user-fullname">{{ usuario.nombres }} {{ usuario.apellidos }}</h1>
-                <input type="text" class="edit-input user-name" id="input-user-fullname" aria-label="Nombre completo" value="{{ usuario.nombres }} {{ usuario.apellidos }}">
+                <h1 class="user-name display-field" id="display-user-fullname">{{ usuario.first_name }} {{ usuario.last_name }}</h1>
+                <input type="text" class="edit-input user-name" id="input-user-fullname" aria-label="Nombre completo" value="{{ usuario.first_name }} {{ usuario.last_name }}">
 
-                <p class="user-role display-field" id="display-user-company">Usuario</p>
-                <input type="text" class="edit-input user-role" id="input-user-company" aria-label="Rol o empresa" value="Usuario">
+                <p class="user-role display-field" id="display-user-company">{{ usuario.rol }}</p>
+                <input type="text" class="edit-input user-role" id="input-user-company" aria-label="Rol o empresa" value="{{ usuario.rol }}">
             </div>
 
             <div class="profile-details">
                 <div class="detail-item" id="user-email-container">
                     <i class="fas fa-envelope"></i>
-                    <span class="display-field"><a href="mailto:{{ usuario.correo }}" id="display-user-email-link">{{ usuario.correo }}</a></span>
-                    <input type="email" class="edit-input" id="input-user-email" aria-label="Correo electrónico" value="{{ usuario.correo }}">
+                    <span class="display-field"><a href="mailto:{{ usuario.email }}" id="display-user-email-link">{{ usuario.email }}</a></span>
+                    <input type="email" class="edit-input" id="input-user-email" aria-label="Correo electrónico" value="{{ usuario.email }}">
                 </div>
                 <div class="detail-item" id="user-phone-container">
                     <i class="fas fa-phone-alt"></i>
-                    <span class="display-field" id="display-user-phone">{{ usuario.numero|default:'Sin teléfono' }}</span>
-                    <input type="tel" class="edit-input" id="input-user-phone" aria-label="Teléfono" value="{{ usuario.numero|default:'' }}">
+                    <span class="display-field" id="display-user-phone">{{ usuario.telefono|default:'Sin teléfono' }}</span>
+                    <input type="tel" class="edit-input" id="input-user-phone" aria-label="Teléfono" value="{{ usuario.telefono|default:'' }}">
                 </div>
-                <div class="detail-item" id="user-nif-container">
+                <div class="detail-item" id="user-doc-container">
                      <i class="fas fa-id-card"></i>
-                     <span class="display-field"><strong>C.C:</strong> <span id="display-user-nif">{{ usuario.nodocumento }}</span></span>
-                     <input type="text" class="edit-input" id="input-user-nif" aria-label="NIF/CIF" value="{{ usuario.nodocumento }}">
+                     <span class="display-field"><strong>{{ usuario.tipo_documento|default:'Documento' }}:</strong> <span id="display-user-doc">{{ usuario.numero_documento }}</span></span>
+                     <input type="text" class="edit-input" id="input-user-doc" aria-label="Documento" value="{{ usuario.numero_documento }}">
                 </div>
-                 <div class="detail-item" id="user-address-container">
+                <div class="detail-item" id="user-genero-container">
+                    <i class="fas fa-venus-mars"></i>
+                    <span class="display-field" id="display-user-genero">{{ usuario.genero|default:'Sin especificar' }}</span>
+                    <input type="text" class="edit-input" id="input-user-genero" aria-label="Género" value="{{ usuario.genero|default:'' }}">
+                </div>
+                <div class="detail-item" id="user-ciudad-container">
+                    <i class="fas fa-city"></i>
+                    <span class="display-field" id="display-user-ciudad">{{ usuario.ciudad|default:'Sin ciudad' }}</span>
+                    <input type="text" class="edit-input" id="input-user-ciudad" aria-label="Ciudad" value="{{ usuario.ciudad|default:'' }}">
+                </div>
+                <div class="detail-item" id="user-address-container">
                     <i class="fas fa-map-marker-alt"></i>
                     <span class="display-field" id="display-user-address">{{ usuario.direccion|default:'Sin dirección' }}</span>
-                     <input type="text" class="edit-input" id="input-user-address" aria-label="Dirección" value="{{ usuario.direccion|default:'' }}">
+                    <input type="text" class="edit-input" id="input-user-address" aria-label="Dirección" value="{{ usuario.direccion|default:'' }}">
                 </div>
                 <div class="detail-item" id="user-joined-container">
                     <i class="fas fa-calendar-alt"></i>
-                    <span id="user-joined">Cliente desde: Marzo 2025</span>
+                    <span id="user-joined">Cliente desde: {{ usuario.fecha_ingreso|date:'F Y' }}</span>
                 </div>
             </div>
 
             <div class="profile-actions">
-                <!-- Botones modo visualización -->
-                 <div class="view-mode-controls"> <!-- Quitamos style inline -->
+                <div class="view-mode-controls">
                     <button class="btn btn-primary" id="edit-profile-btn">Editar Datos</button>
-                    <!-- Usamos un enlace normal para Ver Facturas, es más semántico -->
                     <a href="{% url 'historial_facturas' %}" class="btn btn-secondary" id="view-invoices-link">Ver Facturas</a>
-                </div>
-                <!-- Botones modo edición -->
-                <div class="edit-mode-controls">
-                    <button class="btn btn-success" id="save-changes-btn">Guardar Cambios</button>
-                    <button class="btn btn-danger" id="cancel-edit-btn">Cancelar</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal de edición de perfil -->
+    <div id="editProfileModal" class="modal" style="display:none; position:fixed; z-index:1000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); justify-content:center; align-items:center;">
+        <div class="profile-card modal-content" style="max-width:500px; width:95%; padding:35px 30px; position:relative;">
+            <h2 style="margin-bottom:20px; color:var(--primary-color, #2c3e50);">Editar Perfil</h2>
+            <form id="editProfileForm">
+                <div class="profile-details" style="margin-bottom:0; border-top:none; padding-top:0;">
+                    <div class="detail-item">
+                        <i class="fas fa-user"></i>
+                        <span><strong>Nombre:</strong> {{ usuario.first_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-user"></i>
+                        <span><strong>Apellido:</strong> {{ usuario.last_name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-id-card"></i>
+                        <span><strong>Tipo Documento:</strong> {{ usuario.tipo_documento }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-id-card"></i>
+                        <span><strong>Número Documento:</strong> {{ usuario.numero_documento }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-venus-mars"></i>
+                        <span><strong>Género:</strong> {{ usuario.genero }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-user-tag"></i>
+                        <span><strong>Rol:</strong> {{ usuario.rol }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-envelope"></i>
+                        <span><strong>Correo:</strong></span>
+                        <input type="email" id="edit-email" value="{{ usuario.email }}" style="flex:1; margin-left:8px;" />
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <span><strong>Teléfono:</strong></span>
+                        <input type="text" id="edit-telefono" value="{{ usuario.telefono }}" style="flex:1; margin-left:8px;" />
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-city"></i>
+                        <span><strong>Ciudad:</strong></span>
+                        <input type="text" id="edit-ciudad" value="{{ usuario.ciudad }}" style="flex:1; margin-left:8px;" />
+                    </div>
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span><strong>Dirección:</strong></span>
+                        <input type="text" id="edit-direccion" value="{{ usuario.direccion }}" style="flex:1; margin-left:8px;" />
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-top:20px;">
+                    <button type="button" class="btn btn-success" id="saveProfileModalBtn">Guardar</button>
+                    <button type="button" class="btn btn-danger" id="cancelProfileModalBtn">Cancelar</button>
+                </div>
+            </form>
+            <button id="closeProfileModalBtn" style="position:absolute; top:10px; right:15px; background:none; border:none; font-size:1.5em; color:#888; cursor:pointer;">&times;</button>
+        </div>
+    </div>
+
     <script>
-        // Espera a que el DOM esté completamente cargado
-        document.addEventListener('DOMContentLoaded', (event) => {
+    document.addEventListener('DOMContentLoaded', function() {
+        const editBtn = document.getElementById('edit-profile-btn');
+        const modal = document.getElementById('editProfileModal');
+        const closeBtn = document.getElementById('closeProfileModalBtn');
+        const cancelBtn = document.getElementById('cancelProfileModalBtn');
+        const saveBtn = document.getElementById('saveProfileModalBtn');
+        const form = document.getElementById('editProfileForm');
 
-            // --- Elementos del DOM ---
-            const profileCard = document.getElementById('profile-card');
-            const editBtn = document.getElementById('edit-profile-btn');
-            const saveBtn = document.getElementById('save-changes-btn');
-            const cancelBtn = document.getElementById('cancel-edit-btn');
-            // const viewInvoicesLink = document.getElementById('view-invoices-link'); // No necesitamos JS para este
-
-            // Campos Display
-            const displayFullName = document.getElementById('display-user-fullname');
-            const displayCompany = document.getElementById('display-user-company');
-            const displayEmailLink = document.getElementById('display-user-email-link');
-            const displayPhone = document.getElementById('display-user-phone');
-            const displayNif = document.getElementById('display-user-nif');
-            const displayAddress = document.getElementById('display-user-address');
-            const nifPrefixElement = displayNif.previousElementSibling; // Para mantener "C.C: "
-
-            // Campos Input
-            const inputFullName = document.getElementById('input-user-fullname');
-            const inputCompany = document.getElementById('input-user-company');
-            const inputEmail = document.getElementById('input-user-email');
-            const inputPhone = document.getElementById('input-user-phone');
-            const inputNif = document.getElementById('input-user-nif');
-            const inputAddress = document.getElementById('input-user-address');
-
-            // --- Claves para localStorage ---
-            const STORAGE_KEYS = {
-                fullname: 'profile_fullname',
-                company: 'profile_company',
-                email: 'profile_email',
-                phone: 'profile_phone',
-                nif: 'profile_nif',
-                address: 'profile_address'
-            };
-
-            // --- Funciones ---
-
-            // Carga los datos desde localStorage al iniciar
-            function loadProfileFromStorage() {
-                displayFullName.textContent = localStorage.getItem(STORAGE_KEYS.fullname) ?? displayFullName.textContent;
-                displayCompany.textContent = localStorage.getItem(STORAGE_KEYS.company) ?? displayCompany.textContent;
-                const storedEmail = localStorage.getItem(STORAGE_KEYS.email);
-                if (storedEmail) {
-                    displayEmailLink.textContent = storedEmail;
-                    displayEmailLink.href = 'mailto:' + storedEmail;
-                }
-                displayPhone.textContent = localStorage.getItem(STORAGE_KEYS.phone) ?? displayPhone.textContent;
-                displayNif.textContent = localStorage.getItem(STORAGE_KEYS.nif) ?? displayNif.textContent;
-                displayAddress.textContent = localStorage.getItem(STORAGE_KEYS.address) ?? displayAddress.textContent;
-
-                // Asegurar que el NIF/CIF tenga prefijo si existe (ej. si el span se reconstruye)
-                 if (nifPrefixElement && nifPrefixElement.tagName === 'STRONG' && !displayNif.parentElement.textContent.includes(nifPrefixElement.textContent)) {
-                     displayNif.parentElement.prepend(nifPrefixElement);
-                 }
+        // Mostrar modal
+        editBtn.addEventListener('click', function() {
+            modal.style.display = 'flex';
+        });
+        // Cerrar modal
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        cancelBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        // Guardar cambios (solo frontend)
+        saveBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Obtener valores
+            const email = document.getElementById('edit-email').value;
+            const telefono = document.getElementById('edit-telefono').value;
+            const ciudad = document.getElementById('edit-ciudad').value;
+            const direccion = document.getElementById('edit-direccion').value;
+            // Actualizar en la vista principal (solo frontend)
+            document.getElementById('display-user-email-link').textContent = email;
+            document.getElementById('display-user-email-link').href = 'mailto:' + email;
+            document.getElementById('display-user-phone').textContent = telefono;
+            document.getElementById('display-user-ciudad').textContent = ciudad;
+            document.getElementById('display-user-address').textContent = direccion;
+            // Cerrar modal
+            modal.style.display = 'none';
+        });
+        // Cerrar modal al hacer click fuera del contenido
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
             }
-
-            // Guarda los datos actuales (de los inputs) en localStorage
-            function saveProfileToStorage() {
-                localStorage.setItem(STORAGE_KEYS.fullname, inputFullName.value);
-                localStorage.setItem(STORAGE_KEYS.company, inputCompany.value);
-                localStorage.setItem(STORAGE_KEYS.email, inputEmail.value);
-                localStorage.setItem(STORAGE_KEYS.phone, inputPhone.value);
-                localStorage.setItem(STORAGE_KEYS.nif, inputNif.value);
-                localStorage.setItem(STORAGE_KEYS.address, inputAddress.value);
-                console.log("Datos guardados en localStorage.");
-            }
-
-            function enterEditMode() {
-                // Copiar valores actuales a los inputs
-                inputFullName.value = displayFullName.textContent;
-                inputCompany.value = displayCompany.textContent;
-                inputEmail.value = displayEmailLink.textContent;
-                inputPhone.value = displayPhone.textContent;
-                inputNif.value = displayNif.textContent; // Solo el número
-                inputAddress.value = displayAddress.textContent;
-
-                // Añadir clase 'editing'
-                profileCard.classList.add('editing');
-            }
-
-            function exitEditMode(saveChanges) {
-                if (saveChanges) {
-                    // Copiar valores de inputs a display
-                    displayFullName.textContent = inputFullName.value;
-                    displayCompany.textContent = inputCompany.value;
-                    displayEmailLink.textContent = inputEmail.value;
-                    displayEmailLink.href = 'mailto:' + inputEmail.value;
-                    displayPhone.textContent = inputPhone.value;
-                    displayNif.textContent = inputNif.value; // Actualiza solo el número
-                    displayAddress.textContent = inputAddress.value;
-
-                    // *** GUARDAR EN LOCALSTORAGE ***
-                    saveProfileToStorage();
-
-                    // alert('Cambios guardados (en el navegador). Recarga para probar la persistencia.');
-                } else {
-                    // No hacer nada, los inputs se descartarán visualmente
-                    console.log("Edición cancelada.");
-                }
-
-                // Quitar clase 'editing'
-                profileCard.classList.remove('editing');
-            }
-
-            // --- Inicialización y Event Listeners ---
-
-            // Cargar datos guardados al inicio
-            loadProfileFromStorage();
-
-            if (editBtn) {
-                editBtn.addEventListener('click', enterEditMode);
-            }
-
-            if (saveBtn) {
-                saveBtn.addEventListener('click', () => exitEditMode(true)); // Guardar
-            }
-
-            if (cancelBtn) {
-                cancelBtn.addEventListener('click', () => exitEditMode(false)); // Cancelar
-            }
-
-        }); // Fin del DOMContentLoaded
+        }
+    });
     </script>
 {% endblock %}
 </body>
