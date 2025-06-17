@@ -79,6 +79,22 @@ def registrarse(request):
     return render (request,'paginas/registrarse.html')
 
 def tratamiento(request):
+    import requests
+    from django.contrib import messages
+    if request.method == 'POST':
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        data = {
+            'secret': '6LdUPmQrAAAAADgEKB1dyBPNxWRt8L08JWOrBNCw',
+            'response': recaptcha_response,
+            'remoteip': request.META.get('REMOTE_ADDR')
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+        if result.get('success'):
+            messages.success(request, 'Captcha verificado correctamente.')
+            return redirect('registrarse')
+        else:
+            messages.error(request, 'Captcha inválido. Por favor, inténtalo de nuevo.')
     return render (request,'paginas/tratamiento.html')
 
 def DeclaracionDatos(request):

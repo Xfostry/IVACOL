@@ -85,6 +85,23 @@
                 color: #adb5bd; /* Un gris más suave para el texto */
              }
         </style>
+        <style>
+            .footer-ivacol {
+                position: fixed;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                background: rgba(10, 10, 30, 0.85);
+                color: #b0c4de;
+                text-align: center;
+                padding: 12px 0 10px 0;
+                font-size: 1em;
+                font-family: 'Orbitron', 'Roboto', sans-serif;
+                letter-spacing: 0.5px;
+                z-index: 2000;
+                box-shadow: 0 -2px 12px rgba(0,0,0,0.18);
+            }
+        </style>
     </head>
 
     <!-- La clase inicial del body dependerá de la preferencia guardada o 'light-mode' -->
@@ -198,12 +215,8 @@
         </main>
 
         {% block piePagina %}
-        <!-- mt-auto empuja el footer hacia abajo si el contenido es corto -->
-        <!-- Asegúrate que la clase 'piePag' exista en tu CSS o define estilos aquí -->
-        <footer class="piePag mt-auto py-3">
-             <div class="container">
-                <h6 style="text-align: center; margin-bottom: 0;">© 2025 Derechos Reservados.      IVACOL, Tu app para gestionar el Iva.</h6>
-             </div>
+        <footer class="footer-ivacol">
+            © 2025 Derechos Reservados.      IVACOL, Tu app para gestionar el Iva.
         </footer>
         {% endblock %}
 

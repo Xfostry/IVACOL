@@ -107,6 +107,15 @@
             cursor: pointer;
         }
     </style>
+    <style>
+        .captcha-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 18px 0 10px 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 <div class="tratamiento-container">
@@ -121,7 +130,10 @@
             <input type="checkbox" id="acepto_datos" name="acepto_datos" required>
             <label for="acepto_datos">He leído y acepto el tratamiento de mis datos personales.</label>
         </div>
-        <button type="submit">Aceptar</button>
+        <div class="captcha-container">
+            <div class="g-recaptcha" data-sitekey="6LdUPmQrAAAAABjJYRXhBu3I_TxsQkBhuLIL1VJD"></div>
+        </div>
+        <button type="submit" id="btn-aceptar" disabled>Aceptar</button>
     </form>
 </div>
 
@@ -141,7 +153,34 @@ document.addEventListener('DOMContentLoaded', function() {
     var modal = document.getElementById('modal-confirmacion');
     var cerrarX = document.getElementById('cerrar-modal');
     var cerrarBtn = document.getElementById('boton-cerrar-modal');
+    var btnAceptar = document.getElementById('btn-aceptar');
+    var checkbox = document.getElementById('acepto_datos');
+
+    function isCaptchaChecked() {
+        return grecaptcha && grecaptcha.getResponse().length > 0;
+    }
+
+    function updateButtonState() {
+        btnAceptar.disabled = !(checkbox.checked && isCaptchaChecked());
+    }
+
+    // Actualiza el estado del botón cuando cambia el checkbox
+    checkbox.addEventListener('change', updateButtonState);
+
+    // Callback global para reCAPTCHA
+    window.recaptchaCallback = function() {
+        updateButtonState();
+    };
+
+    // Revisa el captcha cada vez que cambia (por si el usuario lo resuelve después de marcar el checkbox)
+    setInterval(updateButtonState, 500);
+
     form.addEventListener('submit', function(e) {
+        if (!checkbox.checked || !isCaptchaChecked()) {
+            e.preventDefault();
+            alert('Debes aceptar el tratamiento de datos y resolver el captcha.');
+            return false;
+        }
         e.preventDefault();
         window.location.href = '/registrarse/';
     });
@@ -155,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
 {% endblock %}
