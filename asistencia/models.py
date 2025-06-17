@@ -1,56 +1,31 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.conf import settings
 
-# Modelos para el sistema IVACOL
-class usuario(models.Model):
-    id = models.AutoField(primary_key=True, help_text='identificador del usuario')
-    nombres = models.CharField(max_length=100, help_text='nombre del usuario')
-    apellidos = models.CharField(max_length=100, help_text='apellido del usuario')
-    idtipodocumento = models.IntegerField(help_text='identificador del tipo de documento')
-    nodocumento = models.CharField(max_length=20, unique=True, help_text='numero de documento')
-    idgenero = models.IntegerField(help_text='identificador de genero')
-    idciudad = models.IntegerField(help_text='identificador de la ciudad')
-    numero = models.CharField(max_length=20, help_text='numero de contacto')
-    correo = models.EmailField(max_length=100, unique=True, help_text='correo del usuario')
-    contrasena = models.CharField(max_length=255, help_text='contrasena encriptada')
-    direccion = models.CharField(max_length=100, help_text='direccion del usuario')
-    idrol = models.IntegerField(help_text='identificador del rol')
-    fechaIngreso = models.DateField(verbose_name="Fecha Ingreso", blank=True, null=True)
-
-class Persona(models.Model):
-    id = models.AutoField(primary_key=True)
-    nombres = models.CharField(max_length=100, verbose_name="Nombres")
-    apellidos = models.CharField(max_length=100, verbose_name="Apellidos")
-    tipo_documento = models.CharField(max_length=20, verbose_name="Tipo de Documento")
-    no_documento = models.CharField(max_length=20, unique=True, verbose_name="Número de Documento")
-    genero = models.CharField(max_length=20, verbose_name="Género")
-    ciudad = models.CharField(max_length=50, verbose_name="Ciudad")
-    numero = models.CharField(max_length=20, verbose_name="Número de Contacto")
-    correo = models.EmailField(max_length=100, unique=True, verbose_name="Correo")
-    direccion = models.CharField(max_length=100, verbose_name="Dirección")
+class Usuario(AbstractUser):
+    tipo_documento = models.CharField(max_length=20)
+    numero_documento = models.CharField(max_length=30, unique=True)
+    genero = models.CharField(max_length=20)
+    ciudad = models.CharField(max_length=50)
+    telefono = models.CharField(max_length=20)
+    direccion = models.CharField(max_length=100)
+    rol = models.CharField(max_length=20)
+    fecha_ingreso = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.nombres} {self.apellidos} ({self.no_documento})"
-
-class Administrador(models.Model):
-    id = models.AutoField(primary_key=True)
-    persona = models.OneToOneField(Persona, on_delete=models.CASCADE, related_name="administrador")
-    usuario = models.CharField(max_length=50, unique=True, verbose_name="Usuario")
-    contrasena = models.CharField(max_length=255, verbose_name="Contraseña")
-
-    def __str__(self):
-        return self.nombre
+        return f'{self.username} ({self.numero_documento})'
 
 class FacturaSubida(models.Model):
-    usuario = models.ForeignKey(usuario, on_delete=models.CASCADE, related_name='facturas_subidas')
-    numero = models.CharField(max_length=50, default="")
-    nit = models.CharField(max_length=30, blank=True, null=True, default="")
-    fecha = models.DateField(default="2000-01-01")
-    categoria = models.CharField(max_length=50, default="Otros")
-    monto = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    tipo_monto = models.CharField(max_length=10, choices=[('neto', 'Neto'), ('total', 'Total')], default="neto")
-    archivo = models.FileField(upload_to='facturas/', blank=True, null=True)
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    descripcion = models.CharField(max_length=255)
+    numero = models.CharField(max_length=50)
+    nit = models.CharField(max_length=50)
+    fecha = models.DateField(null=True, blank=True)
+    categoria = models.CharField(max_length=100)
+    monto = models.DecimalField(max_digits=12, decimal_places=2)
+    tipo_monto = models.CharField(max_length=20, default='neto')
+    archivo = models.FileField(upload_to='facturas/', null=True, blank=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)
-    descripcion = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return f"Factura {self.numero} de {self.usuario.nombres} subida el {self.fecha_subida}"
+        return f'Factura {self.numero} de {self.usuario}'

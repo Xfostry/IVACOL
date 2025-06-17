@@ -288,18 +288,17 @@
 
                         <tr class="">
                             <td scope="row">{{usuario.id}}</td>
-                            <td>{{usuario.nombres}}</td>
-                            <td>{{usuario.apellidos}}</td>
-                            <td>{{usuario.idtipodocumento}}</td>
-                            <td>{{usuario.nodocumento}}</td>
-                            <td>{{usuario.idgenero}}</td>
-                            <td>{{usuario.idciudad}}</td>
-                            <td>{{usuario.numero}}</td>
-                            <td>{{usuario.correo}}</td>
-                            <td>{{usuario.contrasena}}</td>
+                            <td>{{usuario.first_name}}</td>
+                            <td>{{usuario.last_name}}</td>
+                            <td>{{usuario.tipo_documento}}</td>
+                            <td>{{usuario.numero_documento}}</td>
+                            <td>{{usuario.genero}}</td>
+                            <td>{{usuario.ciudad}}</td>
+                            <td>{{usuario.telefono}}</td>
+                            <td>{{usuario.email}}</td>
                             <td>{{usuario.direccion}}</td>
-                            <td>{{usuario.idrol}}</td>
-                            <td>{{usuario.fechaIngreso}}</td>
+                            <td>{{usuario.rol}}</td>
+                            <td>{{usuario.fecha_ingreso}}</td>
                             <td>
                                 <a name="" id="" class="btn btn-primary" href="{% url 'editarAdm' usuario.id %}" role="button" placeholder="{{ campo.Label }}" value="{{ campo.value|default:'' }}" >Editar</a>
                                 <a name="" id="" class="btn btn-danger" href="{% url 'eliminarAdm' usuario.id %}" role="button" onclick="return confirm('¿Está seguro de borrar al usuario?')">Borrar</a>                     

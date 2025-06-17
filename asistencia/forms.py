@@ -1,14 +1,12 @@
-from .models import usuario
+from .models import Usuario
 from django import forms
 
-
-class usuarioForm(forms.ModelForm):
+class UsuarioForm(forms.ModelForm):
     class Meta:
-        model = usuario
+        model = Usuario
         fields = "__all__"
 
-
-class LoginForm(forms.Form):  # antes: forms.form
+class LoginForm(forms.Form):
     username = forms.CharField(
         widget=forms.TextInput(
             attrs={"placeholder": "nombre / correo", "class": "login_input"}
