@@ -260,16 +260,21 @@ from django.shortcuts import render, redirect
 
 def registrarse(request):
     if request.method == 'POST':
-        fullname = request.POST['fullname']
-        email = request.POST['email']
-        doc_type = request.POST['doc_type']
-        doc_number = request.POST['doc_number']
-        gender = request.POST['gender']
-        password = request.POST['password']
-        confirm_password = request.POST['confirm_password']
-        phone = request.POST['phone']
-        address = request.POST['address']
-        city = request.POST['city']
+        fullname = request.POST.get('fullname', '').strip()
+        email = request.POST.get('email', '').strip()
+        doc_type = request.POST.get('doc_type', '').strip()
+        doc_number = request.POST.get('doc_number', '').strip()
+        gender = request.POST.get('gender', '').strip()
+        password = request.POST.get('password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        address = request.POST.get('address', '').strip()
+        city = request.POST.get('city', '').strip()
+
+        # Validaciones de campos obligatorios
+        if not fullname or not email or not doc_type or not doc_number or not gender or not password or not confirm_password or not phone or not address or not city:
+            messages.error(request, 'Todos los campos son obligatorios. Por favor, completa el formulario.')
+            return redirect('registrarse')
 
         # Validaciones básicas (puedes agregar más)
         if password != confirm_password:
@@ -300,7 +305,7 @@ def registrarse(request):
             idciudad=1,  # Ajusta según tu lógica de ciudades
             numero=phone,
             correo=email,
-            contrasena=password,  # Lo ideal es guardar la contraseña encriptada o dejarla vacía aqu��
+            contrasena=password,  # Lo ideal es guardar la contraseña encriptada o dejarla vacía aquí
             direccion=address,
             idrol=2,  # Ajusta según tu lógica de roles
             # fechaIngreso se puede dejar en blanco o poner la fecha actual
