@@ -93,7 +93,7 @@ def registrarse(request):
             count += 1
 
         # Validaciones básicas
-        if not password or not first_name or not last_name or not tipo_documento or not numero_documento or not genero or not ciudad or not telefono or not direccion or not rol or not email:
+        if not password or not first_name or not last_name or not tipo_documento or not numero_documento or not genero or not ciudad or not telefono or not direccion or not email:
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect('registrarse')
         if Usuario.objects.filter(numero_documento=numero_documento).exists():
@@ -167,30 +167,31 @@ def confirmarContra(request):
 
 @login_required
 def paginaPrincipal(request):
-    return render(request, 'paginas/paginaPrincipal.html')
+    return render(request, 'ivapp/paginaPrincipal.html')
 
 @login_required
 def perfil(request):
-    try:
+    try: 
         usuario_obj = Usuario.objects.get(username=request.user.username)
     except Usuario.DoesNotExist:
         usuario_obj = None
-    return render(request, 'paginas/perfil.html', {'usuario': usuario_obj})
+    return render(request, 'ivapp/perfil.html', {'usuario': usuario_obj})
+
 
 @login_required
 def graficas(request):
-    return render(request, 'paginas/graficas.html')
+    return render(request, 'ivapp/graficas.html')
 
 @login_required
 def leerFacturas(request):
-    return render(request, 'paginas/leerFacturas.html')
+    return render(request, 'ivapp/leerFacturas.html')
 
 @login_required
 def notificaciones(request):
-    return render(request, 'paginas/notificaciones.html')
+    return render(request, 'ivapp/notificaciones.html')
 
 def facturasAdmin(request):
-    return render(request, 'paginas/facturasAdmin.html')
+    return render(request, 'ivapp/facturasAdmin.html')
 
 def UsuariosAdm(request):
     usuarios = Usuario.objects.all()
@@ -304,7 +305,7 @@ def historial_facturas(request):
         'facturas': facturas_context,
         'titulo_pagina': 'Historial de Facturas Subidas'
     }
-    return render(request, 'paginas/historial_facturas.html', context)
+    return render(request, 'ivapp/historial_facturas.html', context)
 
 @login_required
 def borrar_factura(request, id):

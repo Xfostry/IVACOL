@@ -1,0 +1,719 @@
+{% extends "plantillas.html" %}
+{% load static %}
+
+{% block titulo %} Panel de Control de Facturas (LocalStorage) {% endblock titulo %}
+
+{% block Contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_titulo %} Panel de Control de Facturas (LS) {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/facturaAdmin.css' %}">
+        
+</head>
+<body>
+<br><br><br> {# Ajustar según necesite el navbar fijo #}
+
+<div class="container-admin-control" id="admin-main-container">
+
+    <div class="titulo-contenedor">
+        <h1 class="titulo-principal-admin">Panel de Control de Facturas</h1>
+         <button class="btn-admin-accion" id="download-pdf-admin" title="Descargar PDF Todas las Facturas">
+            Descargar Todas (PDF)
+        </button>
+    </div>
+
+    <!-- Sección Facturas Incompletas -->
+    <section class="seccion-facturas" id="seccion-incompletas">
+        <h2 class="titulo-seccion">Facturas con Datos Incompletos</h2>
+        <div class="tabla-container-scroll">
+            <table class="tabla-facturas-admin" id="tabla-incompletas">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Número</th>
+                        <th>Descripción</th>
+                        <th>NIT</th>
+                        <th>Categoría</th>
+                        <th>Neto (COP)</th>
+                        <th>IVA (COP)</th>
+                        <th>Total (COP)</th>
+                        <th class="acciones-header">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body-incompletas">
+                    <!-- Contenido generado por JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        <div id="mensaje-vacio-incompletas" class="mensaje-vacio oculto">
+            <p>No hay facturas con datos incompletos.</p>
+        </div>
+    </section>
+
+    <!-- Sección Facturas Completas -->
+    <section class="seccion-facturas" id="seccion-completas">
+        <h2 class="titulo-seccion">Facturas Completas y Validadas</h2>
+         <div class="tabla-container-scroll">
+            <table class="tabla-facturas-admin" id="tabla-completas">
+                <thead>
+                     <tr>
+                        <th>Fecha</th>
+                        <th>Número</th>
+                        <th>Descripción</th>
+                        <th>NIT</th>
+                        <th>Categoría</th>
+                        <th>Neto (COP)</th>
+                        <th>IVA (COP)</th>
+                        <th>Total (COP)</th>
+                        <th class="acciones-header">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body-completas">
+                    <!-- Contenido generado por JavaScript -->
+                </tbody>
+            </table>
+         </div>
+         <div id="mensaje-vacio-completas" class="mensaje-vacio oculto">
+            <p>No hay facturas completas registradas.</p>
+        </div>
+    </section>
+
+    <!-- Sección Todas las Facturas -->
+    <section class="seccion-facturas" id="seccion-todas">
+        <h2 class="titulo-seccion">Todas las Facturas Registradas</h2>
+        <div class="tabla-container-scroll">
+            <table class="tabla-facturas-admin" id="tabla-todas-facturas-admin">
+               <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Número</th>
+                        <th>Descripción</th>
+                        <th>NIT</th>
+                        <th>Categoría</th>
+                        <th>Neto (COP)</th>
+                        <th>IVA (COP)</th>
+                        <th>Total (COP)</th>
+                        <th class="acciones-header">Acciones</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body-todas">
+                    <!-- Contenido generado por JavaScript -->
+                </tbody>
+            </table>
+         </div>
+        <div id="mensaje-vacio-todas" class="mensaje-vacio oculto">
+            <p>No hay ninguna factura registrada en el sistema.</p>
+        </div>
+    </section>
+
+</div> {# Fin .container-admin-control #}
+
+<!-- Modal de Edición (HTML del Admin anterior) -->
+<div id="edit-invoice-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button" id="close-edit-modal-btn">×</span>
+        <h2>Editar Factura</h2>
+        <form id="edit-invoice-form"> {# No necesita action ni method ni csrf si JS maneja el guardado en LS #}
+            <input type="hidden" id="edit-invoice-index" name="edit-invoice-index">
+            <div class="form-group">
+                <label for="edit-invoice-date">Fecha:</label>
+                <input type="date" id="edit-invoice-date" name="edit-invoice-date" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-numero">Número:</label>
+                <input type="text" id="edit-invoice-numero" name="edit-invoice-numero" required>
+            </div>
+             <div class="form-group">
+                <label for="edit-invoice-label">Descripción:</label>
+                <input type="text" id="edit-invoice-label" name="edit-invoice-label" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-nit">NIT:</label>
+                 <input type="text" id="edit-invoice-nit" name="edit-invoice-nit" placeholder="Número ID Tributaria">
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-category">Categoría:</label>
+                 <select id="edit-invoice-category" name="edit-invoice-category" required>
+                      <option value="" disabled>Selecciona una categoría...</option>
+                      {# Estas opciones deben coincidir con las del modal de agregar si lo hubiera,
+                         o ser las categorías válidas esperadas #}
+                     <option value="Supermercados">Supermercados</option>
+                     <option value="Servicios">Servicios</option>
+                     <option value="Entretenimiento">Entretenimiento</option>
+                     <option value="Tecnología">Tecnología</option>
+                     <option value="Transporte">Transporte</option>
+                     <option value="Salud">Salud</option>
+                     <option value="Restaurantes">Restaurantes</option>
+                     <option value="Educación">Educación</option>
+                     <option value="Vestuario">Vestuario</option>
+                     <option value="Hogar">Hogar</option>
+                     <option value="Otros">Otros</option>
+                 </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-neto">Monto Base (Neto):</label>
+                 <input type="number" id="edit-invoice-neto" name="edit-invoice-neto" step="any" placeholder="Ej: 100000 (sin puntos)" required>
+             </div>
+             {# <p style="font-size: 0.8em; color: #666;">Nota: El IVA y el Total se recalcularán automáticamente.</p> #}
+            <button type="submit" class="submit-button">Guardar Cambios</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Scripts (jQuery opcional, puedes usar Vanilla JS) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSFklMERUk7OgLLOzdpgudppAiHzQEUtGtk/juBSCvZx8rvFnujoPJjpSjuscefMeknXhHReA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" ...></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const STORAGE_KEY = 'historialFacturasApp'; // Usa la misma clave que la pág principal
+        const IVA_RATE = 0.19;
+        const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        // Referencias a los tbody y mensajes de vacío
+        const tablaBodyIncompletas = document.getElementById('tabla-body-incompletas');
+        const mensajeVacioIncompletas = document.getElementById('mensaje-vacio-incompletas');
+        const tablaBodyCompletas = document.getElementById('tabla-body-completas');
+        const mensajeVacioCompletas = document.getElementById('mensaje-vacio-completas');
+        const tablaBodyTodas = document.getElementById('tabla-body-todas');
+        const mensajeVacioTodas = document.getElementById('mensaje-vacio-todas');
+
+        // Referencias al Modal de Edición y sus campos
+        const editModalElement = document.getElementById('edit-invoice-modal');
+        const editForm = document.getElementById('edit-invoice-form');
+        const closeEditModalBtn = document.getElementById('close-edit-modal-btn');
+        const editIndexInput = document.getElementById('edit-invoice-index');
+        const editDateInput = document.getElementById('edit-invoice-date');
+        const editNumeroInput = document.getElementById('edit-invoice-numero');
+        const editLabelInput = document.getElementById('edit-invoice-label');
+        const editNitInput = document.getElementById('edit-invoice-nit'); // Asegúrate que existe el input
+        const editCategoryInput = document.getElementById('edit-invoice-category');
+        const editNetoInput = document.getElementById('edit-invoice-neto');
+
+        // Referencia al contenedor principal para delegación de eventos
+        const mainContainer = document.getElementById('admin-main-container');
+        const downloadPdfBtn = document.getElementById('download-pdf-admin');
+        if (downloadPdfBtn) {
+            downloadPdfBtn.addEventListener('click', downloadPdfAdmin); // Esto debería estar ya
+        } else { console.warn("Botón 'download-pdf-admin' no encontrado."); }
+
+        // --- DATOS GLOBALES ---
+        let facturasGlobal = []; // Almacenará las facturas cargadas
+
+        // --- FUNCIONES AUXILIARES ---
+
+        // Verifica si una factura tiene todos los campos necesarios
+        function isFacturaCompleta(factura) {
+            return factura &&
+                   factura.date && factura.date.match(/^\d{4}-\d{2}-\d{2}$/) && // Formato fecha correcto
+                   factura.numero?.trim() && // Operador Optional Chaining ?. y trim
+                   factura.label?.trim() &&
+                   factura.nit?.trim() && // NIT es ahora requerido para ser "completa"
+                   factura.category?.trim() &&
+                   typeof factura.neto === 'number' && !isNaN(factura.neto) && factura.neto >= 0; // Neto debe ser número >= 0
+        }
+
+        // Recalcula IVA y Total basado en el Neto
+        function calculateInvoiceTotals(factura) {
+            if (!factura || typeof factura !== 'object') return factura;
+            const neto = Number(factura.neto) || 0;
+            // Redondear a 2 decimales para cálculos, aunque el display final no los muestre
+            const iva = parseFloat((neto * IVA_RATE).toFixed(2));
+            const acumulado = parseFloat((neto + iva).toFixed(2));
+            // Devuelve un nuevo objeto o modifica el existente
+            return { ...factura, neto, iva, acumulado };
+         }
+
+        // Carga facturas desde LocalStorage
+        function getFacturasFromStorage() {
+            let facturas = [];
+            try {
+                const datosGuardados = localStorage.getItem(STORAGE_KEY);
+                if (datosGuardados) {
+                    const parsedData = JSON.parse(datosGuardados);
+                    // Validación básica: es un array?
+                    if (Array.isArray(parsedData)) {
+                         // Validar/Limpiar cada item (asegurar que neto es número, etc.)
+                         facturas = parsedData.map((item, index) => {
+                             if (item && typeof item === 'object') {
+                                 // Aseguramos tipos básicos y recalculamos siempre
+                                 const facturaBase = {
+                                     ...item, // Copia todo lo que venga
+                                     date: item.date || null, // Asegura que existe, aunque sea null
+                                     numero: String(item.numero || ''), // Asegura string
+                                     label: String(item.label || ''),
+                                     nit: String(item.nit || ''), // Asegura string para NIT
+                                     category: String(item.category || ''),
+                                     neto: Number(item.neto) || 0, // Asegura número, default a 0
+                                     // Los siguientes se recalcularán
+                                     iva: 0,
+                                     acumulado: 0,
+                                     originalIndex: index // Guardamos índice original para edición/borrado
+                                 };
+                                 return calculateInvoiceTotals(facturaBase);
+                             }
+                             return null; // Ignora items mal formados
+                         }).filter(item => item !== null); // Filtra los nulos
+                         console.log(`Admin Panel: ${facturas.length} facturas cargadas desde localStorage.`);
+                     } else {
+                          console.warn("Admin Panel: Datos en localStorage no son un array. Iniciando con arreglo vacío.");
+                     }
+                } else {
+                    console.log("Admin Panel: No hay datos en localStorage. Iniciando con arreglo vacío.");
+                }
+            } catch (error) {
+                console.error("Admin Panel: Error al leer/parsear localStorage:", error, ". Iniciando con arreglo vacío.");
+            }
+            return facturas;
+        }
+
+        // Guarda facturas en LocalStorage
+        function saveFacturasToStorage(facturas) {
+             try {
+                // Antes de guardar, quitamos el 'originalIndex' si existe
+                 const facturasParaGuardar = facturas.map(({ originalIndex, ...rest }) => calculateInvoiceTotals(rest));
+                 localStorage.setItem(STORAGE_KEY, JSON.stringify(facturasParaGuardar));
+                 console.log(`Admin Panel: ${facturas.length} facturas guardadas en localStorage.`);
+             } catch (error) {
+                 console.error("Admin Panel: Error al guardar en localStorage:", error);
+                 alert('Error al guardar cambios en localStorage. ¿Almacenamiento lleno?');
+             }
+        }
+
+        // --- RENDERIZACIÓN DE TABLAS ---
+
+        // Función genérica para renderizar una tabla
+        function renderTablaAdmin(facturas, tbodyElement, mensajeElement, esTablaIncompleta = false) {
+            tbodyElement.innerHTML = ''; // Limpiar tabla
+
+            if (!Array.isArray(facturas) || facturas.length === 0) {
+                mensajeElement.classList.remove('oculto');
+                tbodyElement.innerHTML = ''; // Asegurarse que esté vacío
+                return;
+            }
+            mensajeElement.classList.add('oculto');
+
+            // Ordenar visualmente por fecha descendente (más reciente primero)
+            const facturasOrdenadas = [...facturas].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            facturasOrdenadas.forEach(factura => {
+                const fila = document.createElement('tr');
+                const isCompleta = isFacturaCompleta(factura);
+
+                 let fechaFormateada = '<span class="missing-data">Falta</span>';
+                 if (factura.date) {
+                     try {
+                         const dateObj = new Date(`${factura.date}T00:00:00Z`); // Asume UTC para evitar problemas TZ
+                         if (!isNaN(dateObj)) {
+                             fechaFormateada = dateObj.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+                         } else { fechaFormateada = factura.date; } // Si no es fecha válida, mostrar lo que haya
+                     } catch(e){ fechaFormateada = factura.date; } // Fallback
+                 }
+
+                // Aplicar clase missing-data si la tabla es la de incompletas y el dato falta
+                 const renderCell = (value, fieldName) => {
+                     const isEmpty = !value || String(value).trim() === '';
+                     const text = isEmpty ? 'Falta' : value;
+                     const className = (esTablaIncompleta && isEmpty) ? 'missing-data' : '';
+                     return `<td class="${className}">${text}</td>`;
+                 };
+                 const renderNitCell = (value) => {
+                     const isEmpty = !value || String(value).trim() === '';
+                     const text = isEmpty ? 'Falta' : value;
+                     const className = (esTablaIncompleta && isEmpty) ? 'missing-data' : '';
+                      // Siempre añadimos la clase nit-cell para alineación derecha
+                     return `<td class="nit-cell ${className}">${text}</td>`;
+                 };
+                const renderNumeroCell = (value, fieldName) => {
+                    const esValido = typeof value === 'number' && !isNaN(value);
+                    const texto = esValido ? currencyFormatter.format(value) : ( (esTablaIncompleta || fieldName === 'neto' /* Neto es requerido */ ) ? '<span class="missing-data">Inválido</span>' : 'N/A' );
+                    return `<td class="numero">${texto}</td>`;
+                };
+
+                 // Para la tabla "Todas", mostrar N/A sutil si falta algo
+                 const renderCellTodas = (value, className = '') => {
+                    const text = (value === null || value === undefined || String(value).trim() === '') ? '<span class="subtle-missing">N/A</span>' : value;
+                    return `<td class="${className}">${text}</td>`;
+                 };
+                const renderNumeroCellTodas = (value) => {
+                    const esValido = typeof value === 'number' && !isNaN(value);
+                    const texto = esValido ? currencyFormatter.format(value) : '<span class="subtle-missing">N/A</span>';
+                     // Añadir clase .numero para formato/alineación
+                     return `<td class="numero">${texto}</td>`;
+                };
+
+
+                if (tbodyElement.id === 'tabla-body-todas') {
+                     // Renderizado para la tabla "Todas"
+                    fila.innerHTML = `
+                        ${renderCellTodas(fechaFormateada)}
+                        ${renderCellTodas(factura.numero)}
+                        ${renderCellTodas(factura.label)}
+                        ${renderCellTodas(factura.nit, 'nit-cell')}
+                        ${renderCellTodas(factura.category)}
+                        ${renderNumeroCellTodas(factura.neto)}
+                        ${renderNumeroCellTodas(factura.iva)}
+                        ${renderNumeroCellTodas(factura.acumulado)}
+                        <td class="acciones-cell">
+                            <button class="action-button-historial edit" data-index="${factura.originalIndex}" title="Editar">✏️</button>
+                            <button class="action-button-historial delete" data-index="${factura.originalIndex}" title="Borrar">🗑️</button>
+                        </td>
+                        <td>
+                            <span style="color: ${isCompleta ? 'green' : 'orange'}; font-weight: bold;">
+                                ${isCompleta ? 'Completa' : 'Incompleta'}
+                            </span>
+                        </td>
+                    `;
+                } else {
+                     // Renderizado para Incompletas / Completas
+                    fila.innerHTML = `
+                         <td>${fechaFormateada}</td>
+                         ${renderCell(factura.numero, 'numero')}
+                         ${renderCell(factura.label, 'label')}
+                         ${renderNitCell(factura.nit)}
+                         ${renderCell(factura.category, 'category')}
+                         ${renderNumeroCell(factura.neto, 'neto')}
+                         ${renderNumeroCell(factura.iva, 'iva')}
+                         ${renderNumeroCell(factura.acumulado, 'acumulado')}
+                        <td class="acciones-cell">
+                            <button class="action-button-historial edit" data-index="${factura.originalIndex}" title="Editar">✏️</button>
+                            <button class="action-button-historial delete" data-index="${factura.originalIndex}" title="Borrar">🗑️</button>
+                        </td>
+                    `;
+                 }
+
+                tbodyElement.appendChild(fila);
+            });
+        }
+
+        // --- FUNCIONES DE MANEJO (EDITAR/BORRAR) ---
+
+        function eliminarFactura(indexOriginal) {
+             if (indexOriginal < 0 || indexOriginal >= facturasGlobal.length) {
+                 alert('Error: Índice de factura inválido para borrar.'); return;
+             }
+             const facturaParaBorrar = facturasGlobal[indexOriginal];
+             const facturaLabel = facturaParaBorrar?.numero || facturaParaBorrar?.label || `Factura Índice ${indexOriginal}`;
+
+             if (confirm(`¿Está seguro de borrar la factura "${facturaLabel}"?`)) {
+                 facturasGlobal.splice(indexOriginal, 1); // Elimina del array global
+                 // IMPORTANTE: recalcular originalIndex para los elementos restantes si fuera necesario, pero para guardar no hace falta
+                 saveFacturasToStorage(facturasGlobal); // Guarda el array modificado
+                 cargarYRenderizarTodo(); // Recarga y vuelve a renderizar todo
+                 alert('Factura borrada.');
+             }
+        }
+
+        function abrirModalEdicion(indexOriginal) {
+             if (indexOriginal < 0 || indexOriginal >= facturasGlobal.length) {
+                  alert('Error: Índice de factura inválido para editar.'); return;
+             }
+             const factura = facturasGlobal[indexOriginal];
+
+             // Llenar el modal con los datos actuales
+             editIndexInput.value = indexOriginal; // Guardar el índice REAL en el array
+             editDateInput.value = factura.date || '';
+             editNumeroInput.value = factura.numero || '';
+             editLabelInput.value = factura.label || '';
+             editNitInput.value = factura.nit || ''; // Cargar NIT
+             editCategoryInput.value = factura.category || '';
+             editNetoInput.value = factura.neto || 0; // Usar 0 si no hay neto
+
+             if (editModalElement) {
+                 editModalElement.style.display = 'block';
+                 document.body.classList.add('modal-open-no-scroll'); // Evitar scroll del fondo
+                 editNumeroInput.focus(); // Opcional: Poner foco en un campo
+             } else { console.error("Error: Modal de edición no encontrado."); alert("Error al abrir ventana de edición."); }
+        }
+
+        function closeEditModal() {
+             if (editModalElement) {
+                 editModalElement.style.display = 'none';
+                 document.body.classList.remove('modal-open-no-scroll');
+                 editForm.reset(); // Limpiar formulario al cerrar
+             }
+         }
+         if (closeEditModalBtn) closeEditModalBtn.onclick = closeEditModal;
+         // Cerrar modal si se hace clic fuera de él
+         window.onclick = function(event) { if (event.target == editModalElement) closeEditModal(); }
+         // Cerrar modal con tecla Escape
+         window.addEventListener('keydown', function(event){ if (event.key === 'Escape' && editModalElement?.style.display === 'block') closeEditModal(); });
+
+        // --- Lógica Submit del Modal de Edición ---
+        if (editForm) {
+             editForm.addEventListener('submit', function(event) {
+                 event.preventDefault(); // Prevenir envío normal del formulario
+
+                 const indexOriginal = parseInt(editIndexInput.value, 10);
+                 if (isNaN(indexOriginal) || indexOriginal < 0 || indexOriginal >= facturasGlobal.length) {
+                      alert('Error: Índice de factura inválido al guardar.'); closeEditModal(); return;
+                 }
+
+                 // Leer datos del formulario modal
+                 const newDate = editDateInput.value;
+                 const newNumero = editNumeroInput.value.trim();
+                 const newLabel = editLabelInput.value.trim();
+                 const newNit = editNitInput.value.trim(); // Obtener NIT editado
+                 const newCategory = editCategoryInput.value;
+                 const newNetoStr = editNetoInput.value;
+
+                 // Validaciones básicas (puedes añadir más)
+                 if (!newDate || !newNumero || !newLabel || !newCategory || !newNetoStr) {
+                     alert('Por favor, complete todos los campos requeridos.'); return;
+                 }
+                 if (!newDate.match(/^\d{4}-\d{2}-\d{2}$/)) { alert('Formato de fecha inválido (AAAA-MM-DD).'); return; }
+                 const newNeto = parseFloat(newNetoStr.replace(',', '.')); // Permitir coma como decimal
+                 if (isNaN(newNeto) || newNeto < 0) { alert('El monto base (neto) debe ser un número positivo o cero.'); return; }
+
+                  // Actualizar el objeto en el array global
+                 const facturaActualizadaBase = {
+                    ...facturasGlobal[indexOriginal], // Mantener datos no editables si los hubiera
+                    date: newDate,
+                    numero: newNumero,
+                    label: newLabel,
+                    nit: newNit, // Guardar NIT actualizado
+                    category: newCategory,
+                    neto: newNeto // Guardar el nuevo neto
+                 };
+                 // Recalcular IVA y Total
+                 const facturaActualizadaConTotales = calculateInvoiceTotals(facturaActualizadaBase);
+
+                 // Reemplazar en el array global
+                 facturasGlobal[indexOriginal] = facturaActualizadaConTotales;
+
+                 // Guardar en localStorage
+                 saveFacturasToStorage(facturasGlobal);
+
+                 // Volver a renderizar todas las tablas
+                 cargarYRenderizarTodo();
+
+                 // Cerrar modal y notificar (opcional)
+                 closeEditModal();
+                 // alert('Factura actualizada correctamente.'); // Opcional
+             });
+        } else { console.error("Formulario de edición no encontrado."); }
+
+        // --- EVENTOS (Delegación) ---
+        if (mainContainer) {
+            mainContainer.addEventListener('click', function(event) {
+                const target = event.target;
+                // Buscar si se hizo clic en un botón de acción (o su ícono)
+                const button = target.closest('button.action-button-historial');
+                if (!button) return; // Si no es un botón de acción, salir
+
+                const indexOriginal = parseInt(button.getAttribute('data-index'), 10);
+                 if (isNaN(indexOriginal)) { console.error("Índice inválido en botón:", button); return; }
+
+                if (button.classList.contains('delete')) {
+                    eliminarFactura(indexOriginal);
+                } else if (button.classList.contains('edit')) {
+                    abrirModalEdicion(indexOriginal);
+                }
+            });
+        } else {
+            console.error("Contenedor principal 'admin-main-container' no encontrado para delegación de eventos.");
+        }
+
+
+        // --- DESCARGA PDF ---
+         // --- REEMPLAZA LA FUNCIÓN downloadPdfAdmin con ESTA ---
+function downloadPdfAdmin() {
+    console.log("Admin Panel: Iniciando downloadPdfAdmin() con AutoTable...");
+    // (Opcional: Añadir lógica de UI como spinner si la tienes en el HTML)
+    // setDownloadButtonState(true, "Preparando datos...");
+
+    // Usar setTimeout para permitir que la UI se actualice antes de procesar
+    setTimeout(() => {
+        try {
+            // 1. Verificar librerías
+            if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                throw new Error("La librería jsPDF no está cargada.");
+            }
+            if (typeof window.jspdf.jsPDF.API?.autoTable === 'undefined') {
+                throw new Error("El plugin jsPDF AutoTable no está cargado.");
+            }
+            const { jsPDF } = window.jspdf;
+            console.log("Admin Panel: Librerías jsPDF y AutoTable verificadas.");
+
+            // 2. Obtener datos (TODOS, sin filtro de fecha)
+            // Usa la función de tu script de admin para obtener datos frescos
+            let facturasParaPdf = getFacturasFromStorage();
+            console.log(`Admin Panel: Obtenidas ${facturasParaPdf.length} facturas para el PDF.`);
+
+            // 3. Verificar si hay datos para el PDF
+            if (facturasParaPdf.length === 0) {
+                console.log("Admin Panel: No hay facturas para generar el PDF.");
+                alert("No hay facturas registradas para generar el PDF."); // Mensaje al usuario
+                // (Opcional: Resetear estado del botón si implementaste setDownloadButtonState)
+                // setDownloadButtonState(false, "No hay datos.");
+                return;
+            }
+
+            // (Opcional: Actualizar mensaje de estado)
+            // setDownloadButtonState(true, "Generando PDF...");
+
+            // 4. Crear instancia de jsPDF
+            const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' }); // Paisaje para más columnas
+
+            // 5. Definir Título y Fecha de Generación
+            const fechaGeneracion = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+            doc.setFontSize(16);
+            doc.text("Informe de Control de Facturas (Admin)", 14, 15); // Ajustar posición Y
+            doc.setFontSize(10);
+            doc.text(`Generado el: ${fechaGeneracion}`, 14, 21); // Ajustar posición Y
+
+            // 6. Preparar datos para AutoTable
+            // Definir columnas consistentes con las tablas del admin panel
+            const tableColumn = ["Fecha", "Número", "Desc.", "NIT", "Categoría", "Neto", "IVA", "Total", "Estado"];
+            const tableRows = [];
+
+            let totalNetoGeneral = 0;
+            let totalIVAGeneral = 0;
+            let totalAcumuladoGeneral = 0;
+
+            // Ordenar por fecha descendente para el PDF, igual que en pantalla
+            facturasParaPdf.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            facturasParaPdf.forEach(fact => {
+                 // Reusar isFacturaCompleta para determinar el estado
+                 const isCompleta = isFacturaCompleta(fact);
+                 const estadoTexto = isCompleta ? 'Completa' : 'Incompleta';
+
+                 // Formatear fecha para el PDF
+                let fechaFormateadaPdf = fact.date;
+                if (fact.date) {
+                     try { const parts = fact.date.split('-'); fechaFormateadaPdf = `${parts[2]}/${parts[1]}/${parts[0]}`; } catch (e) {}
+                } else { fechaFormateadaPdf = 'N/A';}
+
+
+                const facturaData = [
+                    fechaFormateadaPdf,
+                    fact.numero || 'S/N',
+                    fact.label || 'S.D.', // Usar S.D. como en tu ejemplo para descripción vacía si aplica
+                    fact.nit || 'N/A',
+                    fact.category || 'N/A',
+                    currencyFormatter.format(fact.neto),
+                    currencyFormatter.format(fact.iva),
+                    currencyFormatter.format(fact.acumulado),
+                    estadoTexto // Añadir la columna Estado
+                ];
+                tableRows.push(facturaData);
+
+                // Acumular totales solo si la factura tiene neto válido
+                if (typeof fact.neto === 'number' && !isNaN(fact.neto)) {
+                     totalNetoGeneral += fact.neto;
+                     totalIVAGeneral += fact.iva; // ya viene calculado
+                     totalAcumuladoGeneral += fact.acumulado; // ya viene calculado
+                }
+            });
+
+             // Añadir fila de totales al final
+             const totalesRow = [
+                { content: 'TOTALES GENERALES', colSpan: 5, styles: { halign: 'right', fontStyle: 'bold' } }, // Aumenta colSpan
+                { content: currencyFormatter.format(totalNetoGeneral), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: currencyFormatter.format(totalIVAGeneral), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: currencyFormatter.format(totalAcumuladoGeneral), styles: { halign: 'right', fontStyle: 'bold' } },
+                { content: '', styles: {}} // Celda vacía para columna Estado
+            ];
+            tableRows.push(totalesRow);
+
+            // 7. Generar la tabla PDF con AutoTable
+            doc.autoTable({
+                head: [tableColumn],
+                body: tableRows,
+                startY: 25, // Ajustar Y para dejar espacio a títulos
+                theme: 'striped',
+                headStyles: { fillColor: [44, 62, 80], textColor: 255, fontStyle: 'bold' }, // Cabecera oscura
+                alternateRowStyles: { fillColor: [245, 245, 245] },
+                styles: { fontSize: 7, cellPadding: 1.5 }, // Reducir tamaño para que quepan más columnas
+                columnStyles: {
+                    2: { cellWidth: 40 }, // Ancho fijo para Descripción
+                    // Ajusta el índice de las columnas numéricas según la nueva estructura
+                    5: { halign: 'right' }, // Neto (índice 5 ahora)
+                    6: { halign: 'right' }, // IVA (índice 6)
+                    7: { halign: 'right' }  // Total (índice 7)
+                },
+                didParseCell: function (data) {
+                    // Aplicar estilo a la fila de totales (última fila)
+                     if (data.row.index === tableRows.length - 1) {
+                         data.cell.styles.fontStyle = 'bold';
+                         data.cell.styles.fillColor = [220, 220, 220]; // Fondo gris claro para totales
+                     }
+                    // Añadir color condicional a la celda de estado (última columna)
+                     if (data.column.index === 8 && data.cell.raw && data.row.index < tableRows.length -1 ) { // No aplicar a celda de totales
+                          if (data.cell.raw === 'Completa') {
+                              data.cell.styles.textColor = [0, 128, 0]; // Verde
+                          } else if (data.cell.raw === 'Incompleta') {
+                              data.cell.styles.textColor = [255, 165, 0]; // Naranja
+                          }
+                     }
+                }
+            });
+
+            // 8. Generar nombre de archivo
+            const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            const filename = `Admin_ControlFacturas_${timestamp}.pdf`;
+
+            // 9. Guardar el PDF
+            doc.save(filename);
+            console.log(`Admin Panel: PDF "${filename}" generado con AutoTable.`);
+            // (Opcional: Actualizar estado del botón a éxito)
+            // setDownloadButtonState(false, "¡PDF generado!");
+             alert("¡PDF generado con éxito! La descarga debería comenzar."); // Feedback simple
+
+        } catch (error) {
+            console.error("Admin Panel: ERROR al generar el PDF con AutoTable:", error);
+            // (Opcional: Actualizar estado del botón a error)
+            // setDownloadButtonState(false, `Error: ${error.message}`);
+            alert(`Error al generar el PDF: ${error.message || 'Error desconocido'}. Revisa la consola.`); // Feedback de error
+        }
+    }, 50); // 50ms de delay para refresco UI
+}
+
+
+        // --- INICIALIZACIÓN ---
+
+        // Función principal que carga y renderiza todo
+        function cargarYRenderizarTodo() {
+            facturasGlobal = getFacturasFromStorage(); // Cargar datos actualizados
+
+            // Filtrar facturas
+            const facturasIncompletas = facturasGlobal.filter(f => !isFacturaCompleta(f));
+            const facturasCompletas = facturasGlobal.filter(f => isFacturaCompleta(f));
+
+            // Renderizar las tres tablas
+            renderTablaAdmin(facturasIncompletas, tablaBodyIncompletas, mensajeVacioIncompletas, true); // Marcar como tabla incompleta
+            renderTablaAdmin(facturasCompletas, tablaBodyCompletas, mensajeVacioCompletas);
+            renderTablaAdmin(facturasGlobal, tablaBodyTodas, mensajeVacioTodas); // La tabla "Todas" usa la lista completa
+        }
+
+        // Ejecución inicial al cargar la página
+        cargarYRenderizarTodo();
+
+         // --- Listener para cambios en localStorage (opcional, para sincronizar si otra pestaña modifica) ---
+         window.addEventListener('storage', (event) => {
+             if (event.key === STORAGE_KEY && event.newValue !== event.oldValue) {
+                 console.log('Admin Panel: Cambio detectado en localStorage desde otra pestaña/ventana. Recargando...');
+                 cargarYRenderizarTodo(); // Vuelve a cargar y renderizar
+             }
+         });
+
+
+        // --- Lógica Modo Oscuro (Si está en plantilla base, funcionará) ---
+        // Asegúrate que tu plantilla base (plantillas.html) tenga la lógica para
+        // activar/desactivar la clase 'dark-mode' en el <body> y guardar la preferencia.
+        // El CSS de esta página ya incluye los estilos para .dark-mode.
+
+
+    }); // Fin del DOMContentLoaded
+</script>
+{% endblock %}
+
+</body>
+</html>

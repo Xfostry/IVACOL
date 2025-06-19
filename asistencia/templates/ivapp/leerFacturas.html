@@ -1,0 +1,414 @@
+{% extends "plantillas.html" %}
+{% load static %}
+
+{% block titulo %}Descargar Historial PDF{% endblock titulo %}
+
+{% block Contenido %}
+<head>
+    <!-- Añade Font Awesome si no está en la plantilla base -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href=" {% static "css/leerFacturas.css" %}">
+</head>
+
+<br><br> <!-- Simulación espacio plantilla base -->
+<div class="descarga-container">
+    <h1 class="mb-4">Descargar Historial de Facturas</h1>
+    <p>Puedes descargar la tabla completa o filtrar por un rango de fechas.</p>
+
+    <!-- SECCIÓN DE FILTRO POR FECHA -->
+    <div class="date-filter-section">
+        <div>
+            <label for="start-date">Desde:</label>
+            <input type="date" id="start-date" name="start-date" aria-label="Fecha de inicio">
+        </div>
+        <div>
+            <label for="end-date">Hasta:</label>
+            <input type="date" id="end-date" name="end-date" aria-label="Fecha de fin">
+        </div>
+        <button type="button" class="btn-clear-dates" id="clear-dates-btn" title="Limpiar fechas seleccionadas">
+            <i class="fas fa-times icono-inline"></i> Limpiar
+        </button>
+    </div>
+
+    <p>Haz clic en el botón para generar y descargar el archivo PDF.</p>
+    <button class="btn-descarga-pdf" id="download-historial-pdf-btn" disabled>
+         <i class="fas fa-spinner fa-spin oculto" id="download-spinner"></i>
+         <i class="fas fa-file-pdf" id="download-icon"></i>
+         <span id="download-button-text">Descargar PDF del Historial</span>
+    </button>
+    <p id="status-message" class="status-message">Verificando historial local...</p>
+</div>
+
+<!-- ***** LIBRERÍAS PDF ***** -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- html2canvas NO es necesario para AutoTable, lo quitamos si no se usa para captura de pantalla -->
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script> console.log("INFO: Scripts de librerías PDF referenciados."); </script>
+
+<!-- ==== SCRIPT PRINCIPAL ==== -->
+<script defer>
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log("INFO: DOMContentLoaded disparado. Iniciando script principal...");
+
+        // --- SELECTORES DEL DOM ---
+        const downloadButton = document.getElementById('download-historial-pdf-btn');
+        const statusMessage = document.getElementById('status-message');
+        const downloadSpinner = document.getElementById('download-spinner');
+        const downloadIcon = document.getElementById('download-icon');
+        const downloadButtonText = document.getElementById('download-button-text');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const clearDatesButton = document.getElementById('clear-dates-btn');
+
+        // --- CONSTANTES Y CONFIGURACIÓN ---
+        const HISTORIAL_STORAGE_KEY = 'historialFacturasApp';
+        const IVA_RATE = 0.19; // 19% de IVA
+        const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        // --- DATOS DE EJEMPLO (FALLBACK INTERNO) ---
+        const allDataDefaultHistorial = [
+            { date: '2024-01-10', numero: 'F-001', label: 'Compra Mercadona', category: 'Supermercados', neto: 150000 },
+            { date: '2024-01-15', numero: 'F-002', label: 'Restaurante Cena', category: 'Restaurantes', neto: 80000 },
+            { date: '2024-02-05', numero: 'F-003', label: 'Gasolina Viaje', category: 'Transporte', neto: 120000 },
+            { date: '2024-02-20', numero: 'F-004', label: 'Libros Universidad', category: 'Educación', neto: 250000 },
+            { date: '2024-03-12', numero: 'F-005', label: 'Entradas Cine', category: 'Entretenimiento', neto: 45000 },
+            { date: '2024-03-28', numero: 'F-006', label: 'Ropa Nueva', category: 'Compras', neto: 300000 },
+        ]; // No calculamos aquí, se hará en getHistorialFacturas
+
+        // --- FUNCIONES DE DATOS ---
+        function calculateInvoiceTotals(factura) {
+            if (!factura || typeof factura !== 'object') return null; // Ignorar entradas inválidas
+            const neto = Number(factura.neto) || 0;
+            if (neto === 0 && !factura.label) return null; // Ignorar si no tiene neto ni label
+            const iva = parseFloat((neto * IVA_RATE).toFixed(2));
+            const acumulado = parseFloat((neto + iva).toFixed(2));
+            return {
+                date: factura.date || 'Sin fecha',
+                numero: factura.numero || 'S/N',
+                label: factura.label || 'Sin descripción',
+                category: factura.category || 'Sin categoría',
+                neto: neto,
+                iva: iva,
+                acumulado: acumulado
+            };
+        }
+
+        function getHistorialFacturas() {
+             let facturas = [];
+             try {
+                const datosGuardados = localStorage.getItem(HISTORIAL_STORAGE_KEY);
+                if (datosGuardados) {
+                    const parsedData = JSON.parse(datosGuardados);
+                     if (Array.isArray(parsedData)) {
+                         facturas = parsedData;
+                         console.log(`Descarga Historial: ${facturas.length} facturas cargadas desde localStorage.`);
+                     } else {
+                          console.warn("Descarga Historial: Datos localStorage no son array. Usando default.");
+                          facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+                     }
+                } else {
+                     console.log("Descarga Historial: No hay datos en localStorage. Usando default.");
+                     facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+                }
+             } catch (error) {
+                 console.error("Descarga Historial: Error al leer/parsear localStorage:", error, ". Usando default.");
+                 facturas = JSON.parse(JSON.stringify(allDataDefaultHistorial));
+             }
+
+             // Asegurarse de que es un array y calcular totales, filtrando nulos
+             const facturasFinal = Array.isArray(facturas) ? facturas : JSON.parse(JSON.stringify(allDataDefaultHistorial));
+             return facturasFinal
+                    .map(calculateInvoiceTotals) // Calcula totales y estandariza
+                    .filter(f => f !== null) // Elimina las entradas que resultaron inválidas
+                    .sort((a, b) => (a.date < b.date) ? -1 : ((a.date > b.date) ? 1 : 0)); // Ordenar por fecha ascendente
+        }
+
+        // --- FUNCIÓN DE ESTADO DEL BOTÓN ---
+        function setDownloadButtonState(isLoading, message = "") {
+             if (!downloadButton || !downloadSpinner || !downloadIcon || !downloadButtonText || !statusMessage) {
+                console.error("Error crítico: Faltan elementos del DOM para gestionar estado del botón.");
+                return;
+             }
+
+             if (isLoading) {
+                 downloadButton.disabled = true;
+                 downloadSpinner.classList.remove('oculto');
+                 downloadIcon.classList.add('oculto');
+                 downloadButtonText.textContent = "Generando...";
+                 statusMessage.textContent = message || "Procesando...";
+                 statusMessage.classList.remove('oculto');
+             } else {
+                 // Estado final (no cargando)
+                 downloadSpinner.classList.add('oculto');
+                 downloadIcon.classList.remove('oculto');
+                 downloadButtonText.textContent = "Descargar PDF del Historial";
+                 if (message) {
+                    statusMessage.textContent = message;
+                    statusMessage.classList.remove('oculto');
+                 }
+                 // Re-evaluar si el botón debe estar habilitado basado en la lógica de updateStatusBasedOnDates
+                 updateStatusBasedOnDates(); // Llama a la función que habilita/deshabilita correctamente
+             }
+         }
+
+        // --- FUNCIÓN PARA ACTUALIZAR MENSAJE Y ESTADO DEL BOTÓN BASADO EN FECHAS Y DATOS ---
+        function updateStatusBasedOnDates() {
+            if (!statusMessage || !startDateInput || !endDateInput || !downloadButton) return;
+
+            const todasLasFacturas = getHistorialFacturas(); // Obtener SIEMPRE los datos frescos
+            const totalFacturas = todasLasFacturas.length;
+            let mensaje = "";
+            let puedeDescargar = false; // Por defecto, no se puede hasta verificar
+
+            if (totalFacturas === 0) {
+                mensaje = "No hay facturas guardadas en el historial local.";
+                puedeDescargar = false;
+            } else {
+                const startDate = startDateInput.value;
+                const endDate = endDateInput.value;
+                let fechaInicioValida = !startDate || !isNaN(new Date(startDate));
+                let fechaFinValida = !endDate || !isNaN(new Date(endDate));
+                let rangoValido = true;
+
+                if (!fechaInicioValida || !fechaFinValida) {
+                    mensaje = "Error: Formato de fecha inválido.";
+                    puedeDescargar = false; // No permitir con formato inválido
+                    rangoValido = false;
+                } else if (startDate && endDate && startDate > endDate) {
+                    mensaje = "Error: La fecha 'Desde' no puede ser posterior a la fecha 'Hasta'.";
+                    puedeDescargar = false; // No permitir descarga con error de fechas
+                    rangoValido = false;
+                }
+
+                if (rangoValido) {
+                    // Si el rango es válido o no hay filtro, procedemos a contar
+                    puedeDescargar = true; // Hay datos y el rango (si existe) es válido
+                    const facturasFiltradas = todasLasFacturas.filter(f => {
+                        if (!f || !f.date) return false;
+                        const cumpleInicio = startDate ? f.date >= startDate : true;
+                        const cumpleFin = endDate ? f.date <= endDate : true;
+                        return cumpleInicio && cumpleFin;
+                    });
+                    const countInRange = facturasFiltradas.length;
+
+                    if (startDate || endDate) {
+                        if (countInRange > 0) {
+                            mensaje = `Se encontraron ${countInRange} facturas en el rango seleccionado.`;
+                        } else {
+                            mensaje = "No se encontraron facturas para las fechas seleccionadas.";
+                            // Decisión: ¿Permitir descargar PDF vacío o deshabilitar?
+                            // Optamos por deshabilitar si el filtro no da resultados.
+                             // puedeDescargar = false; // Descomentar si quieres deshabilitar si el rango da 0
+                             // O mantener true para descargar un PDF indicando "0 resultados"
+                        }
+                    } else {
+                        // Sin filtro de fecha activo
+                        mensaje = `Listo para descargar ${totalFacturas} facturas (historial completo).`;
+                    }
+                }
+            }
+
+            statusMessage.textContent = mensaje;
+            statusMessage.classList.remove('oculto');
+            downloadButton.disabled = !puedeDescargar;
+
+             // Asegurarse que los iconos estén correctos si el botón se deshabilita aquí
+             if (!downloadSpinner.classList.contains('oculto')) downloadSpinner.classList.add('oculto');
+             if (downloadIcon.classList.contains('oculto') && puedeDescargar) downloadIcon.classList.remove('oculto'); // Solo mostrar si se puede descargar
+             if(downloadButtonText) downloadButtonText.textContent = "Descargar PDF del Historial";
+
+        }
+
+        // --- FUNCIÓN PRINCIPAL: DESCARGAR PDF CON AUTOTABLE ---
+        function downloadHistorialPdf() {
+            console.log("DEBUG: Iniciando downloadHistorialPdf()...");
+            setDownloadButtonState(true, "Preparando datos..."); // Estado inicial de carga
+
+            // Usar setTimeout para permitir que la UI se actualice (mostrar spinner) antes de la tarea pesada
+            setTimeout(() => {
+                try {
+                    // 1. Verificar librerías
+                    if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
+                         throw new Error("La librería jsPDF no está cargada.");
+                    }
+                    if (typeof window.jspdf.jsPDF.API?.autoTable === 'undefined') {
+                        throw new Error("El plugin jsPDF AutoTable no está cargado.");
+                    }
+                    const { jsPDF } = window.jspdf; // Desestructurar para usar new jsPDF()
+                    console.log("DEBUG: Librerías jsPDF y AutoTable verificadas.");
+
+                    // 2. Obtener y filtrar datos
+                    let facturasParaPdf = getHistorialFacturas();
+                    const startDate = startDateInput.value;
+                    const endDate = endDateInput.value;
+
+                    if (startDate || endDate) {
+                        facturasParaPdf = facturasParaPdf.filter(f => {
+                            if (!f || !f.date) return false;
+                            const cumpleInicio = startDate ? f.date >= startDate : true;
+                            const cumpleFin = endDate ? f.date <= endDate : true;
+                            return cumpleInicio && cumpleFin;
+                        });
+                        console.log(`DEBUG: Filtrando por fecha. ${facturasParaPdf.length} facturas en el rango.`);
+                    } else {
+                        console.log(`DEBUG: Descargando historial completo (${facturasParaPdf.length} facturas).`);
+                    }
+
+                    // 3. Verificar si hay datos para el PDF
+                    if (facturasParaPdf.length === 0) {
+                        console.log("DEBUG: No hay facturas para generar el PDF (después de filtrar).");
+                        setDownloadButtonState(false, "No hay facturas que cumplan el filtro para descargar.");
+                        return; // Salir si no hay nada que poner en el PDF
+                    }
+
+                    setDownloadButtonState(true, "Generando PDF..."); // Actualizar mensaje mientras se procesa
+
+                    // 4. Crear instancia de jsPDF
+                    const doc = new jsPDF();
+
+                    // 5. Definir Título y Fecha de Generación
+                    const fechaGeneracion = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+                    doc.setFontSize(16);
+                    doc.text("Historial de Facturas", 14, 20);
+                    doc.setFontSize(10);
+                    doc.text(`Generado el: ${fechaGeneracion}`, 14, 26);
+                    if (startDate || endDate) {
+                        let rangoTexto = "Rango: ";
+                        if (startDate) rangoTexto += `Desde ${startDate}`;
+                        if (startDate && endDate) rangoTexto += " - ";
+                        if (endDate) rangoTexto += `Hasta ${endDate}`;
+                        doc.text(rangoTexto, 14, 32);
+                    }
+
+                    // 6. Preparar datos para AutoTable
+                    const tableColumn = ["Fecha", "Número", "Descripción", "Categoría", "Neto", "IVA (19%)", "Total"];
+                    const tableRows = [];
+
+                    let totalNetoGeneral = 0;
+                    let totalIVAGeneral = 0;
+                    let totalAcumuladoGeneral = 0;
+
+                    facturasParaPdf.forEach(fact => {
+                        const facturaData = [
+                            fact.date,
+                            fact.numero,
+                            fact.label,
+                            fact.category,
+                            currencyFormatter.format(fact.neto),
+                            currencyFormatter.format(fact.iva),
+                            currencyFormatter.format(fact.acumulado)
+                        ];
+                        tableRows.push(facturaData);
+
+                        totalNetoGeneral += fact.neto;
+                        totalIVAGeneral += fact.iva;
+                        totalAcumuladoGeneral += fact.acumulado;
+                    });
+
+                     // Añadir fila de totales al final
+                     const totalesRow = [
+                        { content: 'TOTALES', colSpan: 4, styles: { halign: 'right', fontStyle: 'bold' } },
+                        { content: currencyFormatter.format(totalNetoGeneral), styles: { halign: 'right', fontStyle: 'bold' } },
+                        { content: currencyFormatter.format(totalIVAGeneral), styles: { halign: 'right', fontStyle: 'bold' } },
+                        { content: currencyFormatter.format(totalAcumuladoGeneral), styles: { halign: 'right', fontStyle: 'bold' } },
+                    ];
+                    tableRows.push(totalesRow);
+
+
+                    // 7. Generar la tabla PDF
+                    doc.autoTable({
+                        head: [tableColumn],
+                        body: tableRows,
+                        startY: startDate || endDate ? 36 : 30, // Ajustar inicio basado en si hay filtro
+                        theme: 'striped', // 'striped', 'grid', 'plain'
+                        headStyles: { fillColor: [22, 160, 133], textColor: 255, fontStyle: 'bold' }, // Color verde azulado para cabecera
+                        alternateRowStyles: { fillColor: [245, 245, 245] }, // Gris claro para filas alternas
+                        styles: { fontSize: 8, cellPadding: 2 },
+                         columnStyles: {
+                             4: { halign: 'right' }, // Neto
+                             5: { halign: 'right' }, // IVA
+                             6: { halign: 'right' }  // Total
+                         },
+                         didParseCell: function (data) {
+                             // Centrar verticalmente si es la fila de totales (última fila)
+                             if (data.row.index === tableRows.length - 1) {
+                                 data.cell.styles.valign = 'middle';
+                             }
+                         }
+                    });
+
+                    // 8. Generar nombre de archivo
+                    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, ''); // YYYYMMDD
+                    const filename = `HistorialFacturas_${timestamp}.pdf`;
+
+                    // 9. Guardar el PDF
+                    doc.save(filename);
+                    console.log(`DEBUG: PDF "${filename}" generado y descarga iniciada.`);
+                    setDownloadButtonState(false, "¡PDF generado con éxito! La descarga debería comenzar.");
+
+                } catch (error) {
+                    // Capturar CUALQUIER error durante el proceso
+                    console.error("ERROR al generar el PDF:", error);
+                    // Mostrar mensaje de error al usuario y resetear el botón
+                    setDownloadButtonState(false, `Error al generar PDF: ${error.message || 'Error desconocido'}. Revisa la consola.`);
+                }
+                // El bloque finally no es estrictamente necesario aquí porque
+                // setDownloadButtonState(false, ...) se llama explícitamente
+                // tanto en el caso de éxito como en el de error dentro del try/catch.
+            }, 50); // El timeout de 50ms da tiempo al navegador a actualizar la UI
+
+        } // Fin de downloadHistorialPdf
+
+
+        // --- INICIALIZACIÓN Y EVENTOS ---
+        function initializePage() {
+            console.log("DEBUG: Inicializando página...");
+            updateStatusBasedOnDates(); // Establecer estado inicial basado en datos y fechas
+
+            if (downloadButton) {
+                downloadButton.addEventListener('click', downloadHistorialPdf);
+                console.log("DEBUG: Event listener añadido al botón de descarga.");
+            } else {
+                console.error("ERROR FATAL: Botón de descarga PDF no encontrado en el DOM.");
+                if (statusMessage) {
+                    statusMessage.textContent = 'Error crítico: No se pudo encontrar el botón de descarga.';
+                    statusMessage.classList.remove('oculto');
+                }
+            }
+
+            // Event listeners para cambios en fechas
+            if (startDateInput) {
+                startDateInput.addEventListener('input', updateStatusBasedOnDates);
+            } else { console.warn("WARN: Input de fecha de inicio no encontrado."); }
+
+            if (endDateInput) {
+                endDateInput.addEventListener('input', updateStatusBasedOnDates);
+            } else { console.warn("WARN: Input de fecha de fin no encontrado."); }
+
+            // Event listener para el botón de limpiar fechas
+            if (clearDatesButton) {
+               clearDatesButton.addEventListener('click', () => {
+                   if(startDateInput) startDateInput.value = '';
+                   if(endDateInput) endDateInput.value = '';
+                   console.log("DEBUG: Fechas limpiadas por el usuario.");
+                   updateStatusBasedOnDates(); // Actualizar estado después de limpiar
+               });
+            } else { console.warn("WARN: Botón de limpiar fechas no encontrado."); }
+        }
+
+        initializePage(); // Llamar a la inicialización cuando el DOM esté listo
+
+        // Listener de storage para actualizar si cambia en otra pestaña/ventana
+        window.addEventListener('storage', (event) => {
+             if (event.key === HISTORIAL_STORAGE_KEY && event.oldValue !== event.newValue) {
+                  console.log("Descarga: Detectado cambio en localStorage. Re-inicializando estado.");
+                  // Es buena idea recargar los datos y re-evaluar el estado
+                  initializePage();
+              }
+        });
+
+    }); // Fin del DOMContentLoaded
+</script>
+
+{% endblock Contenido %}

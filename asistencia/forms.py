@@ -9,7 +9,7 @@ class UsuarioForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(
         widget=forms.TextInput(
-            attrs={"placeholder": "nombre / correo", "class": "login_input"}
+            attrs={"placeholder": "Correo", "class": "login_input"}
         )
     )
     password = forms.CharField(
@@ -17,3 +17,4 @@ class LoginForm(forms.Form):
             attrs={"placeholder": "Contraseña", "class": "login_input"}
         )
     )
+
