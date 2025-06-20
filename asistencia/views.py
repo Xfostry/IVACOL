@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
 
 @csrf_exempt
-@login_required
+@login_required(login_url='paginas/login.html')
 def subir_factura(request):
     if request.method == 'POST':
         try:
@@ -143,7 +143,7 @@ def tratamiento(request):
 def DeclaracionDatos(request):
     return render(request, 'paginas/DeclaracionDatos.html')
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def crud(request):
     return render(request, 'paginas/crud.html')
 
@@ -165,11 +165,11 @@ def cambiarContra(request):
 def confirmarContra(request):
     return render(request, 'paginas/confirmarContraseña.html')
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def paginaPrincipal(request):
     return render(request, 'ivapp/paginaPrincipal.html')
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def perfil(request):
     try: 
         usuario_obj = Usuario.objects.get(username=request.user.username)
@@ -178,15 +178,15 @@ def perfil(request):
     return render(request, 'ivapp/perfil.html', {'usuario': usuario_obj})
 
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def graficas(request):
     return render(request, 'ivapp/graficas.html')
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def leerFacturas(request):
     return render(request, 'ivapp/leerFacturas.html')
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def notificaciones(request):
     return render(request, 'ivapp/notificaciones.html')
 
@@ -278,7 +278,7 @@ def user_login(request):
 
     return render(request, "paginas/login.html", {"form": form})
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def historial_facturas(request):
     try:
         usuario_obj = Usuario.objects.get(username=request.user.username)
@@ -307,7 +307,7 @@ def historial_facturas(request):
     }
     return render(request, 'ivapp/historial_facturas.html', context)
 
-@login_required
+@login_required(login_url='paginas/login.html')
 def borrar_factura(request, id):
     try:
         usuario_obj = Usuario.objects.get(username=request.user.username)
