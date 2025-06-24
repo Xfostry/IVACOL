@@ -312,7 +312,35 @@ def notificaciones(request):
     return render(request, 'ivapp/notificaciones.html')
 
 def facturasAdmin(request):
-    return render(request, 'ivapp/facturasAdmin.html')
+    from django.core.serializers.json import DjangoJSONEncoder
+    import json
+    facturas = FacturaSubida.objects.select_related('usuario').all().order_by('-fecha_subida')
+    facturas_context = []
+    for f in facturas:
+        iva = float(f.monto) * 0.19 if f.tipo_monto == 'neto' else float(f.monto) - (float(f.monto) / 1.19)
+        neto = float(f.monto) if f.tipo_monto == 'neto' else float(f.monto) / 1.19
+        total = neto + iva
+        # Criterio de factura completa
+        completa = (
+            f.fecha and f.numero and f.descripcion and f.nit and f.categoria and neto >= 0
+        )
+        estado = 'Completa' if completa else 'Incompleta'
+        facturas_context.append({
+            'date': f.fecha.strftime('%Y-%m-%d') if f.fecha else '',
+            'numero': f.numero,
+            'label': f.descripcion,
+            'nit': f.nit,
+            'category': f.categoria,
+            'neto': round(neto, 2),
+            'iva': round(iva, 2),
+            'acumulado': round(total, 2),
+            'usuario': f.usuario.get_full_name() or f.usuario.username,
+            'usuario_id': f.usuario.id,
+            'id': f.id,
+            'estado': estado,
+        })
+    facturas_json = json.dumps(facturas_context, cls=DjangoJSONEncoder)
+    return render(request, 'ivapp/facturasAdmin.html', {'facturas_json': facturas_json})
 
 def UsuariosAdm(request):
     usuarios = Usuario.objects.all()

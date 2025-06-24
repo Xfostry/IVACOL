@@ -81,7 +81,7 @@
         </div>
     </section>
 
-    <!-- Sección Todas las Facturas -->
+    <!-- NO BORRAR   Sección Todas las Facturas
     <section class="seccion-facturas" id="seccion-todas">
         <h2 class="titulo-seccion">Todas las Facturas Registradas</h2>
         <div class="tabla-container-scroll">
@@ -101,14 +101,16 @@
                     </tr>
                 </thead>
                 <tbody id="tabla-body-todas">
-                    <!-- Contenido generado por JavaScript -->
+
+                    Contenido generado por JavaScript
+                
                 </tbody>
             </table>
          </div>
         <div id="mensaje-vacio-todas" class="mensaje-vacio oculto">
             <p>No hay ninguna factura registrada en el sistema.</p>
         </div>
-    </section>
+    </section>  -->
 
 </div> {# Fin .container-admin-control #}
 
@@ -204,7 +206,15 @@
         } else { console.warn("Botón 'download-pdf-admin' no encontrado."); }
 
         // --- DATOS GLOBALES ---
-        let facturasGlobal = []; // Almacenará las facturas cargadas
+        let facturasGlobal = [];
+        try {
+            facturasGlobal = JSON.parse('{{ facturas_json|escapejs }}');
+            // Asignar originalIndex para compatibilidad con renderTablaAdmin
+            facturasGlobal.forEach((f, idx) => { f.originalIndex = idx; });
+        } catch (e) {
+            facturasGlobal = [];
+        }
+        // NOTA: Ya no se usará localStorage para mostrar datos, solo facturasGlobal del backend
 
         // --- FUNCIONES AUXILIARES ---
 
@@ -231,49 +241,12 @@
          }
 
         // Carga facturas desde LocalStorage
-        function getFacturasFromStorage() {
-            let facturas = [];
-            try {
-                const datosGuardados = localStorage.getItem(STORAGE_KEY);
-                if (datosGuardados) {
-                    const parsedData = JSON.parse(datosGuardados);
-                    // Validación básica: es un array?
-                    if (Array.isArray(parsedData)) {
-                         // Validar/Limpiar cada item (asegurar que neto es número, etc.)
-                         facturas = parsedData.map((item, index) => {
-                             if (item && typeof item === 'object') {
-                                 // Aseguramos tipos básicos y recalculamos siempre
-                                 const facturaBase = {
-                                     ...item, // Copia todo lo que venga
-                                     date: item.date || null, // Asegura que existe, aunque sea null
-                                     numero: String(item.numero || ''), // Asegura string
-                                     label: String(item.label || ''),
-                                     nit: String(item.nit || ''), // Asegura string para NIT
-                                     category: String(item.category || ''),
-                                     neto: Number(item.neto) || 0, // Asegura número, default a 0
-                                     // Los siguientes se recalcularán
-                                     iva: 0,
-                                     acumulado: 0,
-                                     originalIndex: index // Guardamos índice original para edición/borrado
-                                 };
-                                 return calculateInvoiceTotals(facturaBase);
-                             }
-                             return null; // Ignora items mal formados
-                         }).filter(item => item !== null); // Filtra los nulos
-                         console.log(`Admin Panel: ${facturas.length} facturas cargadas desde localStorage.`);
-                     } else {
-                          console.warn("Admin Panel: Datos en localStorage no son un array. Iniciando con arreglo vacío.");
-                     }
-                } else {
-                    console.log("Admin Panel: No hay datos en localStorage. Iniciando con arreglo vacío.");
-                }
-            } catch (error) {
-                console.error("Admin Panel: Error al leer/parsear localStorage:", error, ". Iniciando con arreglo vacío.");
-            }
-            return facturas;
-        }
+        // function getFacturasFromStorage() {
+        //     // Ya no se usa para mostrar datos, solo facturasGlobal del backend
+        //     return facturasGlobal;
+        // }
 
-        // Guarda facturas en LocalStorage
+        // Guarda facturas en LocalStorage (solo si quieres permitir edición local, pero no afecta visualización)
         function saveFacturasToStorage(facturas) {
              try {
                 // Antes de guardar, quitamos el 'originalIndex' si existe
@@ -361,8 +334,8 @@
                         ${renderNumeroCellTodas(factura.iva)}
                         ${renderNumeroCellTodas(factura.acumulado)}
                         <td class="acciones-cell">
-                            <button class="action-button-historial edit" data-index="${factura.originalIndex}" title="Editar">✏️</button>
-                            <button class="action-button-historial delete" data-index="${factura.originalIndex}" title="Borrar">🗑️</button>
+                            <button class="action-button-historial edit" data-index="${indiceOriginal}" title="Editar">✏️</button>
+                            <button class="action-button-historial delete" data-index="${indiceOriginal}" title="Borrar">🗑️</button>
                         </td>
                         <td>
                             <span style="color: ${isCompleta ? 'green' : 'orange'}; font-weight: bold;">
@@ -542,8 +515,8 @@ function downloadPdfAdmin() {
             console.log("Admin Panel: Librerías jsPDF y AutoTable verificadas.");
 
             // 2. Obtener datos (TODOS, sin filtro de fecha)
-            // Usa la función de tu script de admin para obtener datos frescos
-            let facturasParaPdf = getFacturasFromStorage();
+            // Ahora se usa facturasGlobal directamente, que viene del backend
+            let facturasParaPdf = facturasGlobal;
             console.log(`Admin Panel: Obtenidas ${facturasParaPdf.length} facturas para el PDF.`);
 
             // 3. Verificar si hay datos para el PDF
@@ -681,8 +654,7 @@ function downloadPdfAdmin() {
 
         // Función principal que carga y renderiza todo
         function cargarYRenderizarTodo() {
-            facturasGlobal = getFacturasFromStorage(); // Cargar datos actualizados
-
+            // facturasGlobal ya contiene los datos del backend
             // Filtrar facturas
             const facturasIncompletas = facturasGlobal.filter(f => !isFacturaCompleta(f));
             const facturasCompletas = facturasGlobal.filter(f => isFacturaCompleta(f));

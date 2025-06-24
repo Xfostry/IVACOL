@@ -207,6 +207,7 @@
                      <thead>
                          <tr>
                              <th>Concepto</th>
+                             <th>Categoría</th>
                              <th class="numero-header">Valor Total</th>
                          </tr>
                      </thead>
@@ -215,6 +216,7 @@
                             {% for factura in facturas %}
                                 <tr>
                                     <td>{{ factura.descripcion }}</td>
+                                    <td>{{ factura.categoria }}</td>
                                     <td class="numero">{{ factura.total|floatformat:0|intcomma}}</td>
                                 </tr>
                             {% endfor %}
