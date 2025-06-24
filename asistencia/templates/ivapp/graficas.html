@@ -94,58 +94,13 @@
         }
         const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
-        // --- DATOS DE EJEMPLO (sin cambios) ---
-        const allDataDefault = [/* Tus datos de ejemplo aquí */
-            { date: '2024-09-20', numero: 'F-0920A', label: 'Mercado', category: 'Supermercados', neto: 120000, iva: 22800, acumulado: 142800, nit: '900123456-1' },
-            { date: '2024-10-05', numero: 'SW-1005', label: 'Servicio Web', category: 'Servicios', neto: 250000, iva: 47500, acumulado: 297500, nit: '900123457-2' },
-            { date: '2024-10-15', numero: 'FAC-1015B', label: 'Factura Proveedor X', category: 'Supermercados', neto: 180000, iva: 34200, acumulado: 214200, nit: '900123458-3' },
-            { date: '2024-11-05', numero: 'H-1105', label: 'Hosting Anual', category: 'Servicios', neto: 75000, iva: 14250, acumulado: 89250, nit: '900123459-4' },
-            { date: '2024-11-20', numero: 'MANT-1120', label: 'Mantenimiento PC', category: 'Entretenimiento', neto: 95000, iva: 18050, acumulado: 113050, nit: '900123460-5' },
-            { date: '2024-12-01', numero: 'TEC-1201', label: 'Laptop Asus Gamer', category: 'Tecnología', neto: 350000, iva: 66500, acumulado: 416500, nit: '900123461-6' },
-            { date: '2024-12-12', numero: 'F-1212C', label: 'Venta Equipo Oficina', category: 'Otros', neto: 420000, iva: 79800, acumulado: 499800, nit: '900123462-7' },
-            { date: '2024-12-28', numero: 'SOP-1228', label: 'Soporte Urgente Web', category: 'Servicios', neto: 110000, iva: 20900, acumulado: 130900, nit: '900123463-8' },
-            { date: '2025-01-08', numero: 'PROY-0108', label: 'Proyecto Diseño App', category: 'Tecnología', neto: 280000, iva: 53200, acumulado: 333200, nit: '900123464-9' },
-            { date: '2025-01-15', numero: 'SOFT-0115', label: 'Licencia Software CRM', category: 'Tecnología', neto: 210000, iva: 39900, acumulado: 249900, nit: '900123465-0' },
-            { date: '2025-01-25', numero: 'MA-0125', label: 'Mantenimiento Oficina', category: 'Entretenimiento', neto: 150000, iva: 28500, acumulado: 178500, nit: '900123466-1' },
-            { date: '2025-02-02', numero: 'DG-0202', label: 'Diseño Gráfico Logo', category: 'Servicios', neto: 190000, iva: 36100, acumulado: 226100, nit: '900123467-2' },
-            { date: '2025-02-10', numero: 'FAC-0210D', label: 'Factura Proveedor Y', category: 'Supermercados', neto: 265000, iva: 50350, acumulado: 315350, nit: '900123468-3' },
-            { date: '2025-02-20', numero: 'CEL-0220', label: 'Celular nuevo Samsung', category: 'Tecnología', neto: 300000, iva: 57000, acumulado: 357000, nit: '900123469-4' },
-            { date: '2025-02-28', numero: 'AJ-0228', label: 'Ajuste Inventario', category: 'Otros', neto: 50000, iva: 9500, acumulado: 59500, nit: '900123470-5' },
-            { date: '2025-03-07', numero: 'CLD-0307', label: 'Servicio AWS Cloud', category: 'Servicios', neto: 220000, iva: 41800, acumulado: 261800, nit: '900123471-6' },
-            { date: '2025-03-15', numero: 'VG-0315', label: 'Mercado Familiar Mes', category: 'Supermercados', neto: 550000, iva: 104500, acumulado: 654500, nit: '900123472-7' },
-            { date: '2025-03-22', numero: 'ST-0322', label: 'Soporte Técnico Red', category: 'Entretenimiento', neto: 85000, iva: 16150, acumulado: 101150, nit: '900123473-8' },
-        ];
-
-        // --- CARGA DE DATOS (sin cambios) ---
+        // --- CARGA DE DATOS DESDE DJANGO ---
         let processedData = [];
         try {
-            const storedData = localStorage.getItem(STORAGE_KEY_HISTORIAL);
-            if (storedData) {
-                const parsedData = JSON.parse(storedData);
-                if (Array.isArray(parsedData) && parsedData.length > 0 && parsedData[0].date && parsedData[0].neto !== undefined) {
-                    processedData = parsedData.map(item => ({
-                        ...item,
-                        neto: parseFloat(item.neto) || 0,
-                        iva: parseFloat(item.iva) || calcularValores(item.neto).iva,
-                        acumulado: parseFloat(item.acumulado) || calcularValores(item.neto).acumulado,
-                        // Asegurar que el nit exista, aunque sea como string vacío
-                        nit: item.nit || ''
-                    }));
-                    console.log(`Datos cargados desde localStorage (${processedData.length} registros).`);
-                } else if (Array.isArray(parsedData) && parsedData.length === 0) {
-                     console.log("localStorage tiene un array vacío.");
-                     noDataGlobalMessage.textContent = 'No hay datos guardados. Añade facturas en el historial.';
-                } else {
-                    console.warn("Datos en localStorage no son un array válido o tienen formato incorrecto. Usando datos por defecto.");
-                    processedData = allDataDefault;
-                }
-            } else {
-                console.log("No hay datos en localStorage. Usando datos por defecto.");
-                processedData = allDataDefault;
-            }
+            processedData = JSON.parse('{{ facturas_json|escapejs }}');
         } catch (error) {
-            console.error("Error al leer/parsear localStorage:", error, ". Usando datos por defecto.");
-            processedData = allDataDefault;
+            console.error("Error al parsear datos de facturas del backend:", error);
+            processedData = [];
         }
         // Ordenar datos por fecha ascendentemente (importante para gráfico de línea)
         processedData.sort((a, b) => (a.date || '').localeCompare(b.date || ''));

@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from asistencia import urls
 from asistencia import views
 from asistencia.views import user_login
 
@@ -59,6 +60,10 @@ urlpatterns = [
     path('login/', user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('asistencia/', include('asistencia.urls')),
+    path('subir_factura/', views.subir_factura, name='subir_factura'),
+    path('borrar_factura/<int:id>/', views.borrar_factura, name='borrar_factura'),
+    path('editar_factura/<int:id>/', views.editar_factura, name='editar_factura'),
+
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

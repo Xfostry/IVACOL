@@ -1,5 +1,7 @@
 {% extends "plantillas.html" %}
 {% load static %}
+{% load humanize %}
+
 {% block Contenido %}
 <!DOCTYPE html>
 <html lang="es">
@@ -158,11 +160,12 @@
                             <td>{{ factura.descripcion }}</td>
                             <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
                             <td>{{ factura.categoria }}</td>
-                            <td class="numero">{{ factura.monto|floatformat:0 }}</td>
-                            <td class="numero">{{ factura.iva|floatformat:0 }}</td>
-                            <td class="numero">{{ factura.total|floatformat:0 }}</td>
+                            <td class="numero">{{ factura.monto|floatformat:0|intcomma }}</td>
+                            <td class="numero">{{ factura.iva|floatformat:0|intcomma }}</td>
+                            <td class="numero">{{ factura.total|floatformat:0|intcomma }}</td>
                             <td class="acciones-cell">
                                 {% if factura.id %}
+                                <a href="{% url 'editar_factura' factura.id %}" class="action-button-historial edit" title="Editar">✏️</a>
                                 <form method="post" action="{% url 'borrar_factura' factura.id %}" style="display:inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="action-button-historial delete" title="Borrar" onclick="return confirm('¿Seguro que deseas borrar esta factura?');">🗑️</button>
@@ -185,44 +188,55 @@
     <div class="modal-content">
         <span class="close-button" id="close-edit-modal-btn">×</span>
         <h2>Editar Factura</h2>
-        <form id="edit-invoice-form">
+        <form id="edit-invoice-form" novalidate>
             <input type="hidden" id="edit-invoice-index" name="edit-invoice-index">
+            <div class="form-group">
+                <label for="edit-invoice-numero">Número:</label>
+                <input type="text" id="edit-invoice-numero" name="edit-invoice-numero" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-label">Descripción:</label>
+                <input type="text" id="edit-invoice-label" name="edit-invoice-label" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-invoice-nit">NIT (Opcional):</label>
+                <input type="text" id="edit-invoice-nit" name="edit-invoice-nit" placeholder="Número de Identificación Tributaria">
+            </div>
             <div class="form-group">
                 <label for="edit-invoice-date">Fecha:</label>
                 <input type="date" id="edit-invoice-date" name="edit-invoice-date" required>
             </div>
             <div class="form-group">
-                <label for="edit-invoice-numero">Número:</label>
-                <input type="text" id="edit-invoice-numero" name="edit-invoice-numero" required>
-            </div>
-             <div class="form-group">
-                <label for="edit-invoice-label">Descripción:</label>
-                <input type="text" id="edit-invoice-label" name="edit-invoice-label" required>
-            </div>
-            <!-- A FUTURO: Podrías añadir aquí un campo para editar el NIT -->
-            <!-- <div class="form-group"> -->
-            <!--     <label for="edit-invoice-nit">NIT:</label> -->
-            <!--     <input type="text" id="edit-invoice-nit" name="edit-invoice-nit"> -->
-            <!-- </div> -->
-             <div class="form-group">
                 <label for="edit-invoice-category">Categoría:</label>
                 <select id="edit-invoice-category" name="edit-invoice-category" required>
-                     <option value="" disabled>Selecciona una categoría...</option>
-                     <option value="Supermercados">Supermercados</option>
-                     <option value="Servicios">Servicios</option>
-                     <option value="Entretenimiento">Entretenimiento</option>
-                     <option value="Tecnología">Tecnología</option>
-                     <option value="Transporte">Transporte</option>
-                     <option value="Salud">Salud</option>
-                     <option value="Restaurantes">Restaurantes</option>
-                     <option value="Otros">Otros</option>
-                 </select>
+                    <option value="" disabled selected>Selecciona...</option>
+                    <option>Supermercados</option>
+                    <option>Servicios</option>
+                    <option>Entretenimiento</option>
+                    <option>Tecnología</option>
+                    <option>Restaurantes</option>
+                    <option>Transporte</option>
+                    <option>Salud</option>
+                    <option>Educación</option>
+                    <option>Vestuario</option>
+                    <option>Hogar</option>
+                    <option>Otros</option>
+                </select>
+            </div>
+            <div class="form-group radio-group">
+                <label>Monto Ingresado:</label> <br>
+                <input type="radio" id="edit-amount-type-neto" name="edit-amount-type" value="neto" checked> <label for="edit-amount-type-neto">Base (Sin IVA)</label>
+                <input type="radio" id="edit-amount-type-total" name="edit-amount-type" value="total"> <label for="edit-amount-type-total">Total (Con IVA)</label>
             </div>
             <div class="form-group">
-                <label for="edit-invoice-neto">Monto Base (Neto):</label>
-                <input type="number" id="edit-invoice-neto" name="edit-invoice-neto" step="any" required>
+                <label for="edit-invoice-amount">Monto:</label>
+                <input type="number" id="edit-invoice-amount" name="edit-invoice-amount" step="any" placeholder="Monto numérico" required>
             </div>
-            <button type="submit" class="submit-button">Guardar Cambios</button>
+            <div class="form-group">
+                <label for="edit-invoice-file">Archivo (Opc):</label>
+                <input type="file" id="edit-invoice-file" name="edit-invoice-file" accept=".pdf,.jpg,.png,.jpeg">
+            </div>
+            <button type="submit" class="btn btn-primary submit-button">Guardar Cambios</button>
         </form>
     </div>
 </div>
@@ -254,15 +268,6 @@
 
         const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
-        // Datos de ejemplo (asegurarse que incluyan NIT)
-        const allDataDefaultHistorial = [
-            { date: '2024-09-20', numero: 'F-0920A', label: 'Mercado', category: 'Supermercados', neto: 120000, iva: 22800, acumulado: 142800, nit: '900123456-1' },
-            { date: '2024-10-05', numero: 'SW-1005', label: 'Servicio Web', category: 'Servicios', neto: 250000, iva: 47500, acumulado: 297500, nit: '900123457-2' },
-            { date: '2024-10-15', numero: 'FAC-1015B', label: 'Factura', category: 'Supermercados', neto: 180000, iva: 34200, acumulado: 214200, nit: '84938492342' }, // NIT vacío ejemplo
-             { date: '2024-11-05', numero: 'H-1105', label: 'Hosting', category: 'Servicios', neto: 75000, iva: 14250, acumulado: 89250, nit: '900123459-4' },
-            { date: '2024-11-20', numero: 'MANT-1120', label: 'Mantenimiento', category: 'Entretenimiento', neto: 95000, iva: 18050, acumulado: 113050, nit: '438234792873' }, // NIT null ejemplo
-             // ... (más datos con o sin NIT)
-        ];
 
         function getFacturasFromStorageWithFallback() {
              let facturas = [];
@@ -364,7 +369,7 @@
                 const acumuladoFormateado = currencyFormatter.format(factura.acumulado || 0);
                 const nitMostrado = factura.nit || 'N/A'; // <<< Muestra N/A si nit es null, undefined o vacío >>>
 
-                fila.innerHTML = `
+                fila.innerHTML = 
                     <td>${fechaFormateada}</td>
                     <td class="numero">${factura.numero || 'N/A'}</td>
                     <td>${factura.label || 'Sin descripción'}</td>
@@ -377,7 +382,7 @@
                         <button class="action-button-historial edit" data-index="${indiceOriginal}" title="Editar">✏️</button>
                         <button class="action-button-historial delete" data-index="${indiceOriginal}" title="Borrar">🗑️</button>
                     </td>
-                `;
+                ;
                 tablaBody.appendChild(fila);
             });
         }

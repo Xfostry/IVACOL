@@ -8,13 +8,85 @@ from .models import Usuario, FacturaSubida
 from .forms import LoginForm
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
+from django.http import FileResponse
+import io
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+
+@login_required(login_url='login')
+def descargar_facturas_pdf(request):
+    try:
+        usuario_obj = Usuario.objects.get(username=request.user.username)
+    except Usuario.DoesNotExist:
+        return HttpResponse('Usuario no encontrado', status=404)
+
+    # Filtrado por rango de fechas si se reciben parámetros GET
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    facturas_usuario = FacturaSubida.objects.filter(usuario=usuario_obj)
+    if start_date:
+        facturas_usuario = facturas_usuario.filter(fecha__gte=start_date)
+    if end_date:
+        facturas_usuario = facturas_usuario.filter(fecha__lte=end_date)
+    facturas_usuario = facturas_usuario.order_by('-fecha_subida')
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=40, bottomMargin=30)
+    elements = []
+    styles = getSampleStyleSheet()
+    title = "Listado de Facturas"
+    if start_date or end_date:
+        rango = ""
+        if start_date:
+            rango += f"Desde {start_date} "
+        if end_date:
+            rango += f"Hasta {end_date}"
+        title += f" ({rango.strip()})"
+    elements.append(Paragraph(title, styles['Title']))
+    elements.append(Spacer(1, 12))
+    data = [["Fecha", "Número", "Descripción", "NIT", "Categoría", "Monto", "IVA", "Total"]]
+    for f in facturas_usuario:
+        iva = float(f.monto) * 0.19 if f.tipo_monto == 'neto' else float(f.monto) - (float(f.monto) / 1.19)
+        neto = float(f.monto) if f.tipo_monto == 'neto' else float(f.monto) / 1.19
+        total = neto + iva
+        data.append([
+            f.fecha.strftime('%d/%m/%Y') if f.fecha else '',
+            f.numero,
+            f.descripcion,
+            f.nit,
+            f.categoria,
+            f"{neto:,.2f}",
+            f"{iva:,.2f}",
+            f"{total:,.2f}"
+        ])
+    table = Table(data, repeatRows=1, colWidths=[55, 55, 110, 60, 70, 55, 55, 55])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor('#3498db')),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0,0), (-1,0), 10),
+        ('BOTTOMPADDING', (0,0), (-1,0), 8),
+        ('BACKGROUND', (0,1), (-1,-1), colors.whitesmoke),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
+        ('FONTSIZE', (0,1), (-1,-1), 9),
+        ('LEFTPADDING', (0,0), (-1,-1), 4),
+        ('RIGHTPADDING', (0,0), (-1,-1), 4),
+    ]))
+    elements.append(table)
+    doc.build(elements)
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='facturas.pdf')
 
 @csrf_exempt
 @login_required(login_url='login')
 def subir_factura(request):
     if request.method == 'POST':
         try:
-            usuario_obj = Usuario.objects.get(numero_documento=request.user.username)
+            usuario_obj = Usuario.objects.get(username=request.user.username)
         except Usuario.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Usuario no encontrado'}, status=400)
 
@@ -167,7 +239,32 @@ def confirmarContra(request):
 
 @login_required(login_url='login')
 def paginaPrincipal(request):
-    return render(request, 'ivapp/paginaPrincipal.html')
+    try:
+        usuario_obj = Usuario.objects.get(username=request.user.username)
+    except Usuario.DoesNotExist:
+        usuario_obj = None
+
+    facturas_usuario = FacturaSubida.objects.filter(usuario=usuario_obj).order_by('-fecha_subida')[:6] if usuario_obj else []
+    facturas_context = []
+    for f in facturas_usuario:
+        iva = float(f.monto) * 0.19 if f.tipo_monto == 'neto' else float(f.monto) - (float(f.monto) / 1.19)
+        neto = float(f.monto) if f.tipo_monto == 'neto' else float(f.monto) / 1.19
+        total = neto + iva
+        facturas_context.append({
+            'id': f.id,
+            'fecha': f.fecha,
+            'numero': f.numero,
+            'descripcion': f.descripcion,
+            'nit': f.nit,
+            'categoria': f.categoria,
+            'monto': neto,
+            'iva': iva,
+            'total': total,
+        })
+    context = {
+        'facturas': facturas_context,
+    }
+    return render(request, 'ivapp/paginaPrincipal.html', context)
 
 @login_required(login_url='login')
 def perfil(request):
@@ -178,9 +275,33 @@ def perfil(request):
     return render(request, 'ivapp/perfil.html', {'usuario': usuario_obj})
 
 
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+
 @login_required(login_url='login')
 def graficas(request):
-    return render(request, 'ivapp/graficas.html')
+    try:
+        usuario_obj = Usuario.objects.get(username=request.user.username)
+    except Usuario.DoesNotExist:
+        usuario_obj = None
+    facturas_usuario = FacturaSubida.objects.filter(usuario=usuario_obj).order_by('fecha') if usuario_obj else []
+    facturas_context = []
+    for f in facturas_usuario:
+        iva = float(f.monto) * 0.19 if f.tipo_monto == 'neto' else float(f.monto) - (float(f.monto) / 1.19)
+        neto = float(f.monto) if f.tipo_monto == 'neto' else float(f.monto) / 1.19
+        total = neto + iva
+        facturas_context.append({
+            'date': f.fecha.strftime('%Y-%m-%d') if f.fecha else '',
+            'numero': f.numero,
+            'label': f.descripcion,
+            'category': f.categoria,
+            'nit': f.nit,
+            'neto': round(neto, 2),
+            'iva': round(iva, 2),
+            'acumulado': round(total, 2),
+        })
+    facturas_json = json.dumps(facturas_context, cls=DjangoJSONEncoder)
+    return render(request, 'ivapp/graficas.html', {'facturas_json': facturas_json})
 
 @login_required(login_url='login')
 def leerFacturas(request):
@@ -318,3 +439,27 @@ def borrar_factura(request, id):
         factura.delete()
         return redirect('historial_facturas')
     return redirect('historial_facturas')
+
+@login_required(login_url='login')
+def editar_factura(request, id):
+    try:
+        usuario_obj = Usuario.objects.get(username=request.user.username)
+    except Usuario.DoesNotExist:
+        return redirect('historial_facturas')
+    factura = get_object_or_404(FacturaSubida, usuario=usuario_obj, id=id)
+    if request.method == 'POST':
+        factura.descripcion = request.POST.get('descripcion', factura.descripcion)
+        factura.numero = request.POST.get('numero', factura.numero)
+        factura.nit = request.POST.get('nit', factura.nit)
+        factura.fecha = request.POST.get('fecha', factura.fecha)
+        factura.categoria = request.POST.get('categoria', factura.categoria)
+        factura.monto = request.POST.get('monto', factura.monto)
+        factura.tipo_monto = request.POST.get('tipo_monto', factura.tipo_monto)
+        if request.FILES.get('archivo'):
+            factura.archivo = request.FILES['archivo']
+        factura.save()
+        return redirect('historial_facturas')
+    context = {
+        'factura': factura
+    }
+    return render(request, 'ivapp/editar_factura.html', context)

@@ -1,6 +1,6 @@
 {% extends "plantillas.html" %}
 {% load static %}
-{# Ya no necesitamos i18n/l10n/humanize aquí si llenamos la tabla con JS #}
+{% load humanize %}
 
 {% block Contenido %}
 <!DOCTYPE html>
@@ -156,28 +156,9 @@
                 </a>
                 <a href="{% url 'graficas' %}" class="action-button">
                     <img src="{% static 'icons/reporte.svg' %}" alt="Reporte" class="icon">
-                    <span>Reportes IVA</span>
+                    <span>Reportes</span>
                 </a>
             </div>
-        </section>
-
-        <!-- Sección Totales Globales -->
-        <section class="global-totals-section">
-             <h3>Totales Globales Acumulados</h3>
-             <div class="table-responsive">
-                 <table class="invoice-table">
-                     <thead>
-                         <tr>
-                             <th>Concepto</th>
-                             <th class="numero-header">Valor Total</th>
-                         </tr>
-                     </thead>
-                     <tbody id="global-totals-tbody"></tbody>
-                 </table>
-             </div>
-             <div id="no-totals-message" class="oculto">
-                 Aún no hay facturas registradas para calcular totales.
-             </div>
         </section>
 
         <!-- Sección Últimas Facturas -->
@@ -197,11 +178,54 @@
                              <th class="numero-header">Monto Total</th>
                          </tr>
                      </thead>
-                     <tbody id="invoice-table-body"></tbody>
+                     <tbody>
+                        {% if facturas %}
+                            {% for factura in facturas %}
+                                <tr>
+                                    <td>{{ factura.fecha|date:"d/m/Y" }}</td>
+                                    <td class="numero">{{ factura.numero }}</td>
+                                    <td>{{ factura.descripcion }}</td>
+                                    <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
+                                    <td>{{ factura.categoria }}</td>
+                                    <td class="numero">{{ factura.monto|floatformat:0|intcomma }}</td>
+                                    <td class="numero">{{ factura.iva|floatformat:0|intcomma }}</td>
+                                    <td class="numero">{{ factura.total|floatformat:0|intcomma }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="8" style="text-align:center;">No hay facturas registradas.</td></tr>
+                        {% endif %}
+                     </tbody>
                  </table>
              </div>
-             <div id="no-invoices-message" class="oculto">
-                 Aún no has registrado ninguna factura. ¡Empieza subiendo una!
+        </section>
+                <!-- Sección Totales Globales -->
+        <section class="global-totals-section">
+             <h3>Totales Globales Acumulados</h3>
+             <div class="table-responsive">
+                 <table class="invoice-table">
+                     <thead>
+                         <tr>
+                             <th>Concepto</th>
+                             <th class="numero-header">Valor Total</th>
+                         </tr>
+                     </thead>
+                     <tbody id="global-totals-tbody">
+                        {% if facturas %}
+                            {% for factura in facturas %}
+                                <tr>
+                                    <td>{{ factura.descripcion }}</td>
+                                    <td class="numero">{{ factura.total|floatformat:0|intcomma}}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="8" style="text-align:center;">No hay facturas registradas.</td></tr>
+                        {% endif %}
+                     </tbody>
+                 </table>
+             </div>
+             <div id="no-totals-message" class="oculto">
+                 Aún no hay facturas registradas para calcular totales.
              </div>
         </section>
 
@@ -247,13 +271,28 @@
                         <label for="invoice-file">Archivo (Opc):</label>
                         <input type="file" id="invoice-file" name="invoice-file" accept=".pdf,.jpg,.png,.jpeg">
                     </div>
-                    <button type="submit" class="submit-button">Guardar Factura</button>
+                    <button type="submit" class="btn btn-primary submit-button">Guardar Factura</button>
                 </form>
             </div>
-        </div>
+        </div>  
 
     </main>
 
+<script>
+    window.facturasDjango = [
+        {% for f in facturas %}
+        {
+            'fecha': '{{ f.fecha|date:"Y-m-d" }}',
+            'numero': '{{ f.numero|escapejs }}',
+            'descripcion': '{{ f.descripcion|escapejs }}',
+            'nit': '{{ f.nit|escapejs }}',
+            'categoria': '{{ f.categoria|escapejs }}',
+            'monto': '{{ f.monto }}',
+            'tipo_monto': '{{ f.tipo_monto }}'
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
 {% block scripts %}
 {# --- Script JS (SIN CAMBIOS) --- #}
 <script>
@@ -281,86 +320,41 @@
 
         let facturasActuales = [];
 
-        // --- Funciones (actualizarResumenGeneral, actualizarTablaDetallada, cargarDatosIniciales, etc.) SIN CAMBIOS ---
-         function actualizarResumenGeneral() { /*...*/
-             console.log("v7: Actualizando resumen global...");
-            const resumenGlobalExiste = globalTotalsTbody && noTotalsMessage;
-            if (!resumenGlobalExiste) return;
+        // --- Cargar facturas del backend (Django) ---
+        function cargarFacturasDesdeBackend() {
+            // Django inyecta las facturas en una variable global
+            const facturasDjango = window.facturasDjango || [];
+            facturasActuales = facturasDjango.map(f => {
+                // Calcular neto, iva, acumulado según tipo_monto
+                let neto = 0, iva = 0, acumulado = 0;
+                if (f.tipo_monto === 'neto') {
+                    neto = Number(f.monto) || 0;
+                    iva = neto * IVA_RATE;
+                    acumulado = neto + iva;
+                } else {
+                    acumulado = Number(f.monto) || 0;
+                    neto = acumulado / (1 + IVA_RATE);
+                    iva = acumulado - neto;
+                }
+                return {
+                    date: f.fecha || '',
+                    numero: f.numero || '',
+                    label: f.descripcion || '',
+                    nit: f.nit || '',
+                    category: f.categoria || '',
+                    neto: parseFloat(neto.toFixed(2)),
+                    iva: parseFloat(iva.toFixed(2)),
+                    acumulado: parseFloat(acumulado.toFixed(2)),
+                };
+            });
+            actualizarResumenGeneral();
+            actualizarTablaDetallada();
+        }
 
-            const facturas = facturasActuales;
-            const cantidadFacturas = facturas.length;
-
-            if (cantidadFacturas > 0) {
-                let totalAcumuladoGeneral = 0; let totalIvaGeneral = 0; let totalBaseGeneral = 0;
-                facturas.forEach(factura => {
-                    totalBaseGeneral += (Number(factura.neto) || 0);
-                    totalAcumuladoGeneral += (Number(factura.acumulado) || 0);
-                    totalIvaGeneral += (Number(factura.iva) || 0);
-                });
-
-                globalTotalsTbody.innerHTML = `
-                    <tr><td>Cantidad Total Facturas</td><td class="numero">${cantidadFacturas}</td></tr>
-                    <tr><td>Valor Total Base (Neto)</td><td class="numero">${currencyFormatter.format(totalBaseGeneral)}</td></tr>
-                    <tr><td>Valor Total IVA (19%)</td><td class="numero">${currencyFormatter.format(totalIvaGeneral)}</td></tr>
-                    <tr><td>Valor Total Facturado</td><td class="numero">${currencyFormatter.format(totalAcumuladoGeneral)}</td></tr>
-                `;
-                noTotalsMessage.classList.add('oculto');
-            } else {
-                 globalTotalsTbody.innerHTML = '';
-                 noTotalsMessage.classList.remove('oculto');
-            }
-         }
-         function actualizarTablaDetallada() { /*...*/
-            if (!tablaDetalladaExiste) { return; }
-            tablaBodyPrincipal.innerHTML = '';
-            const facturas = facturasActuales;
-
-            if (facturas.length > 0) {
-                mensajeVacioPrincipal.classList.add('oculto');
-                [...facturas].sort((a, b) => (b.date || '0').localeCompare(a.date || '0'))
-                  .forEach((factura) => {
-                    const fila = document.createElement('tr');
-                    let fechaFormateada = 'N/A';
-                    if (factura.date?.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        try { const parts = factura.date.split('-'); fechaFormateada = `${parts[2]}/${parts[1]}/${parts[0]}`; } catch (e) { fechaFormateada = factura.date; }
-                    }
-                    const netoFormateado = currencyFormatter.format(Number(factura.neto) || 0);
-                    const ivaFormateado = currencyFormatter.format(Number(factura.iva) || 0);
-                    const acumuladoFormateado = currencyFormatter.format(Number(factura.acumulado) || 0);
-                    const nitMostrado = factura.nit || 'N/A';
-
-                    fila.innerHTML = `
-                        <td>${fechaFormateada}</td> <td class="numero">${factura.numero || 'N/A'}</td>
-                        <td>${factura.label || 'S.D.'}</td> <td class="nit-cell">${nitMostrado}</td>
-                        <td>${factura.category || 'N/A'}</td> <td class="numero">${netoFormateado}</td>
-                        <td class="numero">${ivaFormateado}</td> <td class="numero">${acumuladoFormateado}</td>
-                    `;
-                    tablaBodyPrincipal.appendChild(fila);
-                });
-            } else {
-                mensajeVacioPrincipal.classList.remove('oculto');
-            }
-         }
-         function cargarDatosIniciales() { /*...*/
-              console.log("--- Iniciando carga de datos v7 ---");
-             let datosCargados = []; let usarDatosPorDefecto = false;
-             try {
-                 const datosGuardados = localStorage.getItem(STORAGE_KEY_PRINCIPAL);
-                 if (datosGuardados) {
-                     const parsedData = JSON.parse(datosGuardados);
-                     if (Array.isArray(parsedData) && parsedData.length > 0) {
-                          if (parsedData.every(f => f && typeof f === 'object' && f.date && f.numero && typeof f.neto !== 'undefined')) {
-                               datosCargados = parsedData.map(f => ({ ...f, nit: f.nit || '', neto: Number(f.neto) || 0, iva: Number(f.iva) || 0, acumulado: Number(f.acumulado) || 0 }));
-                           } else { usarDatosPorDefecto = true; console.warn("Formato inválido en localStorage."); }
-                     } else { if(Array.isArray(parsedData)) console.log("localStorage vacío."); else usarDatosPorDefecto = true;}
-                 } else { usarDatosPorDefecto = true; }
-             } catch (error) { console.error("Error localStorage:", error); usarDatosPorDefecto = true; }
-
-             facturasActuales = usarDatosPorDefecto ? [...allDataDefaultHistorial] : datosCargados;
-             actualizarResumenGeneral();
-             actualizarTablaDetallada();
-             console.log("--- Fin carga de datos v7 ---");
-         }
+        // --- Sobrescribir cargarDatosIniciales para usar backend ---
+        function cargarDatosIniciales() {
+            cargarFacturasDesdeBackend();
+        }
 
         // --- Lógica del Modal y Submit (SIN CAMBIOS) ---
         if (uploadBtn && modal && closeBtn) { /* Listeners para abrir/cerrar modal */
