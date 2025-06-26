@@ -228,11 +228,86 @@ def diccionario(request):
 def dml(request):
     return render(request, 'paginas/dml.html')
 
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+
 def solicitarContra(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        if not email:
+            return render(request, 'paginas/solicitarContraseña.html', {'error': 'Por favor ingresa un correo.'})
+        try:
+            usuario = Usuario.objects.get(email=email)
+        except Usuario.DoesNotExist:
+            # Para no revelar si el correo existe o no
+            return render(request, 'paginas/solicitarContraseña.html', {'success': True})
+        token = default_token_generator.make_token(usuario)
+        uid = urlsafe_base64_encode(force_bytes(usuario.pk))
+        reset_url = request.build_absolute_uri(
+            reverse('cambiarContra') + f'?uid={uid}&token={token}'
+        )
+        from django.core.mail import EmailMultiAlternatives
+        subject = 'Restablecimiento de contraseña IVACOL'
+        html_message = render_to_string('paginas/email_reset_password.html', {
+            'usuario': usuario,
+            'reset_url': reset_url,
+        })
+        text_message = f"Hola {usuario.first_name},\n\nSolicitaste un cambio de tu contraseña, a continuación puedes hacerlo efectivo. Si no fuiste tú, puedes ignorar este mensaje.\n\nEnlace: {reset_url}\n\nSaludos,\nEquipo IVACOL"
+        print('Enviando a:', usuario.email)
+        print('Asunto:', subject)
+        print('Texto plano:', text_message)
+        print('HTML:', html_message)
+        try:
+            email = EmailMultiAlternatives(
+                subject,
+                text_message,
+                'ivacolom.app@gmail.com',
+                [usuario.email],
+            )
+            email.attach_alternative(html_message, "text/html")
+            email.send(fail_silently=False)
+            return render(request, 'paginas/solicitarContraseña.html', {'success': True, 'debug': text_message})
+        except Exception as e:
+            return render(request, 'paginas/solicitarContraseña.html', {'error': f'Error al enviar el correo: {e}', 'debug': text_message})
     return render(request, 'paginas/solicitarContraseña.html')
 
 def cambiarContra(request):
-    return render(request, 'paginas/cambiarContraseña.html')
+    from django.contrib.auth.tokens import default_token_generator
+    from django.utils.http import urlsafe_base64_decode
+    from django.contrib.auth import get_user_model
+    UserModel = get_user_model()
+
+    if request.method == 'GET':
+        uidb64 = request.GET.get('uid')
+        token = request.GET.get('token')
+        if not uidb64 or not token:
+            return render(request, 'paginas/cambiarContraseña.html', {'error': 'Enlace inválido o incompleto.'})
+        return render(request, 'paginas/cambiarContraseña.html', {'uid': uidb64, 'token': token})
+
+    if request.method == 'POST':
+        uidb64 = request.POST.get('uid')
+        token = request.POST.get('token')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+        if not uidb64 or not token:
+            return render(request, 'paginas/cambiarContraseña.html', {'error': 'Enlace inválido o incompleto.'})
+        if not password1 or not password2:
+            return render(request, 'paginas/cambiarContraseña.html', {'error': 'Debes ingresar la nueva contraseña dos veces.', 'uid': uidb64, 'token': token})
+        if password1 != password2:
+            return render(request, 'paginas/cambiarContraseña.html', {'error': 'Las contraseñas no coinciden.', 'uid': uidb64, 'token': token})
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = UserModel.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, UserModel.DoesNotExist):
+            return render(request, 'paginas/cambiarContraseña.html', {'error': 'Usuario inválido.', 'uid': uidb64, 'token': token})
+        if not default_token_generator.check_token(user, token):
+            return render(request, 'paginas/cambiarContraseña.html', {'error': 'El enlace de restablecimiento es inválido o ha expirado.'})
+        user.set_password(password1)
+        user.save()
+        return render(request, 'paginas/cambiarContraseña.html', {'success': '¡Contraseña restablecida exitosamente! Ya puedes iniciar sesión.'})
 
 def confirmarContra(request):
     return render(request, 'paginas/confirmarContraseña.html')
