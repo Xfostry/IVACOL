@@ -405,26 +405,68 @@
                      });
                      const result = await response.json();
                      if (result.success) {
-                         modal.style.display = "none";
-                         invoiceForm.reset();
-                         setTimeout(function() {
-                             alert('¡Factura guardada en el servidor!');
-                         }, 100);
-                         // Opcional: actualizar la tabla desde el backend
+                     modal.style.display = "none";
+                     invoiceForm.reset();
+                     setTimeout(function() {
+                     alert('¡Factura guardada en el servidor!');
+                     }, 100);
+                     // Actualizar la tabla automáticamente
+                     actualizarFacturasDesdeBackend();
                      } else {
-                         alert('Error al guardar la factura: ' + (result.error || ''));
+                     alert('Error al guardar la factura: ' + (result.error || ''));
                      }
-                 } catch (err) {
+                     } catch (err) {
                      alert('Error de red o servidor.');
-                 }
-             });
-         }
-
-        // --- CARGA INICIAL ---
-        cargarDatosIniciales();
-
-    });
-</script>
+                     }
+                     });
+                     }
+                     
+                     // Función para actualizar la tabla de facturas desde el backend
+                     async function actualizarFacturasDesdeBackend() {
+                     try {
+                     const response = await fetch('/asistencia/get_facturas_usuario/', {
+                     method: 'GET',
+                     credentials: 'include'
+                     });
+                     const data = await response.json();
+                     if (data.success) {
+                     // Actualizar la tabla HTML directamente
+                     const facturas = data.facturas;
+                     const tbody = document.querySelector('.invoice-table tbody');
+                     if (tbody) {
+                     tbody.innerHTML = '';
+                     if (facturas.length > 0) {
+                     for (const factura of facturas) {
+                     const row = document.createElement('tr');
+                     row.innerHTML = `
+                     <td>${factura.fecha}</td>
+                     <td class="numero">${factura.numero}</td>
+                     <td>${factura.descripcion}</td>
+                     <td class="nit-cell">${factura.nit || 'N/A'}</td>
+                     <td>${factura.categoria}</td>
+                     <td class="numero">${Number(factura.monto).toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:15})}</td>
+                     <td class="numero">${Number(factura.iva).toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:15})}</td>
+                     <td class="numero">${Number(factura.total).toLocaleString('en', {minimumFractionDigits:2, maximumFractionDigits:15})}</td>
+                     `;
+                     tbody.appendChild(row);
+                     }
+                     } else {
+                     const row = document.createElement('tr');
+                     row.innerHTML = '<td colspan="8" style="text-align:center;">No hay facturas registradas.</td>';
+                     tbody.appendChild(row);
+                     }
+                     }
+                     }
+                     } catch (err) {
+                     // Error silencioso
+                     }
+                     }
+                     
+                     // --- CARGA INICIAL ---
+                     cargarDatosIniciales();
+                     
+                     });
+                     </script>
 {% endblock scripts %}
 
 {% endblock Contenido %}

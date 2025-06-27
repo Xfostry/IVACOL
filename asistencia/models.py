@@ -22,7 +22,7 @@ class FacturaSubida(models.Model):
     nit = models.CharField(max_length=50)
     fecha = models.DateField(null=True, blank=True)
     categoria = models.CharField(max_length=100)
-    monto = models.DecimalField(max_digits=12, decimal_places=2)
+    monto = models.DecimalField(max_digits=30, decimal_places=15)
     tipo_monto = models.CharField(max_length=20, default='neto')
     archivo = models.FileField(upload_to='facturas/', null=True, blank=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)

@@ -101,8 +101,10 @@ def subir_factura(request):
 
         try:
             monto_decimal = float(monto)
+            if monto_decimal < 0:
+                raise ValueError('El monto no puede ser negativo')
         except Exception:
-            monto_decimal = 0
+            return JsonResponse({'success': False, 'error': 'El monto ingresado no es válido. Debe ser un número positivo.'}, status=400)
 
         factura = FacturaSubida(
             usuario=usuario_obj,
@@ -340,6 +342,31 @@ def paginaPrincipal(request):
         'facturas': facturas_context,
     }
     return render(request, 'ivapp/paginaPrincipal.html', context)
+
+@login_required(login_url='login')
+def get_facturas_usuario(request):
+    try:
+        usuario_obj = Usuario.objects.get(username=request.user.username)
+    except Usuario.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Usuario no encontrado'}, status=400)
+    facturas_usuario = FacturaSubida.objects.filter(usuario=usuario_obj).order_by('-fecha_subida')[:6]
+    facturas_context = []
+    for f in facturas_usuario:
+        iva = float(f.monto) * 0.19 if f.tipo_monto == 'neto' else float(f.monto) - (float(f.monto) / 1.19)
+        neto = float(f.monto) if f.tipo_monto == 'neto' else float(f.monto) / 1.19
+        total = neto + iva
+        facturas_context.append({
+            'id': f.id,
+            'fecha': f.fecha.strftime('%d/%m/%Y') if f.fecha else '',
+            'numero': f.numero,
+            'descripcion': f.descripcion,
+            'nit': f.nit,
+            'categoria': f.categoria,
+            'monto': f"{neto:.15f}",
+            'iva': f"{iva:.15f}",
+            'total': f"{total:.15f}",
+        })
+    return JsonResponse({'success': True, 'facturas': facturas_context})
 
 @login_required(login_url='login')
 def perfil(request):
