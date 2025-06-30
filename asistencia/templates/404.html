@@ -1,25 +1,201 @@
 {% load static %}
-
 <!doctype html>
 <html lang="es">
-    <head>
-        <title>{% block titulo %} Página no encontrada {% endblock  %}</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
-    </head>
+<head>
+    <title>{% block titulo %} No hemos encontrado la página... ¡aún! {% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    
+    <!-- Fuente Pixelada de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <!-- Tu archivo CSS personalizado -->
+    <style>
+        /* ---- ESTILOS GLOBALES Y FONDO ---- */
+body {
+    background-color: #1a1a1a;
+    background-image: url("{% static 'images/nada.jpg' %}");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: center;
+    font-family: 'Press Start 2P', cursive;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden; /* Evita barras de scroll */
+}
 
-    <body class="bg-light">
-        <div class="container text-center mt-5">
-            <h1 class="display-1 fw-bold text-danger">404</h1>
-            <p class="lead">¡Oops! Parece que te has perdido.</p>
-            <img src="{% static 'images/404.png' %}" alt="Lost" class="img-fluid mb-4" style="max-width: 300px;">
-            <p class="mb-4">La página que buscas no existe. Pero no te preocupes, ¡te ayudaremos a encontrar el camino de regreso!</p>
-            <a href="/" class="btn btn-primary btn-lg">Volver al inicio</a>
-        </div>
+/* ---- EL CONTENEDOR GRID ---- */
+.layout-container {
+    display: grid;
+    /* Definimos una rejilla de 8 columnas y 6 filas para máxima precisión */
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(6, auto);
+    gap: 10px 20px;
+    width: 90vw;
+    max-width: 1000px;
+    align-items: center; /* Centra los elementos verticalmente en sus celdas */
+    text-shadow: 2px 2px #000000;
+}
 
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    </body>
+/* ---- POSICIONAMIENTO DE CADA ELEMENTO EN LA REJILLA ---- */
+
+/* Título */
+.title-back { 
+    grid-column: 1 / span 3; /* Empieza en la columna 1, ocupa 3 */
+    grid-row: 1; 
+    font-size: clamp(3rem, 10vw, 6rem); /* Tamaño de fuente adaptable */
+    text-align: right;
+}
+.title-arrow { 
+    grid-column: 4 / span 1; 
+    grid-row: 1;
+    max-width: 100%;
+    align-self: center; /* Alinea la flecha verticalmente */
+    position: relative;
+    left: +300px; /* Ajusta la posición horizontal */
+    z-index: 1; /* Asegura que la flecha esté detrás del texto */
+}
+.title-to-the {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    text-align: right;
+    line-height: 1; /* Ajusta el espacio vertical */
+}
+.title-homepage {
+    grid-column: 3 / span 4;
+    grid-row: 2;
+    font-size: clamp(3rem, 10vw, 5.5rem);
+}
+
+/* Coche y personajes */
+.delorean-car {
+    grid-column: 1 / span 4;
+    grid-row: 3 / span 4; /* Ocupa desde la fila 3 hasta el final */
+    max-width: 100%;
+    object-fit: contain;
+    align-self: end; /* Pega la imagen a la parte de abajo de su celda */
+}
+
+/* Textos de error y opciones */
+.text-404 {
+    grid-column: 6 / span 3;
+    grid-row: 4;
+    font-size: clamp(3rem, 9vw, 5rem);
+    color: #ff0000;
+    position: relative;
+    text-align: center;
+}
+.text-not-found {
+    grid-column: 6 / span 3;
+    grid-row: 3;
+    font-size: clamp(1.2rem, 3.5vw, 2rem);
+    text-align: center;
+    justify-self: center;
+}
+
+.text-404 {
+    grid-column: 6 / span 3;
+    grid-row: 4;
+    font-size: clamp(3rem, 9vw, 5rem);
+    color: #ff0000;
+    position: relative;
+    text-align: center;
+    justify-self: center;
+}
+.text-question {
+    grid-column: 6 / span 3;
+    grid-row: 5;
+    font-size: clamp(0.8rem, 2vw, 1.3rem);
+    text-align: center;
+}
+.btn-yes {
+    grid-column: 7 / span 1;
+    grid-row: 6;
+    font-size: clamp(1rem, 2.5vw, 1.7rem);
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+.btn-no {
+    grid-column: 8 / span 1;
+    grid-row: 6;
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    text-decoration: none;
+    color: white;
+    text-align: center;
+}
+
+/* Efectos hover */
+.btn-yes:hover, .btn-no:hover {
+    color: #ff0000;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+/* ---- RESPONSIVE DESIGN PARA MÓVILES ---- */
+@media (max-width: 768px) {
+    body {
+        align-items: flex-start; /* Permite scroll en pantallas pequeñas */
+        overflow: auto;
+    }
+    .layout-container {
+        /* Cambiamos a una disposición de una sola columna */
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto;
+        width: 95vw;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    /* Reasignamos todos los elementos a la única columna */
+    .layout-container > * {
+        grid-column: 1 / -1; /* Todos los elementos ocupan todo el ancho */
+        text-align: center;
+    }
+
+    /* Ocultamos los títulos grandes que no caben bien */
+    .title-back, .title-arrow, .title-to-the, .title-homepage {
+        display: none;
+    }
+    
+    /* Reordenamos para que tenga sentido en móvil */
+    .text-404 { grid-row: 1; margin-top: 20px; }
+    .text-not-found { grid-row: 2; }
+    .delorean-car { grid-row: 3; margin: 20px 0; }
+    .text-question { grid-row: 4; }
+    
+    .btn-yes { grid-row: 5; justify-self: center; } /* Para que los botones no ocupen todo el ancho */
+    .btn-no { grid-row: 6; justify-self: center; margin-bottom: 20px; }
+}
+    </style>
+</head>
+
+<body>
+    <div class="layout-container">
+        <!-- Textos del título principal -->
+        <div class="title-back">REGRESA</div>
+        <img src="{% static 'images/FlechaIzq.jpg' %}" alt="Arrow" class="title-arrow"/>
+        <div class="title-to-the">A <br>LA</div>
+        <div class="title-homepage">PÁGINA PRINCIPAL</div>
+        
+        <!-- Contenido principal y error -->
+        <div class="text-404">404</div>
+        <div class="text-not-found">PÁGINA NO ENCONTRADA</div>
+
+        <!-- Imagen del coche -->
+        <img src="{% static 'images/DeLorean.png' %}" alt="DeLorean Time Machine" class="delorean-car"/>
+
+        <!-- Opciones de navegación -->
+        <div class="text-question">¿VOLVER AL INICIO?</div>
+        <a href="{% url "login" %} " class="btn-yes">SÍ</a>
+    </div>
+    <!--- SE PUEDE CAMBIAR POR ESTE: https://codepen.io/robinselmer/pen/vJjbOZ -->
+</body>
 </html>
