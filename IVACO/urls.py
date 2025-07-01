@@ -37,6 +37,7 @@ urlpatterns = [
     path('registrarse/', views.registrarse, name='registrarse'),
     path('tratamiento/', views.tratamiento, name='tratamiento'),
     path('DeclaracionDatos/', views.DeclaracionDatos, name='DeclaracionDatos'),
+    path('invitar/', views.invitar_registro, name='invitar_registro'),
     path('crud/', views.crud, name='crud'),
     path('contactenos/', views.contactenos, name='contactenos'),
     path('diccionario/', views.diccionario, name='diccionario'),
@@ -64,6 +65,7 @@ urlpatterns = [
     path('borrar_factura/<int:id>/', views.borrar_factura, name='borrar_factura'),
     path('editar_factura/<int:id>/', views.editar_factura, name='editar_factura'),
     path('get_facturas_usuario/', views.get_facturas_usuario, name='get_facturas_usuario'),
+    path('factura_archivo/<int:id>/', views.factura_archivo, name='factura_archivo'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

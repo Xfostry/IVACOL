@@ -1,6 +1,27 @@
+<<<<<<< HEAD
 {% extends 'ingresos/admin_base.html' %}
 {% block titulo %} Panel de Control de Facturas (Admin) {% endblock titulo %}
 {% block Contenido %}
+=======
+{% extends "plantillas.html" %}
+{% load static %}
+
+{% block titulo %} Panel de Control de Facturas{% endblock titulo %}
+
+{% block Contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block head_titulo %} Panel de Control de Facturas (LS) {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/facturaAdmin.css' %}">
+        
+</head>
+<body>
+<br><br>
+
+>>>>>>> 9bc6032db58650336c82653647d7be59467f0ea0
 <div class="container-admin-control" id="admin-main-container">
     <div class="titulo-contenedor">
         <h1 class="titulo-principal-admin">Panel de Control de Facturas</h1>

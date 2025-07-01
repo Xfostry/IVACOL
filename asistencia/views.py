@@ -232,9 +232,35 @@ def dml(request):
 
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+
+def invitar_registro(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        if not nombre or not correo:
+            return render(request, 'paginas/inicio.html', {'error': 'Debes ingresar nombre y correo.'})
+        # Construir enlace a tratamiento
+        url_tratamiento = request.build_absolute_uri(reverse('tratamiento'))
+        asunto = 'Invitación a registrarte en IVACOL'
+        mensaje = f"Hola {nombre}, ya puedes iniciar tu registro en nuestra página, haz clic aquí: {url_tratamiento}"
+        try:
+            send_mail(
+                asunto,
+                mensaje,
+                settings.DEFAULT_FROM_EMAIL,
+                [correo],
+                fail_silently=False,
+            )
+            return render(request, 'paginas/inicio.html', {'success': 'Correo enviado correctamente.'})
+        except Exception as e:
+            return render(request, 'paginas/inicio.html', {'error': f'Error al enviar el correo: {e}'})
+    return redirect('inicio')
 
 def solicitarContra(request):
     if request.method == 'POST':
@@ -554,6 +580,7 @@ def historial_facturas(request):
             'monto': f.monto,
             'iva': iva,
             'total': total,
+            'archivo': f.archivo.url if f.archivo else None,
         })
     context = {
         'facturas': facturas_context,
@@ -596,3 +623,25 @@ def editar_factura(request, id):
         'factura': factura
     }
     return render(request, 'ivapp/editar_factura.html', context)
+
+
+# Vista para mostrar la imagen o archivo de la factura
+from django.http import Http404
+import mimetypes
+
+@login_required(login_url='login')
+def factura_archivo(request, id):
+    factura = get_object_or_404(FacturaSubida, id=id, usuario=request.user)
+    if not factura.archivo:
+        return HttpResponse('No hay archivo adjunto para esta factura.', status=404)
+    file_path = factura.archivo.path
+    file_mime, _ = mimetypes.guess_type(file_path)
+    if file_mime and file_mime.startswith('image/'):
+        # Es una imagen, mostrarla en el navegador
+        with open(file_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type=file_mime)
+    else:
+        # No es imagen, ofrecer descarga
+        response = FileResponse(open(file_path, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{factura.archivo.name.split("/")[-1]}"'
+        return response
