@@ -232,9 +232,35 @@ def dml(request):
 
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from django.shortcuts import render, redirect
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+
+def invitar_registro(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre', '').strip()
+        correo = request.POST.get('correo', '').strip()
+        if not nombre or not correo:
+            return render(request, 'paginas/inicio.html', {'error': 'Debes ingresar nombre y correo.'})
+        # Construir enlace a tratamiento
+        url_tratamiento = request.build_absolute_uri(reverse('tratamiento'))
+        asunto = 'Invitación a registrarte en IVACOL'
+        mensaje = f"Hola {nombre}, ya puedes iniciar tu registro en nuestra página, haz clic aquí: {url_tratamiento}"
+        try:
+            send_mail(
+                asunto,
+                mensaje,
+                settings.DEFAULT_FROM_EMAIL,
+                [correo],
+                fail_silently=False,
+            )
+            return render(request, 'paginas/inicio.html', {'success': 'Correo enviado correctamente.'})
+        except Exception as e:
+            return render(request, 'paginas/inicio.html', {'error': f'Error al enviar el correo: {e}'})
+    return redirect('inicio')
 
 def solicitarContra(request):
     if request.method == 'POST':

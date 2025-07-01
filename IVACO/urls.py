@@ -37,6 +37,7 @@ urlpatterns = [
     path('registrarse/', views.registrarse, name='registrarse'),
     path('tratamiento/', views.tratamiento, name='tratamiento'),
     path('DeclaracionDatos/', views.DeclaracionDatos, name='DeclaracionDatos'),
+    path('invitar/', views.invitar_registro, name='invitar_registro'),
     path('crud/', views.crud, name='crud'),
     path('contactenos/', views.contactenos, name='contactenos'),
     path('diccionario/', views.diccionario, name='diccionario'),

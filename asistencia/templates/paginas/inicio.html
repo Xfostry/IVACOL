@@ -201,38 +201,29 @@
             <p class="col-lg-10 fs-4">Queremos tener un control de usuarios para poner administrar un mejor servicio y así ayudar a más personas, si quieres tener acceso puedes llenar la información para recibir una respuesta.</p>
           </div>
           <div class="col-md-10 mx-auto col-lg-5">
-            <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary">
+            <form class="p-4 p-md-5 border rounded-3 bg-body-tertiary" method="post" action="{% url 'invitar_registro' %}">
+              {% csrf_token %}
               <h2 class="styled-heading">Suscribirme</h2>
+              {% if success %}
+                <div class="alert alert-success">{{ success }}</div>
+              {% endif %}
+              {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+              {% endif %}
               <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="" name="correo" id="correo" required>
+                <input type="email" class="form-control" id="floatingInput" placeholder="" name="correo" required>
                 <label for="floatingInput">Dirección de correo</label>
               </div>
               <div class="form-floating mb-3">
-                <input type="name" class="form-control" id="Name" placeholder="" name="nombre" id="nombre" required>
+                <input type="text" class="form-control" id="Name" placeholder="" name="nombre" required>
                 <label for="Name">Nombre</label>
               </div>
               <div class="checkbox mb-3">
                 <label>
-                  <input type="checkbox" value="remember-me"> Acepto el tratamiento de mis datos personales.
+                  <input type="checkbox" value="remember-me" required> Acepto el tratamiento de mis datos personales.
                 </label>
               </div>
-              <button class="w-100 btn btn-lg btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#submitModal">Enviar</button>
-              <div class="modal fade" id="submitModal" tabindex="-1" aria-labelledby="submitModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="submitModalLabel">Formulario Enviado</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      Gracias por enviar tu información. Nos pondremos en contacto contigo pronto.
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <button class="w-100 btn btn-lg btn-primary" type="submit">Enviar</button>
               <hr class="my-4">
               <small class="text-body-secondary">Al dar clic en Enviar, aceptas los términos de uso.</small>
             </form>
