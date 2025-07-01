@@ -577,6 +577,7 @@ def historial_facturas(request):
             'monto': f.monto,
             'iva': iva,
             'total': total,
+            'archivo': f.archivo.url if f.archivo else None,
         })
     context = {
         'facturas': facturas_context,
@@ -619,3 +620,25 @@ def editar_factura(request, id):
         'factura': factura
     }
     return render(request, 'ivapp/editar_factura.html', context)
+
+
+# Vista para mostrar la imagen o archivo de la factura
+from django.http import Http404
+import mimetypes
+
+@login_required(login_url='login')
+def factura_archivo(request, id):
+    factura = get_object_or_404(FacturaSubida, id=id, usuario=request.user)
+    if not factura.archivo:
+        return HttpResponse('No hay archivo adjunto para esta factura.', status=404)
+    file_path = factura.archivo.path
+    file_mime, _ = mimetypes.guess_type(file_path)
+    if file_mime and file_mime.startswith('image/'):
+        # Es una imagen, mostrarla en el navegador
+        with open(file_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type=file_mime)
+    else:
+        # No es imagen, ofrecer descarga
+        response = FileResponse(open(file_path, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{factura.archivo.name.split("/")[-1]}"'
+        return response

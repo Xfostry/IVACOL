@@ -141,6 +141,7 @@
             <thead>
                 <tr>
                     <th>Fecha</th>
+                    <th>Imagen</th>
                     <th class="numero-header">Número</th>
                     <th>Descripción</th>
                     <th class="nit-header">NIT</th>
@@ -156,6 +157,13 @@
                     {% for factura in facturas %}
                         <tr>
                             <td>{{ factura.fecha|date:"d/m/Y" }}</td>
+                            <td>
+                                {% if factura.archivo %}
+                                    <a href="{% url 'factura_archivo' factura.id %}" target="_blank">Ver factura</a>
+                                {% else %}
+                                    Sin archivo
+                                {% endif %}
+                            </td>
                             <td class="numero">{{ factura.numero }}</td>
                             <td>{{ factura.descripcion }}</td>
                             <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
