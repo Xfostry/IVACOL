@@ -6,6 +6,11 @@ class UsuarioForm(forms.ModelForm):
         model = Usuario
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.rol:
+            self.fields['rol'].initial = 'usuario'
+
 class LoginForm(forms.Form):
     username = forms.CharField(
         widget=forms.TextInput(

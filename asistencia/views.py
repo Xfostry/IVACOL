@@ -518,7 +518,10 @@ def user_login(request):
             if user is not None:
                 if user.is_active:
                     auth_login(request, user)
-                    return redirect('paginaPrincipal') 
+                    if hasattr(user, 'rol') and user.rol == 'admin':
+                        return redirect('InicioAdm')
+                    else:
+                        return redirect('paginaPrincipal')
                 else:
                     messages.error(request, "Usuario inactivo")
             else:

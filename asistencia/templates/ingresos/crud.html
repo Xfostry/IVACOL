@@ -1,0 +1,385 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %} Crud Usuarios {% endblock  %}</title> {# Título más específico #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Estilos del tema (sin cambios) */
+        .custom-theme-toggle {
+            border-right: 2px solid #ccc; /* Add a right border */
+            padding: 0.25rem 0.5rem; /* Adjust padding for a smaller button */
+            font-size: 0.875rem; /* Smaller font size */
+            background-color: #007bff; /* Blue background */
+            color: #ffffff; /* White text color */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition */
+            margin-right: 1rem; /* Custom margin to separate from the search form */
+        }
+
+        .custom-theme-toggle:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            color: #ffffff; /* White text on hover */
+        }
+
+        .dark-mode .custom-theme-toggle {
+            background-color: #007bff; /* Blue background for dark mode */
+            color: #ffffff; /* White text color */
+            border-color: #007bff; /* Blue border color */
+        }
+
+        .dark-mode .custom-theme-toggle:hover {
+            background-color: #0056b3; /* Darker blue on hover in dark mode */
+            color: #ffffff; /* White text on hover */
+        }
+        .btn-theme-toggle {
+            background-color: #007bff; /* Blue background */
+            color: #ffffff; /* White text color */
+            border: 2px solid #ffffff; /* White border */
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Smooth transition */
+            padding: 0.25rem 0.5rem; /* Adjust padding for a smaller button */
+            font-size: 0.875rem; /* Smaller font size */
+        }
+
+        .btn-theme-toggle:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            color: #ffffff; /* White text on hover */
+            border-color: #ffffff; /* Maintain white border on hover */
+        }
+
+        /* Opcional: Estilo para centrar el texto en la columna Rol */
+        .rol-column {
+            text-align: center;
+        }
+         .rol-header {
+             text-align: center;
+         }
+    </style>
+</head>
+<body class="container mt-5">
+<br><br><br>
+    <h2 class="text-center mb-4">Administrar Usuarios</h2>
+
+    <!-- Campo de búsqueda (sin cambios) -->
+    <div class="mb-3">
+        <input type="text" id="searchInput" class="form-control" placeholder="Buscar por ID, Nombre, Correo o Rol">
+    </div>
+
+    <!-- Formulario para agregar usuarios -->
+    <form id="userForm" class="mb-4 border p-3 rounded bg-light shadow-sm"> {# Estilos añadidos para destacar #}
+        <h5 class="mb-3">Agregar Nuevo Usuario</h5>
+        <div class="row g-2"> {# Usar grid para mejor alineación #}
+            <div class="col-md">
+                <input type="text" id="name" class="form-control form-control-sm" placeholder="Nombre" required>
+            </div>
+            <div class="col-md">
+                <input type="email" id="email" class="form-control form-control-sm" placeholder="Correo Electrónico" required>
+            </div>
+            <div class="col-md">
+                <input type="text" id="phone" class="form-control form-control-sm" placeholder="Teléfono" required>
+            </div>
+             <!-- ========================== -->
+             <!-- NUEVO CAMPO: ROL          -->
+             <!-- ========================== -->
+            <div class="col-md-2"> {# Ajustar ancho si es necesario #}
+                <select id="rol" class="form-select form-select-sm" required>
+                    <option value="" disabled selected>Rol...</option>
+                    <option value="usuario">Usuario</option>
+                    <option value="empresa">Empresa</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+             <!-- ========================== -->
+            <div class="col-md-auto"> {# Botón ocupa su espacio #}
+                <button type="submit" class="btn btn-success btn-sm w-100">Agregar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Mensajes de éxito/error (sin cambios) -->
+    <div id="message" class="alert d-none"></div>
+
+    <!-- Tabla de usuarios -->
+    <div class="table-responsive"> {# Mejor para tablas en móviles #}
+        <table class="table table-bordered table-striped table-hover"> {# Clases Bootstrap añadidas #}
+            <thead class="table-dark"> {# Cabecera oscura #}
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th class="rol-header">Rol</th>  {# NUEVO: Cabecera Rol #}
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userTable">
+                <!-- Usuarios se insertarán aquí -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Editar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <input type="hidden" id="editUserId">
+                        <div class="mb-3"> {# Aumentado margen inferior #}
+                            <label for="editName" class="form-label">Nombre:</label>
+                            <input type="text" id="editName" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                             <label for="editEmail" class="form-label">Correo Electrónico:</label>
+                            <input type="email" id="editEmail" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                             <label for="editPhone" class="form-label">Teléfono:</label>
+                            <input type="text" id="editPhone" class="form-control" required>
+                        </div>
+                         <!-- ========================== -->
+                         <!-- NUEVO CAMPO: ROL (Editar) -->
+                         <!-- ========================== -->
+                        <div class="mb-3">
+                             <label for="editRol" class="form-label">Rol:</label>
+                            <select id="editRol" class="form-select" required>
+                                <option value="usuario">Usuario</option>
+                                <option value="empresa">Empresa</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                         <!-- ========================== -->
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            cargarUsuarios();
+
+            // Agregar usuario
+            document.getElementById("userForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+                agregarUsuario();
+            });
+
+            // Editar usuario
+            document.getElementById("editUserForm").addEventListener("submit", function(event) {
+                event.preventDefault();
+                guardarCambiosUsuario();
+            });
+
+            // Buscar usuarios
+            document.getElementById("searchInput").addEventListener("input", function() {
+                cargarUsuarios(this.value);
+            });
+        });
+
+        function cargarUsuarios(searchTerm = "") {
+            let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            let table = document.getElementById("userTable");
+            table.innerHTML = ""; // Limpiar tabla antes de llenar
+
+            // Filtrar usuarios según el término de búsqueda
+            const searchTermLower = searchTerm.toLowerCase();
+            const usuariosFiltrados = usuarios.filter(user => {
+                const rol = user.rol || ''; // Asegurar que rol exista o sea string vacío
+                return user.id.toString().includes(searchTermLower) ||
+                       user.name.toLowerCase().includes(searchTermLower) ||
+                       user.email.toLowerCase().includes(searchTermLower) ||
+                       rol.toLowerCase().includes(searchTermLower); // <-- Buscar también por rol
+            });
+
+
+            if (usuariosFiltrados.length === 0 && searchTerm) {
+                table.innerHTML = `<tr><td colspan="6" class="text-center">No se encontraron usuarios para "${searchTerm}".</td></tr>`;
+            } else if (usuariosFiltrados.length === 0) {
+                 table.innerHTML = `<tr><td colspan="6" class="text-center">No hay usuarios registrados.</td></tr>`;
+            }
+            else {
+                usuariosFiltrados.forEach(user => {
+                    // Asegurar un valor por defecto si 'rol' no existe en datos antiguos
+                    const userRol = user.rol || 'usuario'; // Asignar 'usuario' por defecto
+
+                    let row = `<tr id="row-${user.id}">
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone}</td>
+                        <td class="rol-column">${userRol}</td>  {# NUEVO: Celda para Rol #}
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="mostrarModalEditar(${user.id})">
+                                <i class="bi bi-pencil-fill"></i> Editar {# Icono Bootstrap opcional #}
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarUsuario(${user.id})">
+                                <i class="bi bi-trash-fill"></i> Eliminar {# Icono Bootstrap opcional #}
+                            </button>
+                        </td>
+                    </tr>`;
+                    table.innerHTML += row;
+                });
+            }
+        }
+
+        function obtenerNuevoID() {
+            let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            if (usuarios.length === 0) return 1;
+            // Encuentra el ID máximo actual y súmale 1
+            const maxId = usuarios.reduce((max, user) => user.id > max ? user.id : max, 0);
+            return maxId + 1;
+        }
+
+        function agregarUsuario() {
+            let name = document.getElementById("name").value.trim();
+            let email = document.getElementById("email").value.trim();
+            let phone = document.getElementById("phone").value.trim();
+            let rol = document.getElementById("rol").value; // <-- Obtener Rol
+
+            // Validación básica (puedes añadir más validaciones de formato)
+            if (name && email && phone && rol) {
+                let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+                // Verificar si el email ya existe (opcional pero recomendado)
+                if (usuarios.some(user => user.email.toLowerCase() === email.toLowerCase())) {
+                    mostrarMensaje("El correo electrónico ya está registrado", "warning");
+                    return;
+                }
+
+                let id = obtenerNuevoID();
+
+                usuarios.push({ id, name, email, phone, rol }); // <-- Añadir Rol al objeto
+                localStorage.setItem("usuarios", JSON.stringify(usuarios));
+                cargarUsuarios(); // Recargar tabla
+                document.getElementById("userForm").reset(); // Limpiar formulario
+                mostrarMensaje("Usuario agregado exitosamente", "success");
+            } else {
+                mostrarMensaje("Por favor, complete todos los campos requeridos", "danger");
+            }
+        }
+
+        function eliminarUsuario(id) {
+            // Confirmación antes de eliminar
+            if (!confirm(`¿Está seguro de que desea eliminar al usuario con ID ${id}?`)) {
+                return; // Cancelar si el usuario dice no
+            }
+
+            let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            id = parseInt(id); // Asegurarse de que el ID sea un número
+
+            let nuevoUsuarios = usuarios.filter(user => user.id !== id);
+
+            // Si el usuario fue encontrado y eliminado
+            if (nuevoUsuarios.length < usuarios.length) {
+                localStorage.setItem("usuarios", JSON.stringify(nuevoUsuarios));
+                cargarUsuarios(); // Recargar la tabla
+                mostrarMensaje("Usuario eliminado exitosamente", "success");
+            } else {
+                mostrarMensaje("Error: No se encontró el usuario para eliminar", "danger");
+            }
+        }
+
+        function mostrarModalEditar(id) {
+            let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            let usuario = usuarios.find(user => user.id === id);
+
+            if (usuario) {
+                document.getElementById("editUserId").value = usuario.id;
+                document.getElementById("editName").value = usuario.name;
+                document.getElementById("editEmail").value = usuario.email;
+                document.getElementById("editPhone").value = usuario.phone;
+                // Establecer el rol seleccionado en el modal
+                document.getElementById("editRol").value = usuario.rol || 'usuario'; // <-- Establecer Rol (con default)
+
+                // Usar API de Bootstrap 5 para mostrar el modal
+                let editUserModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+                editUserModal.show();
+            } else {
+                 mostrarMensaje("Error: No se encontró el usuario para editar", "danger");
+            }
+        }
+
+        function guardarCambiosUsuario() {
+            let id = parseInt(document.getElementById("editUserId").value);
+            let nuevoNombre = document.getElementById("editName").value.trim();
+            let nuevoEmail = document.getElementById("editEmail").value.trim();
+            let nuevoTelefono = document.getElementById("editPhone").value.trim();
+            let nuevoRol = document.getElementById("editRol").value; // <-- Obtener nuevo Rol
+
+            let usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+            let usuarioIndex = usuarios.findIndex(user => user.id === id); // Encontrar índice
+
+            if (usuarioIndex === -1) {
+                 mostrarMensaje("Error: No se encontró el usuario para actualizar", "danger");
+                 return;
+            }
+
+            // Verificar si el nuevo email ya existe en OTRO usuario
+             if (usuarios.some((user, index) => index !== usuarioIndex && user.email.toLowerCase() === nuevoEmail.toLowerCase())) {
+                 mostrarMensaje("El nuevo correo electrónico ya está registrado por otro usuario", "warning");
+                 return;
+             }
+
+
+            if (nuevoNombre && nuevoEmail && nuevoTelefono && nuevoRol) {
+                // Actualizar el objeto en el array
+                usuarios[usuarioIndex] = {
+                    ...usuarios[usuarioIndex], // Mantener otras propiedades si las hubiera
+                    name: nuevoNombre,
+                    email: nuevoEmail,
+                    phone: nuevoTelefono,
+                    rol: nuevoRol // <-- Actualizar Rol
+                };
+
+                localStorage.setItem("usuarios", JSON.stringify(usuarios));
+                cargarUsuarios(); // Recargar tabla
+                mostrarMensaje("Usuario actualizado exitosamente", "success");
+
+                // Usar API de Bootstrap 5 para ocultar el modal
+                let editUserModalEl = document.getElementById('editUserModal');
+                let editUserModalInstance = bootstrap.Modal.getInstance(editUserModalEl);
+                if (editUserModalInstance) {
+                    editUserModalInstance.hide();
+                }
+
+            } else {
+                mostrarMensaje("Por favor, complete todos los campos requeridos", "danger");
+            }
+        }
+
+        function mostrarMensaje(mensaje, tipo) {
+            let messageDiv = document.getElementById("message");
+            messageDiv.className = `alert alert-${tipo} alert-dismissible fade show`; // Clases Bootstrap para alerta con cierre
+            messageDiv.setAttribute('role', 'alert');
+            messageDiv.innerHTML = `
+                ${mensaje}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            messageDiv.classList.remove("d-none");
+
+            // No necesitamos el setTimeout si usamos el botón de cierre de Bootstrap
+            /* setTimeout(() => {
+                messageDiv.classList.add("d-none");
+                 messageDiv.classList.remove('show'); // Asegurarse de quitar 'show'
+            }, 4000); // Aumentado tiempo */
+        }
+    </script>
+    <!-- Scripts de Bootstrap 5 (Popper y JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+     {# Añadir si quieres iconos de Bootstrap #}
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</body>
+</html>
+{% endblock %}
+
+{% block piePagina %} {% endblock %}

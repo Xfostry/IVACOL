@@ -9,7 +9,7 @@ class Usuario(AbstractUser):
     ciudad = models.CharField(max_length=50)
     telefono = models.CharField(max_length=20)
     direccion = models.CharField(max_length=100)
-    rol = models.CharField(max_length=20)
+    rol = models.CharField(max_length=20, default='usuario', blank=False)
     fecha_ingreso = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
