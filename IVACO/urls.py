@@ -66,6 +66,7 @@ urlpatterns = [
     path('editar_factura/<int:id>/', views.editar_factura, name='editar_factura'),
     path('get_facturas_usuario/', views.get_facturas_usuario, name='get_facturas_usuario'),
     path('factura_archivo/<int:id>/', views.factura_archivo, name='factura_archivo'),
+    path('Soporte/', views.Soporte, name='Soporte'),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

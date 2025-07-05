@@ -645,3 +645,6 @@ def factura_archivo(request, id):
         response = FileResponse(open(file_path, 'rb'))
         response['Content-Disposition'] = f'attachment; filename="{factura.archivo.name.split("/")[-1]}"'
         return response
+
+def Soporte(request):
+    return render(request, 'ivapp/soporte.html')

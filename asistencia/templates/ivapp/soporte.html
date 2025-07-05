@@ -1,0 +1,153 @@
+{% extends "plantillas.html" %}
+{% load static %}
+{% block Contenido %}
+<main class="container"><br>
+    <section class="welcome-section">
+        <h2>Contáctanos</h2>
+        <p>¿Tienes dudas, sugerencias o necesitas ayuda? Completa el formulario y nos pondremos en contacto contigo lo antes posible.</p>
+    </section>
+    <section class="actions-section" style="margin-bottom: 0;">
+        <div class="actions-grid" style="grid-template-columns: 1fr 1fr; gap: 40px;">
+            <!-- Información de contacto -->
+            <div class="contact-section" style="padding: 25px;">
+                <h3 style="margin-top:0;">Información de Contacto</h3>
+                <ul style="list-style:none; padding:0;">
+                    <li style="margin-bottom: 18px;">Dirección: Cra. 93 #80-72, Bogotá</li>
+                    <li style="margin-bottom: 18px;">Número: 324 9623203</li>
+                    <li style="margin-bottom: 18px;">Correo: <a href="mailto:ivacol.app@gmail.com">ivacol.app@gmail.com</a></li>
+                    <li>Horario: Lunes a Viernes, 9:00 AM - 6:00 PM</li>
+                </ul>
+            </div>
+            <!-- Formulario de contacto -->
+            <div class="contact-section" style="padding: 25px;">
+                <h3 style="margin-top:0;">Envíanos un Mensaje</h3>
+                <form id="contactForm" novalidate>
+                    <div class="form-group">
+                        <label for="name">Nombre Completo <span style="color:#dc3545;">*</span></label>
+                        <input type="text" id="name" name="name" required placeholder="Ej: Juan Pérez" class="input-contact">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico <span style="color:#dc3545;">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="Ej: juan.perez@correo.com" class="input-contact">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Asunto</label>
+                        <input type="text" id="subject" name="subject" placeholder="Ej: Problema al subir un archivo" class="input-contact">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensaje <span style="color:#dc3545;">*</span></label>
+                        <textarea id="message" name="message" rows="5" required placeholder="Escribe tu mensaje aquí..." class="input-contact"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary submit-button" style="width:100%;margin-top:10px;">Enviar Mensaje</button>
+                    <p id="form-message" class="form-status-message" role="alert" style="margin-top:10px;display:none;"></p>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+<style>
+.contact-section {
+    background: var(--section-bg-light);
+    border-radius: 8px;
+    box-shadow: var(--section-shadow-light, 0 1px 3px rgba(0,0,0,0.05));
+    border: 1px solid var(--section-border-light, #e0e0e0);
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.icon-contact {
+    width:22px;
+    vertical-align:middle;
+    margin-right:10px;
+    filter: none;
+    transition: filter 0.3s;
+}
+.input-contact {
+    width:100%;
+    padding:10px;
+    border-radius:5px;
+    border:1px solid var(--input-border-light,#ccc);
+    background: var(--input-bg-light,#fff);
+    color: var(--body-color-light,#222);
+    margin-bottom: 8px;
+    transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+.input-contact:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52,152,219,0.15);
+}
+.form-status-message.success {
+    background: var(--submit-button-bg-light, #d4edda);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.form-status-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+body.dark-mode .contact-section {
+    background: var(--section-bg-dark,#23272b);
+    box-shadow: var(--section-shadow-dark, 0 5px 15px rgba(0,0,0,0.3));
+    border-color: var(--section-border-dark,#444);
+}
+body.dark-mode .icon-contact {
+    filter: brightness(0) invert(1);
+}
+body.dark-mode .input-contact {
+    background: var(--input-bg-dark,#23272b);
+    color: var(--body-color-dark,#e0e0e0);
+    border-color: var(--input-border-dark,#555);
+}
+body.dark-mode .input-contact:focus {
+    border-color: #5dade2;
+    box-shadow: 0 0 0 3px rgba(93,173,226,0.18);
+}
+body.dark-mode .form-status-message.success {
+    background: #1a3c23;
+    color: #a9dfbf;
+    border-color: #2e6f3e;
+}
+body.dark-mode .form-status-message.error {
+    background: #4d1e24;
+    color: #f5c6cb;
+    border-color: #8b3a44;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    const formMessage = document.getElementById('form-message');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            formMessage.textContent = '';
+            formMessage.classList.remove('success', 'error');
+            formMessage.style.display = 'none';
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const message = document.getElementById('message').value.trim();
+            let isValid = true;
+            let errorMessages = [];
+            if (name === '') { isValid = false; errorMessages.push('El nombre es obligatorio.'); }
+            if (email === '') { isValid = false; errorMessages.push('El correo electrónico es obligatorio.'); }
+            else if (!validateEmail(email)) { isValid = false; errorMessages.push('El formato del correo electrónico no es válido.'); }
+            if (message === '') { isValid = false; errorMessages.push('El mensaje es obligatorio.'); }
+            if (isValid) {
+                formMessage.textContent = 'Mensaje enviado correctamente.';
+                formMessage.classList.add('success');
+                formMessage.style.display = 'block';
+                contactForm.reset();
+            } else {
+                formMessage.textContent = errorMessages.join(' ');
+                formMessage.classList.add('error');
+                formMessage.style.display = 'block';
+            }
+        });
+    }
+    function validateEmail(email) {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return re.test(String(email).toLowerCase());
+    }
+});
+</script>
+{% endblock Contenido %}
