@@ -1,56 +1,52 @@
 {% extends 'ingresos/admin_base.html' %}
 {% block Contenido %}
-<div class="text-end">
-    <a name="" id="" class="btn btn-success" href="{% url 'CrearAdm' %}" role="button">Agregar Usuario</a>
-</div>
-<div class="card">
-    <div class="card-body">
-        <h4 class="card-title">Usuarios</h4>
-        <div class="table-responsive">
-            <table class="table table-primary">
-                <thead>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 fw-bold">Administración de Usuarios</h1>
+            <div class="text-muted small">Gestione los usuarios registrados en la plataforma.</div>
+        </div>
+        <!-- Botón de agregar usuario eliminado -->
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-sm align-middle mb-0">
+                <thead class="table-primary">
                     <tr>
-                        <th scope="col">ID</th>
-                        <th scope="col">Nombres</th>
-                        <th scope="col">Apellidos</th>
-                        <th scope="col">Tipo de Documento</th>
-                        <th scope="col">Número de Documento</th>
-                        <th scope="col">Género</th>
-                        <th scope="col">Contraseña</th>
-                        <th scope="col">Confirmar Contraseña</th>
-                        <th scope="col">Número de Teléfono</th>
-                        <th scope="col">Dirección</th>
-                        <th scope="col">Ciudad</th>
-                        <th scope="col">Rol</th>
-                        <th scope="col">Fecha Ingreso</th>
-                        <th scope="col">Acciones</th>
+                        <th>ID</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Ingreso</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for usuario in usuarios %}
-                    <tr class="">
-                        <td scope="row">{{usuario.id}}</td>
-                        <td>{{usuario.first_name}}</td>
-                        <td>{{usuario.last_name}}</td>
-                        <td>{{usuario.tipo_documento}}</td>
-                        <td>{{usuario.numero_documento}}</td>
-                        <td>{{usuario.genero}}</td>
-                        <td>{{usuario.ciudad}}</td>
-                        <td>{{usuario.telefono}}</td>
-                        <td>{{usuario.email}}</td>
-                        <td>{{usuario.direccion}}</td>
+                    <tr>
+                        <td>{{ usuario.id }}</td>
+                        <td>{{ usuario.first_name }}</td>
+                        <td>{{ usuario.last_name }}</td>
+                        <td>{{ usuario.email }}</td>
                         <td>{{ usuario.rol|default:"usuario" }}</td>
-                        <td>{{usuario.fecha_ingreso}}</td>
+                        <td>{{ usuario.fecha_ingreso|date:"d/m/Y H:i" }}</td>
                         <td>
-                            <a name="" id="" class="btn btn-primary" href="{% url 'editarAdm' usuario.id %}" role="button" placeholder="{{ campo.Label }}" value="{{ campo.value|default:'' }}" >Editar</a>
-                            <a name="" id="" class="btn btn-danger" href="{% url 'eliminarAdm' usuario.id %}" role="button" onclick="return confirm('¿Está seguro de borrar al usuario?')">Borrar</a>
+                            <a href="{% url 'editarAdm' usuario.id %}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                            <a href="{% url 'eliminarAdm' usuario.id %}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Está seguro de borrar al usuario?')">Borrar</a>
                         </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No hay usuarios registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <div class="card-footer text-end text-muted small">
+            Total usuarios: <span class="fw-bold">{{ usuarios|length }}</span>
+        </div>
     </div>
-    <div class="card-footer text-muted">Los datos siempre son acordes con los del formulario de registro.</div>
 </div>
 {% endblock Contenido %}

@@ -1,0 +1,207 @@
+{% extends 'ingresos/admin_base.html' %}
+{% block Contenido %}
+<div class="container py-4">
+    <h1 class="h4 mb-3">Facturas (Admin)</h1>
+    <div class="card shadow-sm mb-3">
+        <div class="card-body row g-2 align-items-center">
+            <div class="col-md-4 mb-2 mb-md-0">
+                <select id="usuario-select" class="form-select form-select-sm">
+                    <option value="">Filtrar por usuario (todos)</option>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <input type="text" id="busqueda" class="form-control form-control-sm" placeholder="Buscar por número, estado...">
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle" id="tabla-facturas">
+            <thead class="table-dark">
+                <tr>
+                    <th>Usuario</th>
+                    <th>Fecha</th>
+                    <th>Número</th>
+                    <th class="text-end">Neto</th>
+                    <th class="text-end">Total</th>
+                    <th>Estado</th>
+                    <th>Acción</th>
+                    <th>Borrar</th>
+                </tr>
+            </thead>
+            <tbody id="facturas-body"></tbody>
+        </table>
+    </div>
+    <div id="mensaje-vacio" class="alert alert-info mt-3 d-none">
+        No hay facturas para mostrar.
+    </div>
+</div>
+<!-- Modal Detalle Factura -->
+<div class="modal fade" id="modalFactura" tabindex="-1" aria-labelledby="modalFacturaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalFacturaLabel">Detalle de Factura</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="modalFacturaBody">
+        <!-- JS insertará el detalle aquí -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal Borrar Factura -->
+<div class="modal fade" id="modalBorrarFactura" tabindex="-1" aria-labelledby="modalBorrarFacturaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalBorrarFacturaLabel">Borrar Factura</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formBorrarFactura">
+          {% csrf_token %}
+          <input type="hidden" id="borrarFacturaId">
+          <div class="mb-3">
+            <label for="motivoBorrado" class="form-label">Motivo del borrado</label>
+            <textarea class="form-control" id="motivoBorrado" rows="3" required></textarea>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-danger">Borrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    let facturas = [];
+    try {
+        facturas = {{ facturas_json|safe }};
+        console.log('Facturas cargadas:', facturas);
+    } catch (e) {
+        facturas = [];
+        console.error('Error al parsear facturas_json:', e);
+    }
+    const tbody = document.getElementById('facturas-body');
+    const mensajeVacio = document.getElementById('mensaje-vacio');
+    const busqueda = document.getElementById('busqueda');
+    const usuarioSelect = document.getElementById('usuario-select');
+    const modalFactura = new bootstrap.Modal(document.getElementById('modalFactura'));
+    const modalFacturaBody = document.getElementById('modalFacturaBody');
+    const modalBorrarFactura = new bootstrap.Modal(document.getElementById('modalBorrarFactura'));
+    const formBorrarFactura = document.getElementById('formBorrarFactura');
+
+    function llenarUsuarios() {
+        usuarioSelect.innerHTML = '<option value="">Filtrar por usuario (todos)</option>';
+        const usuariosUnicos = [...new Set(facturas.map(f => f.usuario))].sort();
+        usuariosUnicos.forEach(usuario => {
+            if(usuario) {
+                const opt = document.createElement('option');
+                opt.value = usuario;
+                opt.textContent = usuario;
+                usuarioSelect.appendChild(opt);
+            }
+        });
+    }
+
+    function renderTabla(filtradas) {
+        tbody.innerHTML = '';
+        if (!filtradas || filtradas.length === 0) {
+            mensajeVacio.classList.remove('d-none');
+            return;
+        } else {
+            mensajeVacio.classList.add('d-none');
+        }
+        filtradas.forEach(f => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${f.usuario || ''}</td>
+                <td>${f.date || ''}</td>
+                <td>${f.numero || ''}</td>
+                <td class="text-end">${f.neto?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</td>
+                <td class="text-end">${f.acumulado?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</td>
+                <td><span class="badge ${f.estado === 'Completa' ? 'bg-success' : 'bg-warning text-dark'}">${f.estado || ''}</span></td>
+                <td><button class="btn btn-sm btn-primary" onclick="verDetalleFactura('${f.id}')">Ver</button></td>
+                <td><button class="btn btn-sm btn-danger" onclick="abrirBorrarFactura('${f.id}')">Borrar</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.verDetalleFactura = function(id) {
+        const f = facturas.find(fac => fac.id == id);
+        if (!f) return;
+        let html = `<ul class='list-group list-group-flush'>`;
+        html += `<li class='list-group-item'><b>Usuario:</b> ${f.usuario || ''}</li>`;
+        html += `<li class='list-group-item'><b>Fecha:</b> ${f.date || ''}</li>`;
+        html += `<li class='list-group-item'><b>Número:</b> ${f.numero || ''}</li>`;
+        html += `<li class='list-group-item'><b>Descripción:</b> ${f.label || ''}</li>`;
+        html += `<li class='list-group-item'><b>NIT:</b> ${f.nit || ''}</li>`;
+        html += `<li class='list-group-item'><b>Categoría:</b> ${f.category || ''}</li>`;
+        html += `<li class='list-group-item'><b>Neto:</b> ${f.neto?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</li>`;
+        html += `<li class='list-group-item'><b>IVA:</b> ${f.iva?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</li>`;
+        html += `<li class='list-group-item'><b>Total:</b> ${f.acumulado?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</li>`;
+        html += `<li class='list-group-item'><b>Estado:</b> <span class="badge ${f.estado === 'Completa' ? 'bg-success' : 'bg-warning text-dark'}">${f.estado || ''}</span></li>`;
+        if (f.archivo_url) {
+            html += `<li class='list-group-item'><b>Archivo:</b> <a href='${f.archivo_url}' target='_blank' class='btn btn-sm btn-outline-primary ms-2'><i class='bi bi-file-earmark'></i> Ver archivo</a></li>`;
+        } else {
+            html += `<li class='list-group-item'><b>Archivo:</b> <span class='text-muted'>No disponible</span></li>`;
+        }
+        html += `</ul>`;
+        modalFacturaBody.innerHTML = html;
+        modalFactura.show();
+    }
+
+    window.abrirBorrarFactura = function(id) {
+        document.getElementById('borrarFacturaId').value = id;
+        document.getElementById('motivoBorrado').value = '';
+        modalBorrarFactura.show();
+    }
+    formBorrarFactura.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = document.getElementById('borrarFacturaId').value;
+        const motivo = document.getElementById('motivoBorrado').value.trim();
+        if (!motivo) {
+            alert('Debes ingresar un motivo para el borrado.');
+            return;
+        }
+        if (!confirm('¿Seguro que deseas borrar esta factura?')) return;
+        fetch(`/asistencia/borrar_factura/${id}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('#formBorrarFactura [name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ motivo })
+        }).then(resp => {
+            if (resp.ok) {
+                location.reload();
+            } else {
+                alert('Error al borrar la factura.');
+            }
+        });
+    });
+
+    let facturasFiltradas = facturas;
+    function filtrarFacturas() {
+        const q = busqueda.value.toLowerCase();
+        const usuario = usuarioSelect.value;
+        facturasFiltradas = facturas.filter(f => {
+            const coincideUsuario = !usuario || f.usuario === usuario;
+            const coincideBusqueda =
+                (f.numero && f.numero.toLowerCase().includes(q)) ||
+                (f.estado && f.estado.toLowerCase().includes(q));
+            return coincideUsuario && (q === '' || coincideBusqueda);
+        });
+        renderTabla(facturasFiltradas);
+    }
+
+    busqueda.addEventListener('input', filtrarFacturas);
+    usuarioSelect.addEventListener('change', filtrarFacturas);
+    llenarUsuarios();
+    renderTabla(facturas);
+});
+</script>
+{% endblock Contenido %}

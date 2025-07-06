@@ -16,6 +16,17 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 
+from functools import wraps
+from django.http import HttpResponseForbidden
+
+def admin_required(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if request.user.is_authenticated and (request.user.is_superuser or (hasattr(request.user, 'rol') and request.user.rol == 'admin')):
+            return view_func(request, *args, **kwargs)
+        return HttpResponseForbidden("No tienes permiso para acceder a esta página.")
+    return _wrapped_view
+
 @login_required(login_url='login')
 def descargar_facturas_pdf(request):
     try:
@@ -119,6 +130,14 @@ def subir_factura(request):
         if archivo:
             factura.archivo = archivo
         factura.save()
+        # Notificación de subida exitosa
+        from .models import Notification
+        Notification.objects.create(
+            user=usuario_obj,
+            tipo='info',
+            titulo='Factura subida exitosamente',
+            mensaje=f'Su factura número {factura.numero} fue registrada correctamente.',
+        )
         return JsonResponse({'success': True})
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
@@ -439,6 +458,8 @@ def leerFacturas(request):
 def notificaciones(request):
     return render(request, 'ivapp/notificaciones.html')
 
+@admin_required
+@login_required(login_url='login')
 def facturasAdmin(request):
     from django.core.serializers.json import DjangoJSONEncoder
     import json
@@ -453,6 +474,13 @@ def facturasAdmin(request):
             f.fecha and f.numero and f.descripcion and f.nit and f.categoria and neto >= 0
         )
         estado = 'Completa' if completa else 'Incompleta'
+        archivo_url = None
+        if getattr(f, 'archivo', None):
+            try:
+                if f.archivo:
+                    archivo_url = reverse('factura_archivo', args=[f.id])
+            except Exception:
+                archivo_url = None
         facturas_context.append({
             'date': f.fecha.strftime('%Y-%m-%d') if f.fecha else '',
             'numero': f.numero,
@@ -466,14 +494,19 @@ def facturasAdmin(request):
             'usuario_id': f.usuario.id,
             'id': f.id,
             'estado': estado,
+            'archivo_url': reverse('factura_archivo', args=[f.id]) if getattr(f, 'archivo', None) else None,
         })
     facturas_json = json.dumps(facturas_context, cls=DjangoJSONEncoder)
-    return render(request, 'ivapp/facturasAdmin.html', {'facturas_json': facturas_json})
+    return render(request, 'ingresos/facturasAdmin.html', {'facturas_json': facturas_json})
 
+@admin_required
+@login_required(login_url='login')
 def UsuariosAdm(request):
     usuarios = Usuario.objects.all()
     return render(request, 'ingresos/InicioAdm.html', {'usuarios': usuarios})
 
+@admin_required
+@login_required(login_url='login')
 def CrudAdm(request, id):
     usuario_inst = get_object_or_404(Usuario, id=id)
     if request.method == 'POST':
@@ -485,10 +518,14 @@ def CrudAdm(request, id):
         return redirect('CrudAdm')
     return render(request, 'ingresos/crudAdm.html', {'usuario': usuario_inst})
 
+@admin_required
+@login_required(login_url='login')
 def InicioAdm(request):
     usuarios = Usuario.objects.all()
     return render(request, 'ingresos/InicioAdm.html', {'usuarios': usuarios})
 
+@admin_required
+@login_required(login_url='login')
 def editarAdm(request, id):
     from .forms import UsuarioForm
     usuario_inst = get_object_or_404(Usuario, id=id)
@@ -503,13 +540,17 @@ def editarAdm(request, id):
             return redirect('InicioAdm')
     else:
         form = UsuarioForm(instance=usuario_inst)
-    return render(request, 'ingresos/editarAdm.html', {'formulario': form})
+    return render(request, 'ingresos/editarAdm.html', {'usuario': usuario_inst, 'formulario': form})
 
+@admin_required
+@login_required(login_url='login')
 def eliminarAdm(request, id):
     usuario_inst = get_object_or_404(Usuario, id=id)
     usuario_inst.delete()
     return redirect('InicioAdm')
 
+@admin_required
+@login_required(login_url='login')
 def CrearAdm(request):
     from .forms import UsuarioForm
     if request.method == 'POST':
@@ -588,6 +629,34 @@ def historial_facturas(request):
     }
     return render(request, 'ivapp/historial_facturas.html', context)
 
+from .models import Notification
+import json
+
+# Vista para borrar factura como admin
+@admin_required
+@login_required(login_url='login')
+def borrar_factura_admin(request, id):
+    factura = get_object_or_404(FacturaSubida, id=id)
+    usuario_obj = factura.usuario
+    if request.method == 'POST':
+        # Recibir motivo del borrado (JSON)
+        try:
+            data = json.loads(request.body.decode())
+            motivo = data.get('motivo', '').strip()
+        except Exception:
+            motivo = ''
+        # Crear notificación
+        Notification.objects.create(
+            user=usuario_obj,
+            tipo='alerta',
+            titulo='Factura eliminada por el administrador',
+            mensaje=f'Su factura número {factura.numero} fue eliminada por el administrador. Motivo: {motivo}',
+        )
+        factura.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+
+# Vista para borrar factura como usuario normal
 @login_required(login_url='login')
 def borrar_factura(request, id):
     try:
@@ -596,6 +665,12 @@ def borrar_factura(request, id):
         return redirect('historial_facturas')
     factura = get_object_or_404(FacturaSubida, usuario=usuario_obj, id=id)
     if request.method == 'POST':
+        Notification.objects.create(
+            user=usuario_obj,
+            tipo='info',
+            titulo='Factura eliminada',
+            mensaje=f'Eliminaste tu factura número {factura.numero} correctamente.',
+        )
         factura.delete()
         return redirect('historial_facturas')
     return redirect('historial_facturas')
@@ -648,3 +723,38 @@ def factura_archivo(request, id):
 
 def Soporte(request):
     return render(request, 'ivapp/soporte.html')
+
+# --- NOTIFICACIONES ---
+from .models import Notification
+from django.views.decorators.http import require_POST
+
+@login_required(login_url='login')
+def api_notificaciones_usuario(request):
+    notificaciones = Notification.objects.filter(user=request.user).order_by('-fecha')
+    data = [
+        {
+            'id': n.id,
+            'tipo': n.tipo,
+            'titulo': n.titulo,
+            'mensaje': n.mensaje,
+            'fecha': n.fecha.strftime('%Y-%m-%d'),
+            'leida': n.leida,
+        }
+        for n in notificaciones
+    ]
+    return JsonResponse({'notificaciones': data})
+
+@csrf_exempt
+@require_POST
+@login_required(login_url='login')
+def api_marcar_notificacion_leida(request):
+    import json
+    try:
+        body = json.loads(request.body)
+        notif_id = body.get('id')
+        notif = Notification.objects.get(id=notif_id, user=request.user)
+        notif.leida = True
+        notif.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)

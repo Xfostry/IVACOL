@@ -29,3 +29,20 @@ class FacturaSubida(models.Model):
 
     def __str__(self):
         return f'Factura {self.numero} de {self.usuario}'
+
+class Notification(models.Model):
+    TIPOS = [
+        ('recordatorio', 'Recordatorio'),
+        ('advertencia', 'Advertencia'),
+        ('alerta', 'Alerta'),
+        ('info', 'Información'),
+    ]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    tipo = models.CharField(max_length=20, choices=TIPOS)
+    titulo = models.CharField(max_length=255)
+    mensaje = models.TextField()
+    fecha = models.DateField(auto_now_add=True)
+    leida = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.titulo} para {self.user.username} ({'Leída' if self.leida else 'No leída'})"

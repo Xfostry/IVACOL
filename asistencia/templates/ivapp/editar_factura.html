@@ -1,207 +1,68 @@
-{% extends "plantillas.html" %}
-{% load static %}
-
+{% extends 'plantillas.html' %}
 {% block Contenido %}
-<style>
-    .container-historial {
-        max-width: 500px;
-        margin: 50px auto 0 auto;
-        background: rgba(231, 231, 231, 0.1);
-        border-radius: 12px;
-        box-shadow: 0 9px 24px rgba(0,0,0,0.10);
-        padding: 35px 35px 25px 35px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .titulo-contenedor {
-        width: 100%;
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    .titulo-historial {
-        font-size: 2em;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 0;
-    }
-    .form-editar-factura {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .form-group {
-        width: 100%;
-        margin-bottom: 18px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    .form-group label {
-        font-weight: 500;
-        margin-bottom: 6px;
-        color: #34495e;
-    }
-    .form-group input[type="text"],
-    .form-group input[type="date"],
-    .form-group input[type="number"],
-    .form-group input[type="file"],
-    .form-group select {
-        width: 100%;
-        padding: 9px 12px;
-        border: 1px solid #bfc9d1;
-        border-radius: 5px;
-        font-size: 1em;
-        background: #f8fafc;
-        color: #222;
-        transition: border-color 0.2s;
-    }
-    .form-group input[type="text"]:focus,
-    .form-group input[type="date"]:focus,
-    .form-group input[type="number"]:focus,
-    .form-group select:focus {
-        border-color: #3498db;
-        outline: none;
-    }
-    .radio-group {
-        flex-direction: row;
-        align-items: center;
-        gap: 10px;
-    }
-    .radio-group label {
-        margin-bottom: 0;
-        margin-right: 10px;
-    }
-    .submit-button, .btn-secondary {
-        padding: 10px 28px;
-        border: none;
-        border-radius: 5px;
-        font-size: 1em;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: background 0.2s, color 0.2s;
-    }
-    .submit-button {
-        background: #3498db;
-        color: #fff;
-        margin-right: 10px;
-    }
-    .submit-button:hover {
-        background: #217dbb;
-    }
-    .btn-secondary {
-        background: #eaeaea;
-        color: #333;
-        text-decoration: none;
-    }
-    .btn-secondary:hover {
-        background: #d5d5d5;
-        color: #222;
-    }
-
-    /* DARK MODE */
-    body.dark-mode .container-historial {
-        background-color: var(--section-bg-dark, #23272e);
-        color: var(--body-color-dark, #e0e0e0);
-        box-shadow: 0 4px 24px rgba(0,0,0,0.40);
-    }
-    body.dark-mode .titulo-historial {
-        color: var(--header-title-dark, #e0e0e0);
-    }
-    body.dark-mode .form-group label {
-        color: var(--body-color-dark-muted, #b0b8c1);
-    }
-    body.dark-mode .form-group input[type="text"],
-    body.dark-mode .form-group input[type="date"],
-    body.dark-mode .form-group input[type="number"],
-    body.dark-mode .form-group input[type="file"],
-    body.dark-mode .form-group select {
-        background-color: var(--input-bg-dark, #333);
-        border-color: var(--input-border-dark, #555);
-        color: var(--body-color-dark, #e0e0e0);
-    }
-    body.dark-mode .form-group input:-webkit-autofill,
-    body.dark-mode .form-group select:-webkit-autofill {
-        -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark, #333) inset !important;
-        -webkit-text-fill-color: var(--body-color-dark, #e0e0e0) !important;
-    }
-    body.dark-mode .form-group input:focus,
-    body.dark-mode .form-group select:focus {
-        border-color: #5dade2;
-        box-shadow: 0 0 0 3px rgba(93,173,226,0.25);
-    }
-    body.dark-mode .submit-button {
-        background-color: var(--submit-button-bg-dark, #2a8a44);
-    }
-    body.dark-mode .submit-button:hover {
-        background-color: var(--submit-button-hover-bg-dark, #217336);
-    }
-    body.dark-mode .btn-secondary {
-        background: #23272e;
-        color: #e0e0e0;
-        border: 1px solid #444;
-    }
-    body.dark-mode .btn-secondary:hover {
-        background: #181b20;
-        color: #fff;
-    }
-</style>
-<div class="container-historial">
-    <div class="titulo-contenedor">
-        <h1 class="titulo-historial">Editar Factura</h1>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 fw-bold">Editar Factura</h1>
+        <a href="{% url 'historial_facturas' %}" class="btn btn-outline-secondary">← Volver</a>
     </div>
-    <form method="post" enctype="multipart/form-data" class="form-editar-factura">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="numero">Número:</label>
-            <input type="text" id="numero" name="numero" value="{{ factura.numero }}" required>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" autocomplete="off">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="id_numero" class="form-label">Número</label>
+                        <input type="text" name="numero" maxlength="50" class="form-control" id="id_numero" value="{{ factura.numero }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_descripcion" class="form-label">Descripción</label>
+                        <input type="text" name="descripcion" maxlength="255" class="form-control" id="id_descripcion" value="{{ factura.descripcion }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_nit" class="form-label">NIT</label>
+                        <input type="text" name="nit" maxlength="50" class="form-control" id="id_nit" value="{{ factura.nit }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_fecha" class="form-label">Fecha</label>
+                        <input type="date" name="fecha" class="form-control" id="id_fecha" value="{{ factura.fecha|date:'Y-m-d' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_categoria" class="form-label">Categoría</label>
+                        <input type="text" name="categoria" maxlength="100" class="form-control" id="id_categoria" value="{{ factura.categoria }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_monto" class="form-label">Monto</label>
+                        <input type="number" name="monto" step="any" class="form-control" id="id_monto" value="{{ factura.monto|floatformat:'-2'|default_if_none:'' }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_tipo_monto" class="form-label">Tipo de Monto</label>
+                        <select name="tipo_monto" class="form-select" id="id_tipo_monto" required>
+                            <option value="neto" {% if factura.tipo_monto == 'neto' %}selected{% endif %}>Neto (sin IVA)</option>
+                            <option value="total" {% if factura.tipo_monto == 'total' %}selected{% endif %}>Total (con IVA)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="id_archivo" class="form-label">Archivo (opcional)</label>
+                        <input type="file" name="archivo" class="form-control" id="id_archivo" accept=".pdf,.jpg,.png,.jpeg">
+                        {% if factura.archivo %}
+                        <div class="mt-2">
+                            <a href="{{ factura.archivo.url }}" target="_blank" class="btn btn-sm btn-outline-primary">Ver archivo actual</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4">Guardar Cambios</button>
+                </div>
+            </form>
+            {% if messages %}
+                <div class="mt-3">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-        <div class="form-group">
-            <label for="descripcion">Descripción:</label>
-            <input type="text" id="descripcion" name="descripcion" value="{{ factura.descripcion }}" required>
-        </div>
-        <div class="form-group">
-            <label for="nit">NIT (Opcional):</label>
-            <input type="text" id="nit" name="nit" value="{{ factura.nit }}" placeholder="Número de Identificación Tributaria">
-        </div>
-        <div class="form-group">
-            <label for="fecha">Fecha:</label>
-            <input type="date" id="fecha" name="fecha" value="{{ factura.fecha }}" required>
-        </div>
-        <div class="form-group">
-            <label for="categoria">Categoría:</label>
-            <select id="categoria" name="categoria" required>
-                <option value="" disabled>Selecciona...</option>
-                <option {% if factura.categoria == 'Supermercados' %}selected{% endif %}>Supermercados</option>
-                <option {% if factura.categoria == 'Servicios' %}selected{% endif %}>Servicios</option>
-                <option {% if factura.categoria == 'Entretenimiento' %}selected{% endif %}>Entretenimiento</option>
-                <option {% if factura.categoria == 'Tecnología' %}selected{% endif %}>Tecnología</option>
-                <option {% if factura.categoria == 'Restaurantes' %}selected{% endif %}>Restaurantes</option>
-                <option {% if factura.categoria == 'Transporte' %}selected{% endif %}>Transporte</option>
-                <option {% if factura.categoria == 'Salud' %}selected{% endif %}>Salud</option>
-                <option {% if factura.categoria == 'Educación' %}selected{% endif %}>Educación</option>
-                <option {% if factura.categoria == 'Vestuario' %}selected{% endif %}>Vestuario</option>
-                <option {% if factura.categoria == 'Hogar' %}selected{% endif %}>Hogar</option>
-                <option {% if factura.categoria == 'Otros' %}selected{% endif %}>Otros</option>
-            </select>
-        </div>
-        <div class="form-group radio-group">
-            <label>Monto Ingresado:</label><br>
-            <input type="radio" id="amount-type-neto" name="tipo_monto" value="neto" {% if factura.tipo_monto == 'neto' %}checked{% endif %}> <label for="amount-type-neto">Base (Sin IVA)</label>
-            <input type="radio" id="amount-type-total" name="tipo_monto" value="total" {% if factura.tipo_monto == 'total' %}checked{% endif %}> <label for="amount-type-total">Total (Con IVA)</label>
-        </div>
-        <div class="form-group">
-            <label for="monto">Monto:</label>
-            <input type="number" id="monto" name="monto" step="any" value="{{ factura.monto }}" required>
-        </div>
-        <div class="form-group">
-            <label for="archivo">Archivo (Opcional):</label>
-            <input type="file" id="archivo" name="archivo" accept=".pdf,.jpg,.png,.jpeg">
-        </div>
-        <button type="submit" class="btn btn-primary submit-button">Guardar Cambios</button>
-        <a href="{% url 'historial_facturas' %}" class="btn btn-secondary" style="margin-left:10px;">Cancelar</a>
-    </form>
+    </div>
 </div>
-{% endblock %}
+{% endblock Contenido %}

@@ -329,60 +329,17 @@
             const contenedorNotificaciones = document.getElementById('lista-notificaciones-contenedor');
             const mensajeCarga = document.getElementById('mensaje-carga');
 
-            // --- Datos de ejemplo ---
-            // En una aplicación real, estos datos vendrían de una API o base de datos
-            const notificacionesData = [
-                {
-                    id: 1,
-                    tipo: 'recordatorio', // 'recordatorio', 'advertencia', 'alerta', 'info'
-                    titulo: 'Próxima Declaración de IVA',
-                    mensaje: 'Recuerda presentar tu declaración bimestral de IVA antes del 15 de Julio de 2024.',
-                    fecha: '2024-06-28'
-                },
-                {
-                    id: 2,
-                    tipo: 'advertencia',
-                    titulo: 'Gastos Sin Categoría',
-                    mensaje: 'Tienes 2 gastos registrados en el último mes que aún no tienen una categoría asignada.',
-                    fecha: '2024-06-27'
-                },
-                 {
-                    id: 3,
-                    tipo: 'info',
-                    titulo: 'Actualización Normativa',
-                    mensaje: 'Se ha publicado una nueva resolución de la DIAN relacionada con facturación electrónica.  <a href="https://www.dian.gov.co/normatividad/Paginas/Resoluciones.aspx" target="_blank" rel="noopener noreferrer">Revisa los detalles</a>.',
-                    fecha: '2024-06-25'
-                },
-                {
-                    id: 4,
-                    tipo: 'alerta',
-                    titulo: 'Factura con Posible Inconsistencia',
-                    mensaje: 'La factura FV-0876 de "Proveedor ABC SAS" presenta un valor que podría no ser el correcto.',
-                    fecha: '2024-06-28'
-                },
-                {
-                    id: 5,
-                    tipo: 'recordatorio',
-                    titulo: 'Certificado de Retenciones',
-                    mensaje: 'No olvides generar y enviar los certificados de retención en la fuente a tus proveedores correspondientes al bimestre anterior.',
-                    fecha: '2024-06-20'
-                }
-                // Puedes añadir más notificaciones aquí
-            ];
-
-            // --- Funciones ---
-
             // Formatea fecha a DD/MM/AAAA
             function formatearFecha(fechaString) {
                 const [year, month, day] = fechaString.split('-');
                 return `${day}/${month}/${year}`;
             }
 
-             // Crea el HTML para una notificación
+            // Crea el HTML para una notificación
             function crearElementoNotificacion(notificacion) {
-                const li = document.createElement('div'); // Cambiado a div para semántica sin lista
+                const li = document.createElement('div');
                 li.className = `notificacion tipo-${notificacion.tipo}`;
-                li.dataset.id = notificacion.id; // Añadir ID para identificarla
+                li.dataset.id = notificacion.id;
 
                 li.innerHTML = `
                     <button class="boton-cerrar" title="Marcar como leída">×</button>
@@ -394,29 +351,58 @@
                 // Añadir event listener al botón de cerrar
                 const botonCerrar = li.querySelector('.boton-cerrar');
                 botonCerrar.addEventListener('click', function() {
-                    cerrarNotificacion(li);
+                    marcarNotificacionLeida(notificacion.id, li);
                 });
 
                 return li;
             }
 
-            // Marca una notificación como leída/cerrada (con animación simple)
-            function cerrarNotificacion(elementoNotificacion) {
-                elementoNotificacion.classList.add('cerrada');
-                // Esperar a que termine la transición CSS para removerla o simplemente ocultarla
-                setTimeout(() => {
-                   // Opcional: remover completamente del DOM
-                   // elementoNotificacion.remove();
-                   // Verificar si quedan notificaciones
-                   verificarNotificacionesVacias();
-                }, 500); // Debe coincidir con la duración de la transición CSS (0.5s)
+            // Marca una notificación como leída en el backend y la oculta
+            function marcarNotificacionLeida(id, elementoNotificacion) {
+                fetch('/api/notificaciones/marcar_leida/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ id: id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        elementoNotificacion.classList.add('cerrada');
+                        setTimeout(() => {
+                            verificarNotificacionesVacias();
+                        }, 500);
+                    } else {
+                        alert('Error al marcar la notificación como leída.');
+                    }
+                })
+                .catch(() => {
+                    alert('Error de red al marcar la notificación como leída.');
+                });
+            }
+
+            // Obtener CSRF token para POST
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
             }
 
             // Verifica si no quedan notificaciones y muestra mensaje
             function verificarNotificacionesVacias() {
-                 // Contar solo las notificaciones que NO tienen la clase 'cerrada'
-                 const notificacionesVisibles = contenedorNotificaciones.querySelectorAll('.notificacion:not(.cerrada)').length;
-                 let mensajeVacio = contenedorNotificaciones.querySelector('.mensaje-vacio');
+                const notificacionesVisibles = contenedorNotificaciones.querySelectorAll('.notificacion:not(.cerrada)').length;
+                let mensajeVacio = contenedorNotificaciones.querySelector('.mensaje-vacio');
 
                 if (notificacionesVisibles === 0) {
                     if (!mensajeVacio) {
@@ -426,45 +412,47 @@
                         contenedorNotificaciones.appendChild(mensajeVacio);
                     } else {
                         mensajeVacio.textContent = '🎉 ¡Estás al día! No tienes notificaciones pendientes.';
-                        mensajeVacio.style.display = 'block'; // Asegurar que sea visible
+                        mensajeVacio.style.display = 'block';
                     }
                 } else {
-                     // Si hay notificaciones y existe el mensaje, ocultarlo
-                     if (mensajeVacio) {
-                         mensajeVacio.style.display = 'none';
-                     }
+                    if (mensajeVacio) {
+                        mensajeVacio.style.display = 'none';
+                    }
                 }
             }
 
-             // Muestra todas las notificaciones
-             function renderizarNotificaciones() {
-                 // Limpiar contenedor (excepto el mensaje de carga inicial si existe)
-                 contenedorNotificaciones.innerHTML = ''; // Limpia todo
+            // Renderiza todas las notificaciones no leídas
+            function renderizarNotificaciones(notificacionesData) {
+                contenedorNotificaciones.innerHTML = '';
 
-                 if (notificacionesData.length === 0) {
-                     const p = document.createElement('p');
-                     p.className = 'mensaje-vacio';
-                     p.textContent = 'No hay notificaciones por mostrar.';
-                     contenedorNotificaciones.appendChild(p);
-                     return;
-                 }
+                const noLeidas = notificacionesData.filter(n => !n.leida);
 
-                 notificacionesData.forEach(notif => {
+                if (noLeidas.length === 0) {
+                    const p = document.createElement('p');
+                    p.className = 'mensaje-vacio';
+                    p.textContent = 'No hay notificaciones por mostrar.';
+                    contenedorNotificaciones.appendChild(p);
+                    return;
+                }
+
+                noLeidas.forEach(notif => {
                     const elemento = crearElementoNotificacion(notif);
                     contenedorNotificaciones.appendChild(elemento);
                 });
 
-                 // Verificar estado inicial después de renderizar
-                 verificarNotificacionesVacias();
+                verificarNotificacionesVacias();
             }
 
-            // --- Inicialización ---
-            // Simular una pequeña carga (opcional)
-            setTimeout(() => {
-                 renderizarNotificaciones();
-                 if(mensajeCarga) mensajeCarga.remove(); // Quitar mensaje de carga
-            }, 500); // Pequeño retraso para simular carga
-
+            // Inicialización: cargar notificaciones desde el backend
+            fetch('/asistencia/api/notificaciones/')
+                .then(response => response.json())
+                .then(data => {
+                    renderizarNotificaciones(data.notificaciones || []);
+                    if (mensajeCarga) mensajeCarga.remove();
+                })
+                .catch(() => {
+                    if (mensajeCarga) mensajeCarga.textContent = 'Error al cargar notificaciones.';
+                });
         });
     </script>
     {% endblock %}

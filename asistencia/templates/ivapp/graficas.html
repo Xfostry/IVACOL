@@ -137,25 +137,27 @@
             responsive: true, maintainAspectRatio: false, animation: { duration: 600, easing: 'easeOutQuart'},
             plugins: {
                 legend: { display: false }, // Leyenda general apagada (se usa label de dataset)
-                tooltip: { /* Tu configuración de tooltip existente... */
+                tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.85)', titleFont: { size: 14 }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 6,
                     callbacks: {
-                         label: function(context) {
-                              let label = context.dataset.label || context.label || ''; // Usar etiqueta del dataset o del punto/barra
-                              if (label) { label += ': '; }
-                              if (context.parsed.y !== null && context.chart.config.type !== 'pie') { // Para barras y líneas
-                                   label += currencyFormatter.format(context.parsed.y);
-                              } else if (context.parsed !== null && context.chart.config.type === 'pie') { // Para tarta
-                                  label += currencyFormatter.format(context.parsed);
-                                  // Añadir porcentaje a la tarta
-                                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                  const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) + '%' : '0%';
-                                  label += ` (${percentage})`;
-                              } else if (context.parsed.x !== null && context.chart.options.indexAxis === 'y') { // Para barras horizontales (IVA)
-                                  label += currencyFormatter.format(context.parsed.x);
-                              }
-                              return label;
-                          }
+                        label: function(context) {
+                            let label = context.dataset.label || context.label || '';
+                            if (label) { label += ': '; }
+                            // Para barras horizontales (IVA)
+                            if (context.chart.options.indexAxis === 'y' && context.parsed.x !== null) {
+                                label += currencyFormatter.format(context.parsed.x);
+                            // Para barras verticales y líneas
+                            } else if (context.parsed.y !== null && context.chart.config.type !== 'pie') {
+                                label += currencyFormatter.format(context.parsed.y);
+                            // Para tarta
+                            } else if (context.parsed !== null && context.chart.config.type === 'pie') {
+                                label += currencyFormatter.format(context.parsed);
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) + '%' : '0%';
+                                label += ` (${percentage})`;
+                            }
+                            return label;
+                        }
                     }
                 }
             },

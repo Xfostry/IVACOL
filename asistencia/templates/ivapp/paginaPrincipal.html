@@ -383,11 +383,24 @@
                 const selectedAmountType = document.querySelector('input[name="amount-type"]:checked')?.value;
 
                 if (!numberInput || !descriptionInput || !categoryInput || !amountInputStr || !dateInput || !selectedAmountType) {
-                     alert('Completa campos obligatorios.'); return;
-                 }
-                if (!dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) { alert('Fecha inválida.'); return; }
+                    alert('Completa campos obligatorios.');
+                    enviandoFactura = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                    return;
+                }
+                if (!dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    alert('Fecha inválida.');
+                    enviandoFactura = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                    return;
+                }
                  const amountInput = parseFloat(amountInputStr.replace(',', '.'));
-                if (isNaN(amountInput) || amountInput <= 0) { alert('Monto inválido.'); return; }
+                if (isNaN(amountInput) || amountInput <= 0) {
+                    alert('Monto inválido.');
+                    enviandoFactura = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                    return;
+                }
 
                  let neto, iva, acumulado;
                  if (selectedAmountType === 'neto') { neto = amountInput; }
@@ -406,21 +419,25 @@
                      });
                      const result = await response.json();
                      if (result.success) {
-                     modal.style.display = "none";
-                     invoiceForm.reset();
-                     setTimeout(function() {
-                     alert('¡Factura guardada en el servidor!');
-                     }, 100);
-                     // Actualizar la tabla automáticamente
-                     actualizarFacturasDesdeBackend();
-                     } else {
-                     alert('Error al guardar la factura: ' + (result.error || ''));
-                     }
-                     } catch (err) {
-                     alert('Error de red o servidor.');
-                     }
-                     });
-                     }
+                        modal.style.display = "none";
+                        invoiceForm.reset();
+                        setTimeout(function() {
+                            alert('¡Factura guardada en el servidor!');
+                        }, 100);
+                        // Actualizar la tabla automáticamente
+                        actualizarFacturasDesdeBackend();
+                    } else {
+                        alert('Error al guardar la factura: ' + (result.error || ''));
+                    }
+                    enviandoFactura = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                } catch (err) {
+                    alert('Error de red o servidor.');
+                    enviandoFactura = false;
+                    if (submitBtn) submitBtn.disabled = false;
+                }
+            });
+        }
                      
                      // Función para actualizar la tabla de facturas desde el backend
                      async function actualizarFacturasDesdeBackend() {

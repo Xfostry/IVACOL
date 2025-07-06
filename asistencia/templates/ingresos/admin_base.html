@@ -14,7 +14,101 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Segoe+UI&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
     <style>
-        /* (Se mantienen todos los estilos de plantillas.html) */
+        :root {
+            --body-bg-light: #f8f9fa;
+            --body-color-light: #222;
+            --section-bg-light: #fff;
+            --section-shadow-light: 0 2px 8px rgba(0,0,0,0.04);
+            --header-title-light: #0d47a1;
+            --title-border-light: #e3e3e3;
+            --button-bg-light: #e9ecef;
+            --button-border-light: #d1d5db;
+            --button-color-light: #222;
+            --button-hover-bg-light: #d1d5db;
+            --button-hover-border-light: #b0b0b0;
+            --table-bg-light: #fff;
+            --table-row-even-bg-light: #f3f6fa;
+            --table-row-hover-bg-light: #e9ecef;
+            --table-cell-border-light: #e3e3e3;
+            --footer-bg-light: #fff;
+            --footer-color-light: #888;
+            --footer-border-light: #e3e3e3;
+        
+            --body-bg-dark: #181a1b;
+            --body-color-dark: #e0e0e0;
+            --section-bg-dark: #23272b;
+            --section-shadow-dark: 0 5px 15px rgba(0,0,0,0.3);
+            --header-title-dark: #9fceff;
+            --title-border-dark: #444;
+            --button-bg-dark: #23272b;
+            --button-border-dark: #444;
+            --button-color-dark: #e0e0e0;
+            --button-hover-bg-dark: #2c3136;
+            --button-hover-border-dark: #666;
+            --table-bg-dark: #23272b;
+            --table-row-even-bg-dark: #202124;
+            --table-row-hover-bg-dark: #2c3136;
+            --table-cell-border-dark: #444;
+            --footer-bg-dark: #23272b;
+            --footer-color-dark: #bbb;
+            --footer-border-dark: #444;
+        }
+        body {
+            background: var(--body-bg-light) !important;
+            color: var(--body-color-light);
+            transition: background 0.3s, color 0.3s;
+        }
+        main, .container, .card, .card-body, .card-footer {
+            background: var(--section-bg-light) !important;
+            box-shadow: var(--section-shadow-light);
+        }
+        .navbar, .navbar * {
+            background: var(--section-bg-light) !important;
+        }
+        body.dark-mode {
+            background: var(--body-bg-dark) !important;
+            color: var(--body-color-dark);
+        }
+        body.dark-mode main, body.dark-mode .container, body.dark-mode .card, body.dark-mode .card-body, body.dark-mode .card-footer {
+            background: var(--section-bg-dark) !important;
+            box-shadow: var(--section-shadow-dark);
+        }
+        body.dark-mode .navbar, body.dark-mode .navbar * {
+            background: var(--section-bg-dark) !important;
+        }
+        body.dark-mode .table, body.dark-mode .table th, body.dark-mode .table td {
+            background: var(--table-bg-dark) !important;
+            color: var(--body-color-dark) !important;
+            border-color: var(--table-cell-border-dark) !important;
+        }
+        body.dark-mode .table-striped > tbody > tr:nth-of-type(even) {
+            background-color: var(--table-row-even-bg-dark) !important;
+        }
+        body.dark-mode .table-hover > tbody > tr:hover {
+            background-color: var(--table-row-hover-bg-dark) !important;
+        }
+        body.dark-mode .btn, body.dark-mode .btn-outline-secondary, body.dark-mode .btn-primary {
+            color: var(--body-color-dark) !important;
+        }
+        body.dark-mode .card, body.dark-mode .card-body, body.dark-mode .card-footer {
+            background: var(--section-bg-dark) !important;
+        }
+        body.dark-mode label,
+        body.dark-mode .form-label,
+        body.dark-mode .form-select,
+        body.dark-mode .form-control {
+            color: var(--body-color-dark) !important;
+        }
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: #bbb !important;
+            opacity: 1;
+        }
+        body.dark-mode footer {
+            background: var(--footer-bg-dark) !important;
+            color: var(--footer-color-dark) !important;
+            border-top-color: var(--footer-border-dark) !important;
+        }
     </style>
 </head>
 <body>
@@ -68,9 +162,32 @@
    </footer>
     {% endblock piePag %}
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>
-        // (Se mantiene el script de tema de plantillas.html)
+        // Dark mode toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const themeToggle = document.getElementById('bd-theme-small');
+            // Cargar preferencia
+            if (localStorage.getItem('admin-dark-mode') === 'true') {
+                body.classList.add('dark-mode');
+                document.getElementById('dark-mode-icon-small').style.display = 'none';
+                document.getElementById('light-mode-icon-small').style.display = '';
+            } else {
+                body.classList.remove('dark-mode');
+                document.getElementById('dark-mode-icon-small').style.display = '';
+                document.getElementById('light-mode-icon-small').style.display = 'none';
+            }
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    body.classList.toggle('dark-mode');
+                    const isDark = body.classList.contains('dark-mode');
+                    localStorage.setItem('admin-dark-mode', isDark);
+                    document.getElementById('dark-mode-icon-small').style.display = isDark ? 'none' : '';
+                    document.getElementById('light-mode-icon-small').style.display = isDark ? '' : 'none';
+                });
+            }
+        });
     </script>
     {% block scripts %}{% endblock scripts %}
 </body>
