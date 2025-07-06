@@ -76,14 +76,14 @@
 </div>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let facturas = [];
-    try {
-        facturas = {{ facturas_json|safe }};
-        console.log('Facturas cargadas:', facturas);
-    } catch (e) {
-        facturas = [];
-        console.error('Error al parsear facturas_json:', e);
-    }
+let facturas = [];
+try {
+    facturas = JSON.parse('{{ facturas_json|escapejs }}');
+    console.log('Facturas cargadas:', facturas);
+} catch (e) {
+    facturas = [];
+    console.error('Error al parsear facturas_json:', e);
+}
     const tbody = document.getElementById('facturas-body');
     const mensajeVacio = document.getElementById('mensaje-vacio');
     const busqueda = document.getElementById('busqueda');
