@@ -1,6 +1,13 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 from django.conf import settings
+
+class UsuarioManager(UserManager):
+    def create_superuser(self, username, email=None, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('rol', 'admin')
+        return super().create_superuser(username, email, password, **extra_fields)
 
 class Usuario(AbstractUser):
     tipo_documento = models.CharField(max_length=20)
@@ -11,6 +18,12 @@ class Usuario(AbstractUser):
     direccion = models.CharField(max_length=100)
     rol = models.CharField(max_length=20, default='usuario', blank=False)
     fecha_ingreso = models.DateTimeField(auto_now_add=True)
+
+    REQUIRED_FIELDS = [
+        'email', 'first_name', 'last_name', 'tipo_documento', 'numero_documento', 'genero', 'ciudad', 'telefono', 'direccion'
+    ]
+
+    objects = UsuarioManager()
 
     def __str__(self):
         return f'{self.username} ({self.numero_documento})'
