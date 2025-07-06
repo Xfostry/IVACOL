@@ -133,8 +133,41 @@
         /* Footer Dark Mode */
         body.dark-mode footer { background-color: var(--footer-bg-dark); color: var(--footer-color-dark); border-top-color: var(--footer-border-dark); }
     </style>
+<!-- Toast Notification Styles -->
+<style>
+.toast-notification {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #323232;
+    color: #fff;
+    text-align: center;
+    border-radius: 8px;
+    padding: 16px;
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    bottom: 40px;
+    font-size: 1.1em;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+    opacity: 0;
+    transition: opacity 0.4s, visibility 0.4s;
+}
+.toast-notification.show {
+    visibility: visible;
+    opacity: 1;
+}
+.toast-notification.success { background-color: #28a745; }
+.toast-notification.error { background-color: #dc3545; }
+.toast-notification.info { background-color: #007bff; }
+body.dark-mode .toast-notification { background-color: #222; color: #fff; }
+body.dark-mode .toast-notification.success { background-color: #218838; }
+body.dark-mode .toast-notification.error { background-color: #c82333; }
+body.dark-mode .toast-notification.info { background-color: #0056b3; }
+</style>
 </head>
 <body>
+<div id="toast-notification" class="toast-notification"></div>
 {# --- Contenido HTML (SIN CAMBIOS) --- #}
 <br><br>
     <main class="container">
@@ -383,20 +416,20 @@
                 const selectedAmountType = document.querySelector('input[name="amount-type"]:checked')?.value;
 
                 if (!numberInput || !descriptionInput || !categoryInput || !amountInputStr || !dateInput || !selectedAmountType) {
-                    alert('Completa campos obligatorios.');
+                    showToast('Completa campos obligatorios.', 'error');
                     enviandoFactura = false;
                     if (submitBtn) submitBtn.disabled = false;
                     return;
                 }
                 if (!dateInput.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                    alert('Fecha inválida.');
+                    showToast('Fecha inválida.', 'error');
                     enviandoFactura = false;
                     if (submitBtn) submitBtn.disabled = false;
                     return;
                 }
                  const amountInput = parseFloat(amountInputStr.replace(',', '.'));
                 if (isNaN(amountInput) || amountInput <= 0) {
-                    alert('Monto inválido.');
+                    showToast('Monto inválido.', 'error');
                     enviandoFactura = false;
                     if (submitBtn) submitBtn.disabled = false;
                     return;
@@ -422,17 +455,17 @@
                         modal.style.display = "none";
                         invoiceForm.reset();
                         setTimeout(function() {
-                            alert('¡Factura guardada en el servidor!');
+                            showToast('¡Factura guardada en el servidor!', 'success');
                         }, 100);
                         // Actualizar la tabla automáticamente
                         actualizarFacturasDesdeBackend();
                     } else {
-                        alert('Error al guardar la factura: ' + (result.error || ''));
+                        showToast('Error al guardar la factura: ' + (result.error || ''), 'error');
                     }
                     enviandoFactura = false;
                     if (submitBtn) submitBtn.disabled = false;
                 } catch (err) {
-                    alert('Error de red o servidor.');
+                    showToast('Error de red o servidor.', 'error');
                     enviandoFactura = false;
                     if (submitBtn) submitBtn.disabled = false;
                 }
@@ -484,7 +517,16 @@
                      cargarDatosIniciales();
                      
                      });
-                     </script>
+                     // Toast Notification Function
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast-notification');
+    toast.textContent = message;
+    toast.className = 'toast-notification show ' + (type || 'info');
+    setTimeout(() => {
+        toast.className = 'toast-notification ' + (type || 'info');
+    }, 3200);
+}
+</script>
 {% endblock scripts %}
 
 {% endblock Contenido %}
