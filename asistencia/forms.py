@@ -2,6 +2,34 @@ from .models import Usuario
 from django import forms
 
 class UsuarioForm(forms.ModelForm):
+    TIPO_DOCUMENTO_CHOICES = [
+        ("CC", "Cédula de Ciudadanía (CC)"),
+        ("CE", "Cédula de Extranjería (CE)"),
+        ("PEP", "Permiso Especial de Permanencia (PEP)"),
+        ("PPT", "Permiso por Protección Temporal (PPT)"),
+        ("RUT", "Registro Único Tributario (RUT)"),
+        ("NIT", "Número de Identificación Tributaria (NIT)")
+    ]
+    GENERO_CHOICES = [
+        ("masculino", "Masculino"),
+        ("femenino", "Femenino"),
+        ("otro", "Otro"),
+        ("no_especificado", "Prefiero no decir")
+    ]
+    CIUDAD_CHOICES = [
+        ("bogota", "Bogotá"), ("medellin", "Medellín"), ("cali", "Cali"), ("barranquilla", "Barranquilla"),
+        ("cartagena", "Cartagena"), ("cucuta", "Cúcuta"), ("bucaramanga", "Bucaramanga"), ("pereira", "Pereira"),
+        ("santa_marta", "Santa Marta"), ("ibague", "Ibagué"), ("manizales", "Manizales"), ("neiva", "Neiva"),
+        ("villavicencio", "Villavicencio"), ("pasto", "Pasto"), ("monteria", "Montería"), ("valledupar", "Valledupar"),
+        ("armenia", "Armenia"), ("popayan", "Popayán"), ("sincelejo", "Sincelejo"), ("tunja", "Tunja"),
+        ("florencia", "Florencia"), ("quibdo", "Quibdó"), ("riohacha", "Riohacha"), ("yopal", "Yopal"),
+        ("mocoa", "Mocoa"), ("san_andres", "San Andrés"), ("leticia", "Leticia"), ("inírida", "Inírida"),
+        ("mitu", "Mitú"), ("puerto_carreño", "Puerto Carreño")
+    ]
+
+    tipo_documento = forms.ChoiceField(choices=TIPO_DOCUMENTO_CHOICES, widget=forms.Select, required=True)
+    genero = forms.ChoiceField(choices=GENERO_CHOICES, widget=forms.Select, required=True)
+    ciudad = forms.ChoiceField(choices=CIUDAD_CHOICES, widget=forms.Select, required=True)
     password = forms.CharField(
         label='Contraseña',
         widget=forms.PasswordInput(render_value=True),
@@ -10,7 +38,11 @@ class UsuarioForm(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = "__all__"
+        # Solo los campos editables por el admin
+        fields = [
+            'first_name', 'last_name', 'tipo_documento', 'numero_documento', 'genero',
+            'ciudad', 'telefono', 'direccion', 'rol', 'email', 'password'
+        ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

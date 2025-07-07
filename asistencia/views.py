@@ -639,12 +639,14 @@ def borrar_factura_admin(request, id):
     factura = get_object_or_404(FacturaSubida, id=id)
     usuario_obj = factura.usuario
     if request.method == 'POST':
-        # Recibir motivo del borrado (JSON)
+        # Recibir motivo del borrado (JSON o form-data)
+        motivo = ''
         try:
             data = json.loads(request.body.decode())
             motivo = data.get('motivo', '').strip()
         except Exception:
-            motivo = ''
+            # Si no es JSON, intentar como form-data
+            motivo = request.POST.get('motivo', '').strip()
         # Crear notificación
         Notification.objects.create(
             user=usuario_obj,

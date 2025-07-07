@@ -44,7 +44,7 @@
                 {% endif %}
                 <div class="row g-3">
                     {% for field in formulario %}
-                        {% if field.name not in 'username fecha_ingreso is_staff is_active is_superuser user_permissions groups last_login date_joined' %}
+                        {% if field.name in 'first_name last_name tipo_documento numero_documento genero telefono direccion ciudad email password rol' %}
                             {% if field.name == 'password' %}
                                 <div class="col-md-6">
                                     <label for="{{ field.id_for_label }}" class="form-label">Contraseña (dejar vacío para no cambiar)</label>
@@ -53,9 +53,21 @@
                                         <div class="invalid-feedback d-block">{{ error }}</div>
                                     {% endfor %}
                                 </div>
+                            {% elif field.name == 'rol' %}
+                                <div class="col-md-6">
+                                    <label for="{{ field.id_for_label }}" class="form-label">Rol <span class="text-danger">*</span></label>
+                                    <select name="rol" id="{{ field.id_for_label }}" class="form-select" required>
+                                        <option value="">Seleccione un rol</option>
+                                        <option value="admin" {% if field.value == 'admin' or usuario.rol == 'admin' %}selected{% endif %}>Administrador</option>
+                                        <option value="usuario" {% if field.value == 'usuario' or usuario.rol == 'usuario' %}selected{% endif %}>Usuario</option>
+                                    </select>
+                                    {% for error in field.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
                             {% else %}
                                 <div class="col-md-6">
-                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}{% if field.name == 'rol' %} <span class="text-danger">*</span>{% endif %}</label>
                                     {{ field }}
                                     {% if field.help_text %}
                                         <div class="form-text">{{ field.help_text }}</div>

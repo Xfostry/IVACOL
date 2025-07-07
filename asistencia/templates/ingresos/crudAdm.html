@@ -6,47 +6,189 @@
     <title>Crud para Administrador</title>
     <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+        .container { max-width: 900px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-primary { background: #007bff; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background: #0056b3; }
+        .btn-edit { background: #ffc107; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-edit:hover { background: #e0a800; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100vw; height: 100vh; overflow: auto; background: rgba(0,0,0,0.4); }
+        .modal-content { background: #fff; margin: 60px auto; padding: 20px 30px; border-radius: 8px; max-width: 500px; position: relative; }
+        .close { position: absolute; right: 16px; top: 10px; font-size: 24px; color: #888; cursor: pointer; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 7px; border: 1px solid #ccc; border-radius: 4px; }
+        .modal-footer { text-align: right; }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 8px 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #007bff; color: #fff; }
+    </style>
 </head>
 <body>
-
     <div class="container">
         <h1>Panel de Administración de Usuarios</h1>
         <div class="controls">
             <input type="text" id="searchInput" placeholder="Buscar por nombre, email o N° Doc...">
             <button id="addUserBtn" class="btn-primary"><i class="fas fa-plus"></i> Agregar Usuario</button>
         </div>
+        <div class="table-responsive">
+            <table class="table table-primary">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombres</th>
+                        <th>Apellidos</th>
+                        <th>Tipo de Documento</th>
+                        <th>Número de Documento</th>
+                        <th>Género</th>
+                        <th>Teléfono</th>
+                        <th>Dirección</th>
+                        <th>Ciudad</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <!-- Ejemplo de usuario -->
+                    <tr>
+                        <td>1</td>
+                        <td>Juan</td>
+                        <td>Pérez</td>
+                        <td>CC</td>
+                        <td>12345678</td>
+                        <td>Masculino</td>
+                        <td>3001234567</td>
+                        <td>Calle 123</td>
+                        <td>Bogotá</td>
+                        <td><button class="btn-edit" onclick="openModal('edit', this)"><i class="fas fa-edit"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- Modal para crear/editar usuario -->
     <div id="userModal" class="modal">
         <div class="modal-content">
-            <div
-                class="table-responsive"
-            >
-                <table
-                    class="table table-primary"
-                >
-                    <thead>
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Nombres</th>
-                            <th scope="col">Apellidos</th>
-                            <th scope="col">Tipo de Documento</th>
-                            <th scope="col">Número de Documento</th>
-                            <th scope="col">Género</th>
-                            <th scope="col">Contraseña</th>
-                            <th scope="col">Confirmar Contraseña</th>
-                            <th scope="col">Número de Teléfono</th>
-                            <th scope="col">Dirección</th>
-                            <th scope="col">Ciudad</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        
-                    </tbody>
-                </table>
-            </div>
-            
+            <span class="close" id="closeModal">&times;</span>
+            <h2 id="modalTitle">Agregar Usuario</h2>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label for="nombres">Nombres *</label>
+                    <input type="text" id="nombres" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellidos">Apellidos *</label>
+                    <input type="text" id="apellidos" required>
+                </div>
+                <div class="form-group">
+                    <label for="tipoDoc">Tipo de Documento *</label>
+                    <select id="tipoDoc" required>
+                        <option value="">Seleccione</option>
+                        <option value="CC">CC</option>
+                        <option value="TI">TI</option>
+                        <option value="CE">CE</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="numDoc">Número de Documento *</label>
+                    <input type="text" id="numDoc" required>
+                </div>
+                <div class="form-group">
+                    <label for="genero">Género *</label>
+                    <select id="genero" required>
+                        <option value="">Seleccione</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono *</label>
+                    <input type="text" id="telefono" required>
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Dirección *</label>
+                    <input type="text" id="direccion" required>
+                </div>
+                <div class="form-group">
+                    <label for="ciudad">Ciudad *</label>
+                    <input type="text" id="ciudad" required>
+                </div>
+                <div class="form-group" id="passwordGroup">
+                    <label for="password">Contraseña *</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group" id="confirmPasswordGroup">
+                    <label for="confirmPassword">Confirmar Contraseña *</label>
+                    <input type="password" id="confirmPassword" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn-primary" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script>
+    // Modal logic
+    const userModal = document.getElementById('userModal');
+    const addUserBtn = document.getElementById('addUserBtn');
+    const closeModalBtn = document.getElementById('closeModal');
+    const userForm = document.getElementById('userForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const passwordGroup = document.getElementById('passwordGroup');
+    const confirmPasswordGroup = document.getElementById('confirmPasswordGroup');
+    const userIdInput = document.getElementById('userId');
+
+    function openModal(mode, btn) {
+        userForm.reset();
+        if (mode === 'edit') {
+            modalTitle.textContent = 'Editar Usuario';
+            passwordGroup.style.display = 'none';
+            confirmPasswordGroup.style.display = 'none';
+            // Obtener datos de la fila
+            const row = btn.closest('tr');
+            userIdInput.value = row.cells[0].textContent;
+            document.getElementById('nombres').value = row.cells[1].textContent;
+            document.getElementById('apellidos').value = row.cells[2].textContent;
+            document.getElementById('tipoDoc').value = row.cells[3].textContent;
+            document.getElementById('numDoc').value = row.cells[4].textContent;
+            document.getElementById('genero').value = row.cells[5].textContent;
+            document.getElementById('telefono').value = row.cells[6].textContent;
+            document.getElementById('direccion').value = row.cells[7].textContent;
+            document.getElementById('ciudad').value = row.cells[8].textContent;
+        } else {
+            modalTitle.textContent = 'Agregar Usuario';
+            passwordGroup.style.display = 'block';
+            confirmPasswordGroup.style.display = 'block';
+            userIdInput.value = '';
+        }
+        userModal.style.display = 'block';
+    }
+
+    addUserBtn.onclick = () => openModal('create');
+    closeModalBtn.onclick = () => userModal.style.display = 'none';
+    window.onclick = function(event) { if (event.target == userModal) userModal.style.display = 'none'; };
+
+    userForm.onsubmit = function(e) {
+        e.preventDefault();
+        // Validación mínima
+        if (passwordGroup.style.display !== 'none') {
+            const pass = document.getElementById('password').value;
+            const conf = document.getElementById('confirmPassword').value;
+            if (pass !== conf) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+        }
+        // Aquí iría la lógica para enviar los datos al backend
+        alert('Usuario guardado (simulado)');
+        userModal.style.display = 'none';
+    };
+    </script>
 </body>
 </html>

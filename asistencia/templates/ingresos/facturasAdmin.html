@@ -168,7 +168,7 @@ try {
             return;
         }
         if (!confirm('¿Seguro que deseas borrar esta factura?')) return;
-        fetch(`/asistencia/borrar_factura/${id}/`, {
+        fetch(`/asistencia/borrar_factura_admin/${id}/`, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': document.querySelector('#formBorrarFactura [name=csrfmiddlewaretoken]').value,
