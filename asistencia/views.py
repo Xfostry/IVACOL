@@ -227,6 +227,7 @@ def registrarse(request):
 
     return render(request, 'paginas/registrarse.html')
 
+
 def tratamiento(request):
     import requests
     if request.method == 'POST':
