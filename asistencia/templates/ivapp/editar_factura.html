@@ -27,8 +27,11 @@
                         <input type="date" name="fecha" class="form-control" id="id_fecha" value="{{ factura.fecha|date:'Y-m-d' }}" required>
                     </div>
                     <div class="col-md-6">
-                        <label for="id_categoria" class="form-label">Categoría</label>
-                        <input type="text" name="categoria" maxlength="100" class="form-control" id="id_categoria" value="{{ factura.categoria }}" required>
+                        <label for="id_categoria" class="form-label">Categoría</label><br>
+                            <select id="invoice-category" name="invoice-category" required>
+                            <option value="" disabled selected>Selecciona...</option>
+                            <option>Supermercados</option> <option>Servicios</option> <option>Entretenimiento</option> <option>Tecnología</option> <option>Restaurantes</option> <option>Transporte</option> <option>Salud</option> <option>Educación</option> <option>Vestuario</option> <option>Hogar</option> <option>Otros</option>
+                        </select>
                     </div>
                     <div class="col-md-6">
                         <label for="id_monto" class="form-label">Monto</label>

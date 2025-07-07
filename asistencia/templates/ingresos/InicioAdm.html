@@ -26,8 +26,8 @@
                     {% for usuario in usuarios %}
                     <tr>
                         <td>{{ usuario.id }}</td>
-                        <td>{{ usuario.first_name }}</td>
-                        <td>{{ usuario.last_name }}</td>
+                        <td>{{ usuario.first_name|upper }}</td>
+                        <td>{{ usuario.last_name|upper }}</td>
                         <td>{{ usuario.email }}</td>
                         <td>{{ usuario.rol|default:"usuario" }}</td>
                         <td>{{ usuario.fecha_ingreso|date:"d/m/Y H:i" }}</td>

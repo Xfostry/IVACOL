@@ -207,7 +207,7 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
                              <th class="nit-header">NIT</th>
                              <th>Categoría</th>
                              <th class="numero-header">Monto Base</th>
-                             <th class="numero-header">IVA (19%)</th>
+                             <th class="numero-header">IVA</th>
                              <th class="numero-header">Monto Total</th>
                          </tr>
                      </thead>
@@ -294,6 +294,7 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
                             <option>Supermercados</option> <option>Servicios</option> <option>Entretenimiento</option> <option>Tecnología</option> <option>Restaurantes</option> <option>Transporte</option> <option>Salud</option> <option>Educación</option> <option>Vestuario</option> <option>Hogar</option> <option>Otros</option>
                         </select>
                     </div>
+                    <!-- El tipo de IVA se asigna automáticamente según la categoría seleccionada -->
                     <div class="form-group radio-group">
                         <label>Monto Ingresado:</label> <br>
                         <input type="radio" id="amount-type-neto" name="amount-type" value="neto" checked> <label for="amount-type-neto">Base (Sin IVA)</label>
@@ -337,7 +338,7 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
         console.log("DOM Cargado v7 (NIT added). Iniciando scripts...");
 
         const STORAGE_KEY_PRINCIPAL = 'historialFacturasApp';
-        const IVA_RATE = 0.19;
+        // El IVA se determina dinámicamente según la selección
         const currencyFormatter = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
         // Datos por defecto
@@ -435,11 +436,23 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
                     return;
                 }
 
+                 // Asignar IVA automáticamente según la categoría
+                 let category = categoryInput ? categoryInput.toLowerCase() : '';
+                 let ivaRate = 0.19; // General por defecto
+                 let ivaExcluido = false;
+                 if (["alimentos", "medicamentos", "servicios", "servicios públicos"].some(c => category.includes(c))) {
+                     ivaRate = 0.05;
+                 } else if (["libros", "educación", "salud"].some(c => category.includes(c))) {
+                     ivaRate = 0;
+                 } else if (["exportaciones", "donaciones", "operaciones financieras"].some(c => category.includes(c))) {
+                     ivaRate = 0;
+                     ivaExcluido = true;
+                 }
                  let neto, iva, acumulado;
                  if (selectedAmountType === 'neto') { neto = amountInput; }
-                 else { neto = amountInput / (1 + IVA_RATE); }
+                 else { neto = amountInput / (1 + ivaRate); }
                  neto = parseFloat(neto.toFixed(2));
-                 iva = parseFloat((neto * IVA_RATE).toFixed(2));
+                 iva = ivaExcluido ? 0 : parseFloat((neto * ivaRate).toFixed(2));
                  acumulado = parseFloat((neto + iva).toFixed(2));
 
                  // Enviar al backend

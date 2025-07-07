@@ -221,9 +221,7 @@
 
 /* --- Estilos Dark Mode para Página de Perfil (Añadir DENTRO de body.dark-mode {...}) --- */
 body.dark-mode .profile-page-wrapper {
-    /* Cambiar gradiente o usar fondo sólido oscuro */
-    /* background: linear-gradient(135deg, #232526 0%, #414345 100%); */
-    background-color: var(--body-bg-dark);
+    background: #181a1b !important;
     color: var(--body-color-dark); /* Color texto dark mode */
 }
 body.dark-mode .profile-card {
@@ -299,6 +297,9 @@ body.dark-mode .btn-secondary:hover {
 --theme-button-hover-bg-light: rgba(255, 255, 255, 0.2); /* Más visible al pasar el mouse */
 }
 
+    body.dark-mode {
+        background-color: #181a1b !important;
+    }
     </style>
 </head>
 <body>
@@ -337,7 +338,39 @@ body.dark-mode .btn-secondary:hover {
                 <div class="detail-item" id="user-ciudad-container">
                     <i class="fas fa-city"></i>
                     <span class="display-field" id="display-user-ciudad">{{ usuario.ciudad|default:'Sin ciudad' }}</span>
-                    <input type="text" class="edit-input" id="input-user-ciudad" aria-label="Ciudad" value="{{ usuario.ciudad|default:'' }}">
+                    <select class="edit-input" id="input-user-ciudad" aria-label="Ciudad" name="ciudad" required>
+                        <option value="" selected disabled>Seleccione una ciudad</option>
+                        <option value="bogota">Bogotá</option>
+                        <option value="medellin">Medellín</option>
+                        <option value="cali">Cali</option>
+                        <option value="barranquilla">Barranquilla</option>
+                        <option value="cartagena">Cartagena</option>
+                        <option value="cucuta">Cúcuta</option>
+                        <option value="bucaramanga">Bucaramanga</option>
+                        <option value="pereira">Pereira</option>
+                        <option value="santa_marta">Santa Marta</option>
+                        <option value="ibague">Ibagué</option>
+                        <option value="manizales">Manizales</option>
+                        <option value="neiva">Neiva</option>
+                        <option value="villavicencio">Villavicencio</option>
+                        <option value="pasto">Pasto</option>
+                        <option value="monteria">Montería</option>
+                        <option value="valledupar">Valledupar</option>
+                        <option value="armenia">Armenia</option>
+                        <option value="popayan">Popayán</option>
+                        <option value="sincelejo">Sincelejo</option>
+                        <option value="tunja">Tunja</option>
+                        <option value="florencia">Florencia</option>
+                        <option value="quibdo">Quibdó</option>
+                        <option value="riohacha">Riohacha</option>
+                        <option value="yopal">Yopal</option>
+                        <option value="mocoa">Mocoa</option>
+                        <option value="san_andres">San Andrés</option>
+                        <option value="leticia">Leticia</option>
+                        <option value="inírida">Inírida</option>
+                        <option value="mitu">Mitú</option>
+                        <option value="puerto_carreño">Puerto Carreño</option>
+                    </select>
                 </div>
                 <div class="detail-item" id="user-address-container">
                     <i class="fas fa-map-marker-alt"></i>
@@ -402,7 +435,39 @@ body.dark-mode .btn-secondary:hover {
                     <div class="detail-item">
                         <i class="fas fa-city"></i>
                         <span><strong>Ciudad:</strong></span>
-                        <input type="text" id="edit-ciudad" value="{{ usuario.ciudad }}" style="flex:1; margin-left:8px;" />
+                        <select id="edit-ciudad" name="ciudad" style="flex:1; margin-left:8px;" required>
+                            <option value="" selected disabled>Seleccione una ciudad</option>
+                            <option value="bogota">Bogotá</option>
+                            <option value="medellin">Medellín</option>
+                            <option value="cali">Cali</option>
+                            <option value="barranquilla">Barranquilla</option>
+                            <option value="cartagena">Cartagena</option>
+                            <option value="cucuta">Cúcuta</option>
+                            <option value="bucaramanga">Bucaramanga</option>
+                            <option value="pereira">Pereira</option>
+                            <option value="santa_marta">Santa Marta</option>
+                            <option value="ibague">Ibagué</option>
+                            <option value="manizales">Manizales</option>
+                            <option value="neiva">Neiva</option>
+                            <option value="villavicencio">Villavicencio</option>
+                            <option value="pasto">Pasto</option>
+                            <option value="monteria">Montería</option>
+                            <option value="valledupar">Valledupar</option>
+                            <option value="armenia">Armenia</option>
+                            <option value="popayan">Popayán</option>
+                            <option value="sincelejo">Sincelejo</option>
+                            <option value="tunja">Tunja</option>
+                            <option value="florencia">Florencia</option>
+                            <option value="quibdo">Quibdó</option>
+                            <option value="riohacha">Riohacha</option>
+                            <option value="yopal">Yopal</option>
+                            <option value="mocoa">Mocoa</option>
+                            <option value="san_andres">San Andrés</option>
+                            <option value="leticia">Leticia</option>
+                            <option value="inírida">Inírida</option>
+                            <option value="mitu">Mitú</option>
+                            <option value="puerto_carreño">Puerto Carreño</option>
+                        </select>
                     </div>
                     <div class="detail-item">
                         <i class="fas fa-map-marker-alt"></i>
