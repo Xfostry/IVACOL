@@ -5,70 +5,68 @@
         <h1 class="h3 mb-0 fw-bold">Editar Usuario</h1>
         <a href="{% url 'InicioAdm' %}" class="btn btn-outline-secondary">← Volver</a>
     </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Datos del usuario</h5>
+            <div class="row g-3">
+                <div class="col-md-4"><strong>Username:</strong> {{ usuario.username }}</div>
+                <div class="col-md-4"><strong>Nombres:</strong> {{ usuario.first_name }}</div>
+                <div class="col-md-4"><strong>Apellidos:</strong> {{ usuario.last_name }}</div>
+                <div class="col-md-4"><strong>Email:</strong> {{ usuario.email }}</div>
+                <div class="col-md-4"><strong>Tipo de documento:</strong> {{ usuario.tipo_documento }}</div>
+                <div class="col-md-4"><strong>Número de documento:</strong> {{ usuario.numero_documento }}</div>
+                <div class="col-md-4"><strong>Género:</strong> {{ usuario.genero }}</div>
+                <div class="col-md-4"><strong>Ciudad:</strong> {{ usuario.ciudad }}</div>
+                <div class="col-md-4"><strong>Teléfono:</strong> {{ usuario.telefono }}</div>
+                <div class="col-md-4"><strong>Dirección:</strong> {{ usuario.direccion }}</div>
+                <div class="col-md-4"><strong>Rol:</strong> {{ usuario.rol }}</div>
+                <div class="col-md-4"><strong>Fecha de ingreso:</strong> {{ usuario.fecha_ingreso }}</div>
+            </div>
+        </div>
+    </div>
     <div class="card shadow-sm">
         <div class="card-body">
             <form method="post" autocomplete="off">
                 {% csrf_token %}
+                {% if formulario.errors %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                        {% for field in formulario %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in formulario.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 <div class="row g-3">
-                    <div class="col-md-6">
-                        <label for="id_first_name" class="form-label">Nombres</label>
-                        <input type="text" name="first_name" maxlength="150" class="form-control" id="id_first_name" value="{{ usuario.first_name }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_last_name" class="form-label">Apellidos</label>
-                        <input type="text" name="last_name" maxlength="150" class="form-control" id="id_last_name" value="{{ usuario.last_name }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_email" class="form-label">Email</label>
-                        <input type="email" name="email" maxlength="254" class="form-control" id="id_email" value="{{ usuario.email }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_password" class="form-label">Contraseña (dejar vacío para no cambiar)</label>
-                        <input type="password" name="password" class="form-control" id="id_password">
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_tipo_documento" class="form-label">Tipo de Documento</label>
-                        <select name="tipo_documento" class="form-select" id="id_tipo_documento" required>
-                            <option value="" disabled>Selecciona...</option>
-                            <option value="CC" {% if usuario.tipo_documento == 'CC' %}selected{% endif %}>Cédula de Ciudadanía</option>
-                            <option value="CE" {% if usuario.tipo_documento == 'CE' %}selected{% endif %}>Cédula de Extranjería</option>
-                            <option value="TI" {% if usuario.tipo_documento == 'TI' %}selected{% endif %}>Tarjeta de Identidad</option>
-                            <option value="NIT" {% if usuario.tipo_documento == 'NIT' %}selected{% endif %}>NIT</option>
-                            <option value="Otro" {% if usuario.tipo_documento == 'Otro' %}selected{% endif %}>Otro</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_numero_documento" class="form-label">Número de Documento</label>
-                        <input type="text" name="numero_documento" maxlength="30" class="form-control" id="id_numero_documento" value="{{ usuario.numero_documento }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_genero" class="form-label">Género</label>
-                        <select name="genero" class="form-select" id="id_genero" required>
-                            <option value="" disabled>Selecciona...</option>
-                            <option value="Masculino" {% if usuario.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
-                            <option value="Femenino" {% if usuario.genero == 'Femenino' %}selected{% endif %}>Femenino</option>
-                            <option value="Otro" {% if usuario.genero == 'Otro' %}selected{% endif %}>Otro</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_ciudad" class="form-label">Ciudad</label>
-                        <input type="text" name="ciudad" maxlength="50" class="form-control" id="id_ciudad" value="{{ usuario.ciudad }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_telefono" class="form-label">Teléfono</label>
-                        <input type="text" name="telefono" maxlength="20" class="form-control" id="id_telefono" value="{{ usuario.telefono }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_direccion" class="form-label">Dirección</label>
-                        <input type="text" name="direccion" maxlength="100" class="form-control" id="id_direccion" value="{{ usuario.direccion }}" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="id_rol" class="form-label">Rol</label>
-                        <select name="rol" class="form-select" id="id_rol" required>
-                            <option value="admin" {% if usuario.rol == 'admin' %}selected{% endif %}>Administrador</option>
-                            <option value="usuario" {% if usuario.rol == 'usuario' %}selected{% endif %}>Usuario</option>
-                        </select>
-                    </div>
+                    {% for field in formulario %}
+                        {% if field.name not in 'username fecha_ingreso is_staff is_active is_superuser user_permissions groups last_login date_joined' %}
+                            {% if field.name == 'password' %}
+                                <div class="col-md-6">
+                                    <label for="{{ field.id_for_label }}" class="form-label">Contraseña (dejar vacío para no cambiar)</label>
+                                    <input type="password" name="password" class="form-control" id="{{ field.id_for_label }}">
+                                    {% for error in field.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="col-md-6">
+                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <div class="form-text">{{ field.help_text }}</div>
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        <div class="invalid-feedback d-block">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
                 </div>
                 <div class="mt-4 d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary px-4">Guardar Cambios</button>

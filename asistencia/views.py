@@ -706,17 +706,22 @@ import mimetypes
 
 @login_required(login_url='login')
 def factura_archivo(request, id):
-    factura = get_object_or_404(FacturaSubida, id=id, usuario=request.user)
+    from django.core.exceptions import PermissionDenied
+    try:
+        if request.user.is_superuser or (hasattr(request.user, 'rol') and request.user.rol == 'admin'):
+            factura = get_object_or_404(FacturaSubida, id=id)
+        else:
+            factura = get_object_or_404(FacturaSubida, id=id, usuario=request.user)
+    except FacturaSubida.DoesNotExist:
+        raise Http404('No existe FacturaSubida que coincida con la consulta dada.')
     if not factura.archivo:
         return HttpResponse('No hay archivo adjunto para esta factura.', status=404)
     file_path = factura.archivo.path
     file_mime, _ = mimetypes.guess_type(file_path)
     if file_mime and file_mime.startswith('image/'):
-        # Es una imagen, mostrarla en el navegador
         with open(file_path, 'rb') as f:
             return HttpResponse(f.read(), content_type=file_mime)
     else:
-        # No es imagen, ofrecer descarga
         response = FileResponse(open(file_path, 'rb'))
         response['Content-Disposition'] = f'attachment; filename="{factura.archivo.name.split("/")[-1]}"'
         return response
