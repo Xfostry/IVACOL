@@ -123,10 +123,23 @@
         body.dark-mode .modal-content .submit-button:hover { background-color: var(--submit-button-hover-bg-dark, #217336); }
 
         body.modal-open-no-scroll { overflow: hidden; }
+    /* Estilos para el cuadro de totales en modo oscuro */
+    body.dark-mode #totales-cuadro {
+        background: #232b36;
+        color: black;
+        box-shadow: 0 2px 8px rgba(20, 20, 20, 0.18);
+        border: 1px solid #3a4656;
+    }
+    body.dark-mode #totales-cuadro span {
+        color: black;
+    }
+    body.dark-mode #totales-cuadro span span {
+        color: black;
+    }
     </style>
 </head>
 <body>
-<br><br><br>
+<br>
 <div class="container-historial">
 
     <div class="titulo-contenedor">
@@ -136,61 +149,68 @@
         </a>
     </div>
 
-    <div class="table-responsive">
-        <table class="tabla-historial">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Imagen</th>
-                    <th class="numero-header">Número</th>
-                    <th>Descripción</th>
-                    <th class="nit-header">NIT</th>
-                    <th>Categoría</th>
-                    <th class="numero-header">Neto (COP)</th>
-                    <th class="numero-header">IVA (19%) (COP)</th>
-                    <th class="numero-header">Total (COP)</th>
-                    <th class="acciones-header">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if facturas %}
-                    {% for factura in facturas %}
-                        <tr>
-                            <td>{{ factura.fecha|date:"d/m/Y" }}</td>
-                            <td>
-                                {% if factura.archivo %}
-                                    <a href="{% url 'factura_archivo' factura.id %}" target="_blank">Ver factura</a>
-                                {% else %}
-                                    Sin archivo
-                                {% endif %}
-                            </td>
-                            <td class="numero">{{ factura.numero }}</td>
-                            <td>{{ factura.descripcion }}</td>
-                            <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
-                            <td>{{ factura.categoria }}</td>
-                            <td class="numero">{{ factura.monto|floatformat:0|intcomma }}</td>
-                            <td class="numero">{{ factura.iva|floatformat:0|intcomma }}</td>
-                            <td class="numero">{{ factura.total|floatformat:0|intcomma }}</td>
-                            <td class="acciones-cell">
-                                {% if factura.id %}
-                                <a href="{% url 'editar_factura' factura.id %}" class="action-button-historial edit" title="Editar">✏️</a>
-                                <form method="post" action="{% url 'borrar_factura' factura.id %}" style="display:inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="action-button-historial delete" title="Borrar" onclick="return confirm('¿Seguro que deseas borrar esta factura?');">🗑️</button>
-                                </form>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="9" style="text-align:center;">No hay facturas registradas.</td></tr>
-                {% endif %}
-            </tbody>
-        </table>
+    <div id="historial-contenedor-pdf">
+        <div class="table-responsive">
+            <table class="tabla-historial">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Imagen</th>
+                        <th class="numero-header">Número</th>
+                        <th>Descripción</th>
+                        <th class="nit-header">NIT</th>
+                        <th>Categoría</th>
+                        <th class="numero-header">Neto (COP)</th>
+                        <th class="numero-header">IVA (COP)</th>
+                        <th class="numero-header">Total (COP)</th>
+                        <th class="acciones-header">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-historial-body">
+                    {% if facturas %}
+                        {% for factura in facturas %}
+                            <tr>
+                                <td>{{ factura.fecha|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if factura.archivo %}
+                                        <a href="{% url 'factura_archivo' factura.id %}" target="_blank">Ver factura</a>
+                                    {% else %}
+                                        Sin archivo
+                                    {% endif %}
+                                </td>
+                                <td class="numero">{{ factura.numero }}</td>
+                                <td>{{ factura.descripcion }}</td>
+                                <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
+                                <td>{{ factura.categoria }}</td>
+                                <td class="numero">{{ factura.monto|floatformat:0|intcomma }}</td>
+                                <td class="numero">{{ factura.iva|floatformat:0|intcomma }}</td>
+                                <td class="numero">{{ factura.total|floatformat:0|intcomma }}</td>
+                                <td class="acciones-cell">
+                                    {% if factura.id %}
+                                    <a href="{% url 'editar_factura' factura.id %}" class="action-button-historial edit" title="Editar">✏️</a>
+                                    <form method="post" action="{% url 'borrar_factura' factura.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-button-historial delete" title="Borrar" onclick="return confirm('¿Seguro que deseas borrar esta factura?');">🗑️</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="9" style="text-align:center;">No hay facturas registradas.</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div id="totales-cuadro" style="max-width:600px;margin:30px auto 0 auto;padding:18px 28px;background:#e3f2fd;border-radius:10px;box-shadow:0 2px 8px rgba(44,62,80,0.08);font-size:1.15em;display:flex;gap:30px;justify-content:center;align-items:center;font-weight:bold;">
+            <span>Total Neto: <span id="cuadro-total-neto">{% if total_neto %}{{ total_neto|floatformat:0|intcomma }}{% endif %}</span></span>
+            <span>Total IVA: <span id="cuadro-total-iva">{% if total_iva %}{{ total_iva|floatformat:0|intcomma }}{% endif %}</span></span>
+            <span>Total General: <span id="cuadro-total-acumulado">{% if total_general %}{{ total_general|floatformat:0|intcomma }}{% endif %}</span></span>
+        </div>
     </div>
 
 </div>
-
+    
 <!-- Modal de Edición (Sin cambios en el HTML del modal en sí) -->
 <div id="edit-invoice-modal" class="modal">
     <div class="modal-content">
@@ -253,6 +273,7 @@
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSFklMERUk7OgLLOzdpgudppAiHzQEUtGtk/juBSCvZx8rvFnujoPJjpSjuscefMeknXhHReA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="/static/js/iva_utils.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
 
@@ -310,6 +331,8 @@
              const facturasFinal = Array.isArray(facturas) ? facturas : JSON.parse(JSON.stringify(allDataDefaultHistorial));
              // Recalcular/asegurar totales y añadir NIT vacío si no existe al cargar
              return facturasFinal.map(factura => {
+                  // Si no tiene tipo_monto, asumir 'neto' por compatibilidad
+                  if (!factura.tipo_monto) factura.tipo_monto = 'neto';
                   const facturaCalculada = calculateInvoiceTotals(factura);
                   // Asegurarse que la propiedad 'nit' exista, aunque sea vacía
                   if (typeof facturaCalculada.nit === 'undefined') {
@@ -333,13 +356,18 @@
         }
 
         function calculateInvoiceTotals(factura) {
-             if (!factura || typeof factura !== 'object') return factura;
-             const neto = Number(factura.neto) || 0;
-             const iva = parseFloat((neto * IVA_RATE).toFixed(2));
-             const acumulado = parseFloat((neto + iva).toFixed(2));
-             // Devuelve un nuevo objeto con todo, incluyendo el nit si ya existía
-             return { ...factura, neto, iva, acumulado };
-         }
+            if (!factura || typeof factura !== 'object') return factura;
+            let tipoMonto = factura.tipo_monto || 'neto';
+            let valor = 0;
+            if (tipoMonto === 'total') {
+                valor = typeof factura.total !== 'undefined' ? Number(factura.total) : (typeof factura.valor_original !== 'undefined' ? Number(factura.valor_original) : 0);
+            } else {
+                valor = typeof factura.neto !== 'undefined' ? Number(factura.neto) : (typeof factura.valor_original !== 'undefined' ? Number(factura.valor_original) : 0);
+            }
+            const categoria = factura.category || '';
+            const resultado = calcularIvaYTotales({ valor, tipoMonto, categoria });
+            return { ...factura, neto: resultado.neto, iva: resultado.iva, acumulado: resultado.total };
+        }
 
         // ===>>> MODIFICADA PARA AÑADIR CELDA NIT <<<===
         function renderTablaHistorial(facturas) {
@@ -351,6 +379,8 @@
             mensajeVacio.classList.add('oculto');
 
             const facturasOrdenadasVisualmente = [...facturas].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+            let totalNeto = 0, totalIva = 0, totalAcumulado = 0;
 
             facturasOrdenadasVisualmente.forEach((factura, indexVisual) => {
                  const indiceOriginal = facturas.findIndex(fOrig =>
@@ -377,6 +407,11 @@
                 const acumuladoFormateado = currencyFormatter.format(factura.acumulado || 0);
                 const nitMostrado = factura.nit || 'N/A'; // <<< Muestra N/A si nit es null, undefined o vacío >>>
 
+                // Acumular totales (llamado aquí, línea 191 aprox)
+                totalNeto += factura.neto || 0;
+                totalIva += factura.iva || 0;
+                totalAcumulado += factura.acumulado || 0;
+
                 fila.innerHTML = 
                     <td>${fechaFormateada}</td>
                     <td class="numero">${factura.numero || 'N/A'}</td>
@@ -393,6 +428,24 @@
                 ;
                 tablaBody.appendChild(fila);
             });
+
+            // Fila de totales
+            const filaTotales = document.createElement('tr');
+            filaTotales.style.fontWeight = 'bold';
+            filaTotales.style.background = '#e3f2fd';
+            filaTotales.innerHTML = `
+                <td colspan="5" style="text-align:right;">Totales:</td>
+                <td class="numero">${currencyFormatter.format(totalNeto)}</td>
+                <td class="numero">${currencyFormatter.format(totalIva)}</td>
+                <td class="numero">${currencyFormatter.format(totalAcumulado)}</td>
+                <td></td>
+            `;
+            tablaBody.appendChild(filaTotales);
+
+            // Actualizar cuadro de totales
+            document.getElementById('cuadro-total-neto').textContent = currencyFormatter.format(totalNeto);
+            document.getElementById('cuadro-total-iva').textContent = currencyFormatter.format(totalIva);
+            document.getElementById('cuadro-total-acumulado').textContent = currencyFormatter.format(totalAcumulado);
         }
 
         function cargarYRenderizar() {
@@ -444,10 +497,12 @@
                  const newLabel = editLabelInput.value.trim();
                  // A FUTURO: const newNit = editNitInput.value.trim();
                  const newCategory = editCategoryInput.value.trim();
-                 const newNeto = parseFloat(editNetoInput.value);
+                 const newNetoOtotal = parseFloat(editNetoInput.value);
+                 // Obtener tipo de monto seleccionado
+                 const tipoMontoSeleccionado = document.querySelector('input[name="edit-amount-type"]:checked')?.value || 'neto';
 
                  if (isNaN(indexOriginal)) { alert('Error: Índice inválido.'); return; }
-                 if (!newDate || !newNumero || !newLabel || !newCategory || isNaN(newNeto) || newNeto < 0) {
+                 if (!newDate || !newNumero || !newLabel || !newCategory || isNaN(newNetoOtotal) || newNetoOtotal < 0) {
                      alert('Completa los campos correctamente.'); return;
                  }
 
@@ -456,13 +511,22 @@
                      // Importante: Mantener el NIT original ya que no se puede editar aquí
                      const nitOriginal = facturasOriginales[indexOriginal].nit;
 
-                     const updatedInvoiceData = {
+                     // Guardar el valor como neto o total según la opción seleccionada
+                     let facturaData = {
                          date: newDate, numero: newNumero, label: newLabel,
-                         nit: nitOriginal, // <<< MANTIENE EL NIT ORIGINAL >>>
-                         // A FUTURO: nit: newNit,
-                         category: newCategory, neto: newNeto
+                         nit: nitOriginal,
+                         category: newCategory, tipo_monto: tipoMontoSeleccionado
                      };
-                     const updatedInvoiceWithTotals = calculateInvoiceTotals(updatedInvoiceData);
+                     if (tipoMontoSeleccionado === 'total') {
+                         facturaData.total = newNetoOtotal; // El input es el total
+                         facturaData.neto = undefined;
+                     } else {
+                         facturaData.neto = newNetoOtotal; // El input es el neto
+                         facturaData.total = undefined;
+                     }
+                     // Guardar también el valor original para compatibilidad
+                     facturaData.valor_original = newNetoOtotal;
+                     const updatedInvoiceWithTotals = calculateInvoiceTotals(facturaData);
 
                      facturasOriginales[indexOriginal] = updatedInvoiceWithTotals;
                      saveFacturasToStorage(facturasOriginales);
@@ -496,56 +560,71 @@
         });
 
         // Funcionalidad Descargar PDF (SIN CAMBIOS INTERNOS)
-         function downloadPdfHistorial() {
-            // ... tu código existente para generar PDF ...
-             console.log("Iniciando descarga PDF del historial...");
-             if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') { alert("Error: Librerías PDF no cargadas."); console.error("jsPDF o html2canvas no definidos."); return; }
-             if (!tablaHistorialElement) { alert("Error: Tabla no encontrada."); console.error("Tabla '.tabla-historial' no encontrada."); return; }
+function downloadPdfHistorial() {
+    console.log("Iniciando descarga PDF del historial...");
+    if (typeof window.jspdf === 'undefined' || typeof html2canvas === 'undefined') {
+        alert("Error: Librerías PDF no cargadas.");
+        console.error("jsPDF o html2canvas no definidos.");
+        return;
+    }
+    const contenedorPdf = document.getElementById('historial-contenedor-pdf');
+    if (!contenedorPdf) {
+        alert("Error: Contenedor PDF no encontrado.");
+        console.error("Contenedor '#historial-contenedor-pdf' no encontrado.");
+        return;
+    }
 
-             const { jsPDF } = window.jspdf;
-             const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-             const pdfWidth = pdf.internal.pageSize.getWidth();
-             const pdfHeight = pdf.internal.pageSize.getHeight();
-             const margin = 10;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const margin = 10;
 
-             pdf.setFontSize(16); pdf.setTextColor(40); pdf.text("Historial de Facturas", margin, margin + 5);
-             pdf.setFontSize(10); pdf.setTextColor(100); pdf.text(`Generado el: ${new Date().toLocaleString('es-ES')}`, margin, margin + 10);
+    pdf.setFontSize(16);
+    pdf.setTextColor(40);
+    pdf.text("Historial de Facturas", margin, margin + 5);
+    pdf.setFontSize(10);
+    pdf.setTextColor(100);
+    pdf.text(`Generado el: ${new Date().toLocaleString('es-ES')}`, margin, margin + 10);
 
-             // Asegurarse que la tabla sea visible temporalmente si estaba oculta
-             const wasTableHidden = tablaHistorialElement.style.display === 'none';
-             if(wasTableHidden) tablaHistorialElement.style.display = ''; // Mostrar
+    // Asegurarse que el contenedor sea visible temporalmente si estaba oculto
+    const wasContainerHidden = contenedorPdf.style.display === 'none';
+    if (wasContainerHidden) contenedorPdf.style.display = '';
 
-             html2canvas(tablaHistorialElement, { scale: 2, useCORS: true, backgroundColor: document.body.classList.contains('dark-mode') ? '#252525' : '#ffffff' })
-             .then(canvas => {
-                 if(wasTableHidden) tablaHistorialElement.style.display = 'none'; // Ocultar de nuevo si estaba oculta
+    html2canvas(contenedorPdf, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: document.body.classList.contains('dark-mode') ? '#252525' : '#ffffff'
+    }).then(canvas => {
+        if (wasContainerHidden) contenedorPdf.style.display = 'none';
 
-                 const imgData = canvas.toDataURL('image/png');
-                 const imgProps = pdf.getImageProperties(imgData);
-                 const pdfImageWidth = pdfWidth - (margin * 2);
-                 const pdfImageHeight = (imgProps.height * pdfImageWidth) / imgProps.width;
-                 let heightLeft = pdfImageHeight;
-                 let position = margin + 18; // Posición Y inicial
+        const imgData = canvas.toDataURL('image/png');
+        const imgProps = pdf.getImageProperties(imgData);
+        const pdfImageWidth = pdfWidth - (margin * 2);
+        const pdfImageHeight = (imgProps.height * pdfImageWidth) / imgProps.width;
+        let heightLeft = pdfImageHeight;
+        let position = margin + 18; // Posición Y inicial
 
-                 pdf.addImage(imgData, 'PNG', margin, position, pdfImageWidth, pdfImageHeight);
-                 heightLeft -= (pdfHeight - margin - position); // Altura restante después de la 1ª pág
+        pdf.addImage(imgData, 'PNG', margin, position, pdfImageWidth, pdfImageHeight);
+        heightLeft -= (pdfHeight - margin - position);
 
-                 // Añadir páginas si es necesario
-                 while (heightLeft > 0) {
-                     position = heightLeft - pdfImageHeight - margin; // Nueva posición Y negativa
-                     pdf.addPage();
-                     pdf.addImage(imgData, 'PNG', margin, position, pdfImageWidth, pdfImageHeight);
-                     heightLeft -= (pdfHeight - margin * 2); // Restar altura útil de la nueva pág
-                 }
+        // Añadir páginas si es necesario
+        while (heightLeft > 0) {
+            position = heightLeft - pdfImageHeight - margin;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', margin, position, pdfImageWidth, pdfImageHeight);
+            heightLeft -= (pdfHeight - margin * 2);
+        }
 
-                 const fechaISO = new Date().toISOString().split('T')[0].replace(/-/g, '');
-                 pdf.save(`HistorialFacturas_${fechaISO}.pdf`);
-                 console.log("PDF generado.");
-             }).catch(error => {
-                 if(wasTableHidden) tablaHistorialElement.style.display = 'none'; // Asegurar ocultar en caso de error
-                 console.error("Error generando PDF con html2canvas:", error);
-                 alert("Error al generar el PDF.");
-             });
-         }
+        const fechaISO = new Date().toISOString().split('T')[0].replace(/-/g, '');
+        pdf.save(`HistorialFacturas_${fechaISO}.pdf`);
+        console.log("PDF generado.");
+    }).catch(error => {
+        if (wasContainerHidden) contenedorPdf.style.display = 'none';
+        console.error("Error generando PDF con html2canvas:", error);
+        alert("Error al generar el PDF.");
+    });
+}
         // Intentar encontrar el botón de descarga PDF (si existe)
         const downloadPdfButton = document.getElementById('download-pdf-historial'); // Busca el botón por ID
         if (downloadPdfButton) {
@@ -556,6 +635,7 @@
          }
 
         // --- EJECUCIÓN INICIAL ---
+        window.addEventListener('DOMContentLoaded', cargarYRenderizar);
         cargarYRenderizar();
 
         // --- Listener para storage ---

@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/graficas.css' %}">
 </head>
 <body>
-<br><br><br>
+<br><br>
     <div class="main-container">
         <h1>Dashboard Financiero</h1>
 
@@ -23,6 +23,23 @@
         <div class="filters-container">
              <div><label for="startDate">Fecha Inicio:</label><input type="date" id="startDate" name="startDate"></div>
              <div><label for="endDate">Fecha Fin:</label><input type="date" id="endDate" name="endDate"></div>
+             <div>
+                <label for="categoryFilter" class="form-label">Categoría:</label>
+                <select id="categoryFilter" name="categoryFilter" class="form-select">
+                    <option value="">Todas</option>
+                    <option>Supermercados</option>
+                    <option>Servicios</option>
+                    <option>Entretenimiento</option>
+                    <option>Tecnología</option>
+                    <option>Restaurantes</option>
+                    <option>Transporte</option>
+                    <option>Salud</option>
+                    <option>Educación</option>
+                    <option>Vestuario</option>
+                    <option>Hogar</option>
+                    <option>Otros</option>
+                </select>
+             </div>
              <button id="filterButton">Filtrar</button>
         </div>
 
@@ -34,7 +51,7 @@
                      <h2>Valor Neto (Sin IVA)</h2>
                      <div class="max-value-control">
                          <label for="maxNeto">Mostrar hasta:</label>
-                         <input type="number" id="maxNeto" class="max-value-input" placeholder="Todos" min="0" step="50000">
+                         <input type="number" id="maxNeto" class="max-value-input" placeholder="Precio" min="0" step="50000">
                      </div>
                      <div class="chart-content-wrapper">
                         <div class="canvas-wrapper"><canvas id="netoChart"></canvas></div>
@@ -43,10 +60,10 @@
                  </div>
                  <!-- Card 2: IVA (Barra Horizontal - sin cambios) -->
                  <div class="chart-card">
-                     <h2>IVA (19%)</h2>
+                     <h2>IVA</h2>
                       <div class="max-value-control">
                          <label for="maxIva">Mostrar hasta:</label>
-                         <input type="number" id="maxIva" class="max-value-input" placeholder="Todos" min="0" step="10000">
+                         <input type="number" id="maxIva" class="max-value-input" placeholder="Precio" min="0" step="10000">
                      </div>
                      <div class="chart-content-wrapper">
                         <div class="canvas-wrapper"><canvas id="ivaChart"></canvas></div>
@@ -58,7 +75,7 @@
                     <h2>Valor Acumulado (Bruto)</h2>
                      <div class="max-value-control">
                         <label for="maxAcumulado">Mostrar hasta:</label>
-                        <input type="number" id="maxAcumulado" class="max-value-input" placeholder="Todos" min="0" step="50000">
+                        <input type="number" id="maxAcumulado" class="max-value-input" placeholder="Precio" min="0" step="50000">
                     </div>
                     <div class="chart-content-wrapper">
                        <div class="canvas-wrapper"><canvas id="acumuladoChart"></canvas></div>
@@ -190,7 +207,7 @@
                 x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45, minRotation: 0 } } // Mismo eje X que barras verticales
             },
              interaction: { // Mejorar interacción con línea
-                mode: 'index', // Muestra tooltips para todos los puntos en el mismo índice x
+                mode: 'index', // Muestra tooltips para Precio los puntos en el mismo índice x
                 intersect: false // Muestra tooltip al pasar cerca, no solo exactamente sobre el punto
             },
         };
@@ -337,24 +354,27 @@
         function filterData() {
              const start = startDateInput.value;
              const end = endDateInput.value;
+             const selectedCategory = document.getElementById('categoryFilter').value;
              let filtered = processedData;
 
              if (start && end && start > end) {
                  alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
-                 // Quizás mostrar todos o vaciar filtro? Por ahora, mostramos todos
                  updateCharts(processedData);
                  return;
              }
 
-             // Filtrar solo si ambas fechas son válidas y están definidas
+             // Filtrar por fechas
              if (start && end) {
                   filtered = processedData.filter(item => item.date && item.date >= start && item.date <= end);
-             } else if (start) { // Filtrar solo por inicio si no hay fin
+             } else if (start) {
                  filtered = processedData.filter(item => item.date && item.date >= start);
-             } else if (end) { // Filtrar solo por fin si no hay inicio
+             } else if (end) {
                  filtered = processedData.filter(item => item.date && item.date <= end);
              }
-             // Si no hay ni start ni end, 'filtered' sigue siendo 'processedData' (todos los datos)
+             // Filtrar por categoría si se selecciona una
+             if (selectedCategory) {
+                 filtered = filtered.filter(item => (item.category || '').toLowerCase() === selectedCategory.toLowerCase());
+             }
 
              updateCharts(filtered);
         }
@@ -364,6 +384,7 @@
         maxNetoInput.addEventListener('input', () => filterData());
         maxIvaInput.addEventListener('input', () => filterData());
         maxAcumuladoInput.addEventListener('input', () => filterData());
+        document.getElementById('categoryFilter').addEventListener('change', filterData);
 
         // Establecer fechas por defecto
         function setDefaultDates() {

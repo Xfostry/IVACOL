@@ -608,9 +608,15 @@ def historial_facturas(request):
 
     facturas_usuario = FacturaSubida.objects.filter(usuario=usuario_obj).order_by('-fecha_subida') if usuario_obj else []
     facturas_context = []
+    total_neto = 0
+    total_iva = 0
+    total_general = 0
     for f in facturas_usuario:
         iva = float(f.monto) * 0.19
         total = float(f.monto) + iva
+        total_neto += float(f.monto)
+        total_iva += iva
+        total_general += total
         facturas_context.append({
             'id': f.id,
             'fecha': f.fecha,
@@ -625,7 +631,10 @@ def historial_facturas(request):
         })
     context = {
         'facturas': facturas_context,
-        'titulo_pagina': 'Historial de Facturas Subidas'
+        'titulo_pagina': 'Historial de Facturas Subidas',
+        'total_neto': total_neto,
+        'total_iva': total_iva,
+        'total_general': total_general,
     }
     return render(request, 'ivapp/historial_facturas.html', context)
 

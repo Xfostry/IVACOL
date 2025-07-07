@@ -117,7 +117,7 @@ try {
         filtradas.forEach(f => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${f.usuario || ''}</td>
+                <td>${f.usuario ? f.usuario.toUpperCase() : ''}</td>
                 <td>${f.date || ''}</td>
                 <td>${f.numero || ''}</td>
                 <td class="text-end">${f.neto?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</td>
@@ -134,7 +134,7 @@ try {
         const f = facturas.find(fac => fac.id == id);
         if (!f) return;
         let html = `<ul class='list-group list-group-flush'>`;
-        html += `<li class='list-group-item'><b>Usuario:</b> ${f.usuario || ''}</li>`;
+        html += `<li class='list-group-item'><b>Usuario:</b> ${f.usuario ? f.usuario.toUpperCase() : ''}</li>`;
         html += `<li class='list-group-item'><b>Fecha:</b> ${f.date || ''}</li>`;
         html += `<li class='list-group-item'><b>Número:</b> ${f.numero || ''}</li>`;
         html += `<li class='list-group-item'><b>Descripción:</b> ${f.label || ''}</li>`;
