@@ -341,17 +341,28 @@
                 li.className = `notificacion tipo-${notificacion.tipo}`;
                 li.dataset.id = notificacion.id;
 
+                // Estructura segura: solo el mensaje puede tener HTML
                 li.innerHTML = `
                     <button class="boton-cerrar" title="Marcar como leída">×</button>
-                    <h3>${notificacion.titulo}</h3>
-                    <p>${notificacion.mensaje}</p>
-                    <span class="fecha">Recibido: ${formatearFecha(notificacion.fecha)}</span>
+                    <h3></h3>
+                    <p></p>
+                    <span class="fecha"></span>
                 `;
+                li.querySelector('h3').textContent = notificacion.titulo;
+                li.querySelector('span.fecha').textContent = 'Recibido: ' + formatearFecha(notificacion.fecha);
+                li.querySelector('p').innerHTML = notificacion.mensaje;
 
                 // Añadir event listener al botón de cerrar
                 const botonCerrar = li.querySelector('.boton-cerrar');
                 botonCerrar.addEventListener('click', function() {
-                    marcarNotificacionLeida(notificacion.id, li);
+                    if (!window.confirm('¿Estás seguro de que deseas quitar esta notificación?')) return;
+                    // Si es la notificación especial, solo ocultar en frontend
+                    if (notificacion.id === 'iva-devolucion-info') {
+                        li.classList.add('cerrada');
+                        setTimeout(() => { li.remove(); verificarNotificacionesVacias(); }, 500);
+                    } else {
+                        marcarNotificacionLeida(notificacion.id, li);
+                    }
                 });
 
                 return li;
@@ -359,7 +370,7 @@
 
             // Marca una notificación como leída en el backend y la oculta
             function marcarNotificacionLeida(id, elementoNotificacion) {
-                fetch('/api/notificaciones/marcar_leida/', {
+                fetch('/asistencia/api/notificaciones/marcar_leida/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -447,7 +458,29 @@
             fetch('/asistencia/api/notificaciones/')
                 .then(response => response.json())
                 .then(data => {
-                    renderizarNotificaciones(data.notificaciones || []);
+                    let notificaciones = data.notificaciones || [];
+
+                    // --- Notificación Devolución IVA cada 24h ---
+                    const IVA_NOTIF_KEY = 'ivaDevolucionNotificacionLastShown';
+                    const HOURS_24 = 60 * 1000; // 1 minuto para pruebas
+                    const now = Date.now();
+                    const lastShown = localStorage.getItem(IVA_NOTIF_KEY);
+                    const existeNotificacionIVA = notificaciones.some(n => n.id === 'iva-devolucion-info');
+                    if ((!lastShown || now - parseInt(lastShown, 10) > HOURS_24) && !existeNotificacionIVA) {
+                        // Agregar notificación especial
+                        notificaciones.unshift({
+                            id: 'iva-devolucion-info',
+                            tipo: 'info',
+                            titulo: 'Consulta si eres beneficiario de la devolución del IVA',
+                            mensaje: 'Puedes consultar si eres beneficiario de la devolución del IVA en el siguiente enlace: <a href="https://consultagiros.bancoagrario.gov.co/ConsultaPagos/ConsultaRN.aspx" target="_blank" style="color:#1976d2; font-weight:bold; text-decoration:underline;">Banco Agrario - Consulta Devolución IVA</a>',
+                            fecha: new Date().toISOString().slice(0, 10),
+                            leida: false
+                        });
+                        // Guardar timestamp de visualización
+                        localStorage.setItem(IVA_NOTIF_KEY, now.toString());
+                    }
+
+                    renderizarNotificaciones(notificaciones);
                     if (mensajeCarga) mensajeCarga.remove();
                 })
                 .catch(() => {
