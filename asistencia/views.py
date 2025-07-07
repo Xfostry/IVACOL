@@ -210,6 +210,18 @@ def registrarse(request):
             rol=rol,
             email=email,
         )
+        # Enviar correo de bienvenida
+        from django.core.mail import send_mail
+        from django.conf import settings
+        asunto = 'Bienvenido a IVACOL'
+        mensaje = f'Hola {first_name}, tu usuario ha sido creado exitosamente. Ya puedes iniciar sesión en IVACOL.'
+        send_mail(
+            asunto,
+            mensaje,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=True
+        )
         messages.success(request, 'Usuario registrado exitosamente. Ahora puedes iniciar sesión.')
         return redirect('login')
 
@@ -559,6 +571,18 @@ def CrearAdm(request):
             usuario = form.save(commit=False)
             usuario.set_password(form.cleaned_data['password'])
             usuario.save()
+            # Enviar correo de bienvenida
+            from django.core.mail import send_mail
+            from django.conf import settings
+            asunto = 'Bienvenido a IVACOL'
+            mensaje = f'Hola {usuario.first_name}, tu usuario ha sido creado exitosamente. Ya puedes iniciar sesión en IVACOL.'
+            send_mail(
+                asunto,
+                mensaje,
+                settings.DEFAULT_FROM_EMAIL,
+                [usuario.email],
+                fail_silently=True
+            )
             messages.success(request, 'Usuario creado exitosamente.')
             return redirect('InicioAdm')
     else:
@@ -738,7 +762,40 @@ def factura_archivo(request, id):
         return response
 
 def Soporte(request):
-    return render(request, 'ivapp/soporte.html')
+    from django.core.mail import send_mail
+    from django.conf import settings
+    mensaje_estado = None
+    mensaje_tipo = None
+    if request.method == 'POST':
+        nombre = request.POST.get('name', '').strip()
+        correo = request.POST.get('email', '').strip()
+        asunto = request.POST.get('subject', '').strip() or 'Contacto desde formulario web'
+        mensaje = request.POST.get('message', '').strip()
+        if nombre and correo and mensaje:
+            cuerpo = f"""
+Nombre: {nombre}
+Correo: {correo}
+Asunto: {asunto}
+Mensaje:
+{mensaje}
+"""
+            try:
+                send_mail(
+                    f"[Soporte IVACOL] {asunto}",
+                    cuerpo,
+                    settings.DEFAULT_FROM_EMAIL,
+                    ['ivacolom.app@gmail.com'],
+                    fail_silently=False
+                )
+                mensaje_estado = '¡Mensaje enviado correctamente! Nos pondremos en contacto contigo pronto.'
+                mensaje_tipo = 'success'
+            except Exception as e:
+                mensaje_estado = 'Ocurrió un error al enviar el mensaje. Intenta de nuevo más tarde.'
+                mensaje_tipo = 'error'
+        else:
+            mensaje_estado = 'Por favor completa todos los campos obligatorios.'
+            mensaje_tipo = 'error'
+    return render(request, 'ivapp/soporte.html', {'mensaje_estado': mensaje_estado, 'mensaje_tipo': mensaje_tipo})
 
 # --- NOTIFICACIONES ---
 from .models import Notification
