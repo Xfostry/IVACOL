@@ -136,6 +136,36 @@
     body.dark-mode #totales-cuadro span span {
         color: black;
     }
+
+    .totales-cuadro-galactico {
+            max-width: 600px;
+            margin: 30px auto 0 auto;
+            padding: 18px 28px;
+            background: linear-gradient(90deg, #eaf6ff 0%, #dbeafe 100%);
+            border-radius: 14px;
+            box-shadow: 0 2px 16px 0 rgba(0,191,255,0.10), 0 0 24px 2px #b3e6ff inset;
+            font-size: 1.15em;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: var(--title-color-light, #00bfff);
+            border: 2px solid var(--section-border-light, #7fd7ff);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        .totales-cuadro-galactico span span {
+            color: var(--link-color-light, #00bfff);
+        }
+        body.dark-mode .totales-cuadro-galactico {
+            background: linear-gradient(90deg, #181a2a 0%, #232b36 100%);
+            color: var(--title-color-dark, #9dceff);
+            border: 2px solid var(--section-border-dark, #4a00e0);
+            box-shadow: 0 2px 16px 0 rgba(74,0,224,0.10), 0 0 24px 2px #2e2e60 inset;
+        }
+        body.dark-mode .totales-cuadro-galactico span span {
+            color: var(--link-color-dark, #9dceff);
+        }
     </style>
 </head>
 <body>
@@ -210,7 +240,7 @@
                 </tbody>
             </table>
         </div>
-        <div id="totales-cuadro" style="max-width:600px;margin:30px auto 0 auto;padding:18px 28px;background:#e3f2fd;border-radius:10px;box-shadow:0 2px 8px rgba(44,62,80,0.08);font-size:1.15em;display:flex;gap:30px;justify-content:center;align-items:center;font-weight:bold;">
+        <div id="totales-cuadro" class="totales-cuadro-galactico">
             <span>Total Neto: <span id="cuadro-total-neto">{% if total_neto %}{{ total_neto|floatformat:0|intcomma }}{% endif %}</span></span>
             <span>Total IVA: <span id="cuadro-total-iva">{% if total_iva %}{{ total_iva|floatformat:0|intcomma }}{% endif %}</span></span>
             <span>Total General: <span id="cuadro-total-acumulado">{% if total_general %}{{ total_general|floatformat:0|intcomma }}{% endif %}</span></span>
