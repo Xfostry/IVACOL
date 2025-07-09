@@ -194,14 +194,44 @@
                             }
                 
                             if (isValid) {
-                                // Mostrar popover debajo del botón
-                                popover.style.display = 'block';
-                                // Limpiar el formulario
-                                contactForm.reset();
-                                // Ocultar el popover después de 2 segundos
-                                setTimeout(() => {
-                                    popover.style.display = 'none';
-                                }, 2000);
+                                // Enviar datos por AJAX a /asistencia/soporte_contacto/
+                                btn.disabled = true;
+                                fetch('/asistencia/soporte_contacto/', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                    },
+                                    body: JSON.stringify({
+                                        name: name,
+                                        email: email,
+                                        message: message
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    btn.disabled = false;
+                                    if (data.success) {
+                                        // Mostrar popover debajo del botón
+                                        popover.textContent = 'Mensaje enviado correctamente. Revisa tu correo.';
+                                        popover.style.background = '#28a745';
+                                        popover.style.display = 'block';
+                                        formMessage.textContent = '';
+                                        formMessage.classList.remove('error', 'show');
+                                        contactForm.reset();
+                                        setTimeout(() => {
+                                            popover.style.display = 'none';
+                                        }, 2500);
+                                    } else {
+                                        formMessage.textContent = data.error || 'Ocurrió un error al enviar el mensaje.';
+                                        formMessage.classList.add('error', 'show');
+                                    }
+                                })
+                                .catch(error => {
+                                    btn.disabled = false;
+                                    formMessage.textContent = 'Error de red o servidor. Intenta de nuevo más tarde.';
+                                    formMessage.classList.add('error', 'show');
+                                });
                             } else {
                                 // Mostrar errores
                                 formMessage.textContent = errorMessages.join(' ');

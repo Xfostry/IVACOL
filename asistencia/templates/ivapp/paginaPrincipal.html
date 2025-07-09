@@ -25,7 +25,7 @@
         /* Estilos Secciones (Modo Claro) */
         section {
              background-color: var(--section-bg-light); padding: 25px; margin-bottom: 30px; border-radius: 8px;
-             box-shadow: var(--section-shadow-light, 0 1px 3px rgba(0,0,0,0.05)); border: 1px solid transparent;
+             box-shadow: var(--section-shadow-light, 0 1px 3px rgba(0,0,0,0.05)); border: 1px solid rgb(180, 180, 180);
              transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
         section h2, section h3 {
@@ -175,6 +175,45 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
             <h2>Bienvenido, {{ user.get_full_name|default:user.username }}!</h2>
             <p>Gestiona tus facturas y calcula tu IVA fácilmente.</p>
         </section>
+        <!-- Carrusel de imágenes -->
+        <div id="carouselFinanzas" class="carousel slide mb-4" data-bs-ride="carousel" style="max-width: 700px; margin: 0 auto; border-radius: 18px; overflow: hidden; box-shadow: 0 4px 16px rgba(25, 118, 210, 0.10); border: 2px solid rgb(180, 180, 180);">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselFinanzas" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Imagen 1"></button>
+                <button type="button" data-bs-target="#carouselFinanzas" data-bs-slide-to="1" aria-label="Imagen 2"></button>
+                <button type="button" data-bs-target="#carouselFinanzas" data-bs-slide-to="2" aria-label="Imagen 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{% static 'images/iva.jpg' %}" class="d-block w-100" alt="Gestión de IVA" style="object-fit:cover; height:320px;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-2">
+                        <h5>Gestión Inteligente de IVA</h5>
+                        <p>Controla y visualiza tus impuestos de forma sencilla.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'images/ivamoneda.jpg' %}" class="d-block w-100" alt="Ahorro y Control" style="object-fit:cover; height:320px;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-2">
+                        <h5>Ahorra y controla tus gastos</h5>
+                        <p>Visualiza el impacto de tus compras y facturas.</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'images/ELIVA.png' %}" class="d-block w-100" alt="Reportes Visuales" style="object-fit:cover; height:320px;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded-3 p-2">
+                        <h5>Reportes Visuales</h5>
+                        <p>Gráficas y reportes claros para tu tranquilidad financiera.</p>
+                    </div>
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselFinanzas" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselFinanzas" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
 
         <section class="actions-section">
             <h3>Acciones Rápidas</h3>
