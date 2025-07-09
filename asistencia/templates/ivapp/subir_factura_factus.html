@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Factura a Factus</title>
+</head>
+<body>
+    <h1>Subir Factura Real a Factus</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Datos Generales</h2>
+        <label>Número de Resolución (numbering_range_id): <input type="number" name="numbering_range_id" value="8" required></label><br>
+        <label>Referencia (reference_code): <input type="text" name="reference_code" value="ivas" required></label><br>
+        <label>Observación: <input type="text" name="observation"></label><br>
+        <label>Forma de Pago (payment_form): <input type="text" name="payment_form" value="1" required></label><br>
+        <label>Fecha Vencimiento (payment_due_date): <input type="date" name="payment_due_date" required></label><br>
+        <label>Código Método Pago (payment_method_code): <input type="text" name="payment_method_code" value="10" required></label><br>
+        <label>Tipo Operación (operation_type): <input type="number" name="operation_type" value="10" required></label><br>
+        <label>Enviar Email (send_email): <input type="checkbox" name="send_email" value="true"></label><br>
+        <h2>Referencia de Orden</h2>
+        <label>Código Referencia: <input type="text" name="order_reference_code" value="ref-001"></label><br>
+        <label>Fecha Emisión Orden: <input type="date" name="order_issue_date"></label><br>
+        <h2>Periodo de Facturación</h2>
+        <label>Inicio: <input type="date" name="billing_start_date"> <input type="time" name="billing_start_time" value="00:00:00"></label><br>
+        <label>Fin: <input type="date" name="billing_end_date"> <input type="time" name="billing_end_time" value="23:59:59"></label><br>
+        <h2>Cliente</h2>
+        <label>NIT (identification): <input type="text" name="nit" required></label><br>
+        <label>DV: <input type="text" name="customer_dv"></label><br>
+        <label>Razón Social (company): <input type="text" name="customer_company"></label><br>
+        <label>Nombre Comercial (trade_name): <input type="text" name="customer_trade_name"></label><br>
+        <label>Nombres (names): <input type="text" name="customer_names"></label><br>
+        <label>Dirección: <input type="text" name="customer_address"></label><br>
+        <label>Email: <input type="email" name="customer_email"></label><br>
+        <label>Teléfono: <input type="text" name="customer_phone"></label><br>
+        <label>ID Org. Legal: <input type="text" name="customer_legal_organization_id"></label><br>
+        <label>ID Tributo: <input type="text" name="customer_tribute_id"></label><br>
+        <label>ID Doc. Identidad: <input type="text" name="customer_identification_document_id"></label><br>
+        <label>ID Municipio: <input type="text" name="customer_municipality_id"></label><br>
+        <h2>Items (Producto/Servicio)</h2>
+        <h3>Item 1</h3>
+        <label>Esquema (scheme_id): <input type="number" name="item1_scheme_id" value="1"></label><br>
+        <label>Nota: <input type="text" name="item1_note"></label><br>
+        <label>Código Ref.: <input type="text" name="item1_code_reference" value="12345"></label><br>
+        <label>Nombre: <input type="text" name="item1_name"></label><br>
+        <label>Cantidad: <input type="number" name="item1_quantity" value="1"></label><br>
+        <label>Descuento (%): <input type="number" name="item1_discount_rate" value="20"></label><br>
+        <label>Precio: <input type="number" name="item1_price"></label><br>
+        <label>IVA (%): <input type="text" name="item1_tax_rate" value="19.00"></label><br>
+        <label>ID Unidad Medida: <input type="number" name="item1_unit_measure_id" value="70"></label><br>
+        <label>ID Código Estándar: <input type="number" name="item1_standard_code_id" value="1"></label><br>
+        <label>¿Excluido? (0/1): <input type="number" name="item1_is_excluded" value="0"></label><br>
+        <label>ID Tributo: <input type="number" name="item1_tribute_id" value="1"></label><br>
+        <h4>Retenciones</h4>
+        <label>Código 1: <input type="text" name="item1_withholding_code_1" value="06"></label>
+        <label>Tasa 1: <input type="text" name="item1_withholding_tax_rate_1" value="7.00"></label><br>
+        <label>Código 2: <input type="text" name="item1_withholding_code_2" value="05"></label>
+        <label>Tasa 2: <input type="text" name="item1_withholding_tax_rate_2" value="15.00"></label><br>
+        <h4>Mandato</h4>
+        <label>ID Doc. Mandato: <input type="number" name="item1_mandate_identification_document_id" value="6"></label><br>
+        <label>Identificación Mandato: <input type="text" name="item1_mandate_identification"></label><br>
+        <h3>Item 2</h3>
+        <label>Esquema (scheme_id): <input type="number" name="item2_scheme_id" value="0"></label><br>
+        <label>Nota: <input type="text" name="item2_note"></label><br>
+        <label>Código Ref.: <input type="text" name="item2_code_reference" value="54321"></label><br>
+        <label>Nombre: <input type="text" name="item2_name"></label><br>
+        <label>Cantidad: <input type="number" name="item2_quantity" value="1"></label><br>
+        <label>Descuento (%): <input type="number" name="item2_discount_rate" value="0"></label><br>
+        <label>Precio: <input type="number" name="item2_price"></label><br>
+        <label>IVA (%): <input type="text" name="item2_tax_rate" value="5.00"></label><br>
+        <label>ID Unidad Medida: <input type="number" name="item2_unit_measure_id" value="70"></label><br>
+        <label>ID Código Estándar: <input type="number" name="item2_standard_code_id" value="1"></label><br>
+        <label>¿Excluido? (0/1): <input type="number" name="item2_is_excluded" value="0"></label><br>
+        <label>ID Tributo: <input type="number" name="item2_tribute_id" value="1"></label><br>
+        <h2>Archivo de Factura (opcional)</h2>
+        <input type="file" name="archivo" accept=".pdf,.jpg,.png,.jpeg"><br><br>
+        <button type="submit">Crear Factura Real</button>
+    </form>
+</body>
+</html>

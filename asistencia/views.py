@@ -101,6 +101,7 @@ def descargar_facturas_pdf(request):
 @csrf_exempt
 @login_required(login_url='login')
 def subir_factura(request):
+    import requests
     if request.method == 'POST':
         try:
             usuario_obj = Usuario.objects.get(username=request.user.username)
@@ -123,6 +124,123 @@ def subir_factura(request):
         except Exception:
             return JsonResponse({'success': False, 'error': 'El monto ingresado no es válido. Debe ser un número positivo.'}, status=400)
 
+        # --- INTEGRACIÓN CON FACTUS ---
+        # 1. Obtener token de autenticación
+        auth_url = 'https://api-sandbox.factus.com.co/oauth/token'
+        client_id = '9de1b0af-7c02-471e-a568-bdc78a5b119d'
+        client_secret = '6byR029aNsrSSEESx87mISZiUep6fcooUEcngm5N'
+        username = 'sandbox@factus.com.co'
+        password = 'sandbox2024%'
+        data = {
+            'grant_type': 'password',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'username': username,
+            'password': password
+        }
+        try:
+            auth_response = requests.post(auth_url, data=data)
+            auth_response.raise_for_status()
+            access_token = auth_response.json().get('access_token')
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Error autenticando con Factus: {str(e)}'}, status=500)
+        if not access_token:
+            return JsonResponse({'success': False, 'error': 'No se pudo obtener token de acceso de Factus.'}, status=500)
+
+        # 2. Enviar factura a Factus (Ajusta los campos según la documentación oficial de Factus)
+        # Ejemplo de payload basado en la documentación de Factus:
+        factura_payload = {
+            "numbering_range_id": int(request.POST.get('numbering_range_id', 8)),
+            "reference_code": request.POST.get('reference_code', 'ivas'),
+            "observation": request.POST.get('observation', ''),
+            "payment_form": request.POST.get('payment_form', '1'),
+            "payment_due_date": request.POST.get('payment_due_date', fecha),
+            "payment_method_code": request.POST.get('payment_method_code', '10'),
+            "operation_type": int(request.POST.get('operation_type', 10)),
+            "send_email": request.POST.get('send_email', 'false') == 'true',
+            "order_reference": {
+                "reference_code": request.POST.get('order_reference_code', 'ref-001'),
+                "issue_date": request.POST.get('order_issue_date', '')
+            },
+            "billing_period": {
+                "start_date": request.POST.get('billing_start_date', fecha),
+                "start_time": request.POST.get('billing_start_time', '00:00:00'),
+                "end_date": request.POST.get('billing_end_date', fecha),
+                "end_time": request.POST.get('billing_end_time', '23:59:59')
+            },
+            "customer": {
+                "identification": nit,
+                "dv": request.POST.get('customer_dv', ''),
+                "company": request.POST.get('customer_company', ''),
+                "trade_name": request.POST.get('customer_trade_name', ''),
+                "names": request.POST.get('customer_names', ''),
+                "address": request.POST.get('customer_address', ''),
+                "email": request.POST.get('customer_email', ''),
+                "phone": request.POST.get('customer_phone', ''),
+                "legal_organization_id": request.POST.get('customer_legal_organization_id', ''),
+                "tribute_id": request.POST.get('customer_tribute_id', ''),
+                "identification_document_id": request.POST.get('customer_identification_document_id', ''),
+                "municipality_id": request.POST.get('customer_municipality_id', '')
+            },
+            "items": [
+                {
+                    "scheme_id": int(request.POST.get('item1_scheme_id', 1)),
+                    "note": request.POST.get('item1_note', ''),
+                    "code_reference": request.POST.get('item1_code_reference', '12345'),
+                    "name": request.POST.get('item1_name', descripcion),
+                    "quantity": int(request.POST.get('item1_quantity', 1)),
+                    "discount_rate": float(request.POST.get('item1_discount_rate', 20)),
+                    "price": float(request.POST.get('item1_price', monto_decimal)),
+                    "tax_rate": request.POST.get('item1_tax_rate', '19.00'),
+                    "unit_measure_id": int(request.POST.get('item1_unit_measure_id', 70)),
+                    "standard_code_id": int(request.POST.get('item1_standard_code_id', 1)),
+                    "is_excluded": int(request.POST.get('item1_is_excluded', 0)),
+                    "tribute_id": int(request.POST.get('item1_tribute_id', 1)),
+                    "withholding_taxes": [
+                        {
+                            "code": request.POST.get('item1_withholding_code_1', '06'),
+                            "withholding_tax_rate": request.POST.get('item1_withholding_tax_rate_1', '7.00')
+                        },
+                        {
+                            "code": request.POST.get('item1_withholding_code_2', '05'),
+                            "withholding_tax_rate": request.POST.get('item1_withholding_tax_rate_2', '15.00')
+                        }
+                    ],
+                    "mandate": {
+                        "identification_document_id": int(request.POST.get('item1_mandate_identification_document_id', 6)),
+                        "identification": request.POST.get('item1_mandate_identification', nit)
+                    }
+                },
+                {
+                    "scheme_id": int(request.POST.get('item2_scheme_id', 0)),
+                    "note": request.POST.get('item2_note', ''),
+                    "code_reference": request.POST.get('item2_code_reference', '54321'),
+                    "name": request.POST.get('item2_name', 'producto de prueba 2'),
+                    "quantity": int(request.POST.get('item2_quantity', 1)),
+                    "discount_rate": float(request.POST.get('item2_discount_rate', 0)),
+                    "price": float(request.POST.get('item2_price', monto_decimal)),
+                    "tax_rate": request.POST.get('item2_tax_rate', '5.00'),
+                    "unit_measure_id": int(request.POST.get('item2_unit_measure_id', 70)),
+                    "standard_code_id": int(request.POST.get('item2_standard_code_id', 1)),
+                    "is_excluded": int(request.POST.get('item2_is_excluded', 0)),
+                    "tribute_id": int(request.POST.get('item2_tribute_id', 1)),
+                    "withholding_taxes": []
+                }
+            ]
+        }
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'Content-Type': 'application/json'
+        }
+        factus_url = 'https://api-sandbox.factus.com.co/v1/bills/validate'  # Endpoint correcto según Postman
+        try:
+            factus_response = requests.post(factus_url, json=factura_payload, headers=headers)
+            factus_response.raise_for_status()
+            factus_data = factus_response.json()
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': f'Error enviando factura a Factus: {str(e)}'}, status=500)
+
+        # 3. Guardar localmente solo si Factus responde OK
         factura = FacturaSubida(
             usuario=usuario_obj,
             descripcion=descripcion,
@@ -133,6 +251,12 @@ def subir_factura(request):
             monto=monto_decimal,
             tipo_monto=tipo_monto,
         )
+        # Si la respuesta de Factus incluye un PDF o ID, guárdalo en el modelo
+        if factus_data.get('pdf_url'):
+            factura.factus_pdf_url = factus_data['pdf_url']
+        # Guardar el enlace público de visualización si viene en la respuesta
+        if 'data' in factus_data and 'bill' in factus_data['data'] and 'public_url' in factus_data['data']['bill']:
+            factura.factus_public_url = factus_data['data']['bill']['public_url']
         if archivo:
             factura.archivo = archivo
         factura.save()
@@ -142,9 +266,10 @@ def subir_factura(request):
             user=usuario_obj,
             tipo='info',
             titulo='Factura subida exitosamente',
-            mensaje=f'Su factura número {factura.numero} fue registrada correctamente.',
+            mensaje=f'Su factura número {factura.numero} fue registrada correctamente en Factus.',
         )
-        return JsonResponse({'success': True})
+        # Devuelve la información relevante de Factus
+        return JsonResponse({'success': True, 'factus': factus_data})
     return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
 
 def user_logout(request):
@@ -670,6 +795,7 @@ def historial_facturas(request):
             'iva': iva,
             'total': total,
             'archivo': f.archivo.url if f.archivo else None,
+            'public_url': getattr(f, 'factus_public_url', None),
         })
     context = {
         'facturas': facturas_context,

@@ -14,7 +14,7 @@
         /* --- Estilos Base (Modo Claro) --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; margin: 0; padding: 0; background-color: var(--body-bg-light, #f4f7f6); transition: background-color 0.3s ease, color 0.3s ease; }
         .container-historial {
-            max-width: 1300px; margin: 40px auto; padding: 25px 30px;
+            max-width: 1350px; margin: 40px auto; padding: 25px 30px;
             background-color: var(--section-bg-light);
             border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             overflow-x: auto;
@@ -193,6 +193,7 @@
                         <th class="numero-header">Neto (COP)</th>
                         <th class="numero-header">IVA (COP)</th>
                         <th class="numero-header">Total (COP)</th>
+                        <th>Factura </th>
                         <th class="acciones-header">Acciones</th>
                     </tr>
                 </thead>
@@ -203,7 +204,7 @@
                                 <td>{{ factura.fecha|date:"d/m/Y" }}</td>
                                 <td>
                                     {% if factura.archivo %}
-                                        <a href="{% url 'factura_archivo' factura.id %}" target="_blank">Ver factura</a>
+                                        <a href="{{ factura.archivo }}" target="_blank">Ver archivo</a>
                                     {% else %}
                                         Sin archivo
                                     {% endif %}
@@ -215,6 +216,13 @@
                                 <td class="numero">{{ factura.monto|floatformat:0|intcomma }}</td>
                                 <td class="numero">{{ factura.iva|floatformat:0|intcomma }}</td>
                                 <td class="numero">{{ factura.total|floatformat:0|intcomma }}</td>
+                                <td>
+                                    {% if factura.public_url %}
+                                        <a href="{{ factura.public_url }}" target="_blank" rel="noopener" class="ver-factura-btn" style="display:inline-block;padding:6px 14px;background:#3498db;color:#fff;border:none;border-radius:5px;text-decoration:none;font-weight:500;">Ver factura</a>
+                                    {% else %}
+                                        Sin enlace
+                                    {% endif %}
+                                </td>
                                 <td class="acciones-cell">
                                     {% if factura.id %}
                                     <a href="{% url 'editar_factura' factura.id %}" class="action-button-historial edit" title="Editar">✏️</a>
@@ -680,4 +688,57 @@ function downloadPdfHistorial() {
 </script>
 {% endblock %}
 </body>
+<!-- Modal visor de factura real -->
+<div id="modal-visor-factura" class="modal" style="display:none;z-index:2000;">
+  <div class="modal-content" style="max-width:900px;width:95vw;height:90vh;position:relative;padding:0;overflow:hidden;">
+    <span class="close-button" id="cerrar-modal-visor" style="position:absolute;top:10px;right:20px;font-size:2rem;cursor:pointer;z-index:10;">&times;</span>
+    <div id="contenedor-archivo-factura" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f8f9fa;"></div>
+  </div>
+</div>
+<script>
+// Visor de factura real (PDF o imagen)
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('modal-visor-factura');
+  const closeBtn = document.getElementById('cerrar-modal-visor');
+  const contenedor = document.getElementById('contenedor-archivo-factura');
+  // Delegación de eventos para botones "Ver factura"
+  const tablaBody = document.getElementById('tabla-historial-body');
+  if (tablaBody) {
+    tablaBody.addEventListener('click', function(event) {
+      const btn = event.target.closest('.ver-factura-btn');
+      if (!btn) return;
+      const url = btn.getAttribute('data-url');
+      if (!url) return;
+      contenedor.innerHTML = '';
+      contenedor.innerHTML = `
+        <iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>
+        <div style="text-align:center;margin-top:10px;">
+          <a href="${url}" target="_blank" rel="noopener" style="color:#007bff;font-weight:bold;">Abrir en nueva pestaña</a>
+        </div>
+      `;
+      modal.style.display = 'block';
+      document.body.classList.add('modal-open-no-scroll');
+    });
+  }
+  closeBtn.onclick = function() {
+    modal.style.display = 'none';
+    contenedor.innerHTML = '';
+    document.body.classList.remove('modal-open-no-scroll');
+  };
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = 'none';
+      contenedor.innerHTML = '';
+      document.body.classList.remove('modal-open-no-scroll');
+    }
+  };
+  window.addEventListener('keydown', function(event){
+    if (event.key === 'Escape' && modal.style.display === 'block') {
+      modal.style.display = 'none';
+      contenedor.innerHTML = '';
+      document.body.classList.remove('modal-open-no-scroll');
+    }
+  });
+});
+</script>
 </html>

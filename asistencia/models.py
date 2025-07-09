@@ -39,6 +39,8 @@ class FacturaSubida(models.Model):
     tipo_monto = models.CharField(max_length=20, default='neto')
     archivo = models.FileField(upload_to='facturas/', null=True, blank=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)
+    factus_pdf_url = models.URLField(null=True, blank=True, help_text='URL del PDF generado por Factus')
+    factus_public_url = models.URLField(null=True, blank=True, help_text='URL pública de visualización de la factura en Factus')
 
     def __str__(self):
         return f'Factura {self.numero} de {self.usuario}'

@@ -309,7 +309,8 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
              <div class="modal-content">
                 <span class="close-button" id="close-modal-btn">×</span>
                 <h2>Subir Factura</h2>
-                <form id="invoice-form" novalidate>
+                <form id="invoice-form" novalidate enctype="multipart/form-data">
+                    <!-- Campos visibles existentes -->
                     <div class="form-group">
                         <label for="invoice-number">Número:</label>
                         <input type="text" id="invoice-number" name="invoice-number" required>
@@ -318,10 +319,10 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
                         <label for="invoice-description">Descripción:</label>
                         <input type="text" id="invoice-description" name="invoice-description" required>
                     </div>
-                     <div class="form-group">
-                         <label for="invoice-nit">NIT (Opcional):</label>
-                         <input type="text" id="invoice-nit" name="invoice-nit" placeholder="Número de Identificación Tributaria">
-                     </div>
+                    <div class="form-group">
+                        <label for="invoice-nit">NIT (Opcional):</label>
+                        <input type="text" id="invoice-nit" name="invoice-nit" placeholder="Número de Identificación Tributaria">
+                    </div>
                     <div class="form-group">
                         <label for="invoice-date">Fecha:</label>
                         <input type="date" id="invoice-date" name="invoice-date" required>
@@ -333,7 +334,6 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
                             <option>Supermercados</option> <option>Servicios</option> <option>Entretenimiento</option> <option>Tecnología</option> <option>Restaurantes</option> <option>Transporte</option> <option>Salud</option> <option>Educación</option> <option>Vestuario</option> <option>Hogar</option> <option>Otros</option>
                         </select>
                     </div>
-                    <!-- El tipo de IVA se asigna automáticamente según la categoría seleccionada -->
                     <div class="form-group radio-group">
                         <label>Monto Ingresado:</label> <br>
                         <input type="radio" id="amount-type-neto" name="amount-type" value="neto" checked> <label for="amount-type-neto">Base (Sin IVA)</label>
@@ -347,11 +347,108 @@ body.dark-mode .toast-notification.info { background-color: #0056b3; }
                         <label for="invoice-file">Archivo (Opc):</label>
                         <input type="file" id="invoice-file" name="invoice-file" accept=".pdf,.jpg,.png,.jpeg">
                     </div>
+                    <!-- Campos ocultos para Factus (puedes hacerlos visibles si lo deseas) -->
+                    <input type="hidden" name="numbering_range_id" value="8">
+                    <input type="hidden" name="reference_code" value="ivas">
+                    <input type="hidden" name="observation" value="">
+                    <input type="hidden" name="payment_form" value="1">
+                    <input type="hidden" name="payment_due_date" value="2024-12-30">
+                    <input type="hidden" name="payment_method_code" value="10">
+                    <input type="hidden" name="operation_type" value="10">
+                    <input type="hidden" name="send_email" value="false">
+                    <input type="hidden" name="order_reference_code" value="ref-001">
+                    <input type="hidden" name="order_issue_date" value="">
+                    <input type="hidden" name="billing_start_date" value="2024-01-10">
+                    <input type="hidden" name="billing_start_time" value="00:00:00">
+                    <input type="hidden" name="billing_end_date" value="2024-02-09">
+                    <input type="hidden" name="billing_end_time" value="23:59:59">
+                    <input type="hidden" name="customer_dv" value="3">
+                    <input type="hidden" name="customer_company" value="">
+                    <input type="hidden" name="customer_trade_name" value="">
+                    <input type="hidden" name="customer_names" value="Deiby Rodriguez">
+                    <input type="hidden" name="customer_address" value="calle 1 # 2-68">
+                    <input type="hidden" name="customer_email" value="rdeiby73@gmail.com">
+                    <input type="hidden" name="customer_phone" value="3222163619">
+                    <input type="hidden" name="customer_legal_organization_id" value="2">
+                    <input type="hidden" name="customer_tribute_id" value="21">
+                    <input type="hidden" name="customer_identification_document_id" value="3">
+                    <input type="hidden" name="customer_municipality_id" value="980">
+                    <!-- Item 1 -->
+                    <input type="hidden" name="item1_scheme_id" value="1">
+                    <input type="hidden" name="item1_note" value="">
+                    <input type="hidden" name="item1_code_reference" value="12345">
+                    <input type="hidden" name="item1_name" value="producto de prueba">
+                    <input type="hidden" name="item1_quantity" value="1">
+                    <input type="hidden" name="item1_discount_rate" value="20">
+                    <input type="hidden" name="item1_price" value="50000">
+                    <input type="hidden" name="item1_tax_rate" value="19.00">
+                    <input type="hidden" name="item1_unit_measure_id" value="70">
+                    <input type="hidden" name="item1_standard_code_id" value="1">
+                    <input type="hidden" name="item1_is_excluded" value="0">
+                    <input type="hidden" name="item1_tribute_id" value="1">
+                    <input type="hidden" name="item1_withholding_code_1" value="06">
+                    <input type="hidden" name="item1_withholding_tax_rate_1" value="7.00">
+                    <input type="hidden" name="item1_withholding_code_2" value="05">
+                    <input type="hidden" name="item1_withholding_tax_rate_2" value="15.00">
+                    <input type="hidden" name="item1_mandate_identification_document_id" value="6">
+                    <input type="hidden" name="item1_mandate_identification" value="123456789">
+                    <!-- Item 2 -->
+                    <input type="hidden" name="item2_scheme_id" value="0">
+                    <input type="hidden" name="item2_note" value="">
+                    <input type="hidden" name="item2_code_reference" value="54321">
+                    <input type="hidden" name="item2_name" value="producto de prueba 2">
+                    <input type="hidden" name="item2_quantity" value="1">
+                    <input type="hidden" name="item2_discount_rate" value="0">
+                    <input type="hidden" name="item2_price" value="50000">
+                    <input type="hidden" name="item2_tax_rate" value="5.00">
+                    <input type="hidden" name="item2_unit_measure_id" value="70">
+                    <input type="hidden" name="item2_standard_code_id" value="1">
+                    <input type="hidden" name="item2_is_excluded" value="0">
+                    <input type="hidden" name="item2_tribute_id" value="1">
+                    <!-- Puedes agregar más campos según lo requiera Factus -->
                     <button type="submit" class="btn btn-primary submit-button">Guardar Factura</button>
                 </form>
             </div>
         </div>  
 
+    <!-- Sección Historial de Facturas -->
+        <section class="history-section">
+            <h3>Historial de Facturas</h3>
+            <div class="table-responsive">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th class="numero-header">Número</th>
+                            <th>Descripción</th>
+                            <th class="nit-header">NIT</th>
+                            <th>Categoría</th>
+                            <th class="numero-header">Monto Base</th>
+                            <th class="numero-header">IVA</th>
+                            <th class="numero-header">Monto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if facturas %}
+                            {% for factura in facturas %}
+                                <tr>
+                                    <td>{{ factura.fecha|date:"d/m/Y" }}</td>
+                                    <td class="numero">{{ factura.numero }}</td>
+                                    <td>{{ factura.descripcion }}</td>
+                                    <td class="nit-cell">{{ factura.nit|default:"N/A" }}</td>
+                                    <td>{{ factura.categoria }}</td>
+                                    <td class="numero">{{ factura.monto|floatformat:0|intcomma }}</td>
+                                    <td class="numero">{{ factura.iva|floatformat:0|intcomma }}</td>
+                                    <td class="numero">{{ factura.total|floatformat:0|intcomma }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="8" style="text-align:center;">No hay facturas registradas.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
 <script>
