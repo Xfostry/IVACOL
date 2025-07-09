@@ -9,7 +9,6 @@ urlpatterns = [
     path('descargar_facturas_pdf/', views.descargar_facturas_pdf, name='descargar_facturas_pdf'),
     path('get_facturas_usuario/', views.get_facturas_usuario, name='get_facturas_usuario'),
     path('facturasAdmin/', views.facturasAdmin, name='facturasAdmin'),
-    # Notificaciones
-    path('api/notificaciones/', views.api_notificaciones_usuario, name='api_notificaciones_usuario'),
+    path('api/notificacioness/', views.api_notificaciones_usuario, name='api_notificaciones_usuario'),
     path('api/notificaciones/marcar_leida/', views.api_marcar_notificacion_leida, name='api_marcar_notificacion_leida'),
 ]
