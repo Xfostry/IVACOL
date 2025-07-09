@@ -15,59 +15,128 @@
     <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
     <style>
         :root {
-            --body-bg-light: #f8f9fa;
-            --body-color-light: #222;
+            --main-blue: #1976d2;
+            --main-blue-dark: #1565c0;
+            --accent-green: #43a047;
+            --accent-yellow: #ffd600;
+            --accent-red: #e53935;
+            --bg-gradient: linear-gradient(135deg, #e3f2fd 0%, #fff 100%);
+            --card-shadow: 0 8px 32px rgba(25, 118, 210, 0.10);
             --section-bg-light: #fff;
-            --section-shadow-light: 0 2px 8px rgba(0,0,0,0.04);
-            --header-title-light: #0d47a1;
-            --title-border-light: #e3e3e3;
-            --button-bg-light: #e9ecef;
-            --button-border-light: #d1d5db;
-            --button-color-light: #222;
-            --button-hover-bg-light: #d1d5db;
-            --button-hover-border-light: #b0b0b0;
-            --table-bg-light: #fff;
-            --table-row-even-bg-light: #f3f6fa;
-            --table-row-hover-bg-light: #e9ecef;
-            --table-cell-border-light: #e3e3e3;
-            --footer-bg-light: #fff;
-            --footer-color-light: #888;
-            --footer-border-light: #e3e3e3;
-        
-            --body-bg-dark: #181a1b;
-            --body-color-dark: #e0e0e0;
             --section-bg-dark: #23272b;
-            --section-shadow-dark: 0 5px 15px rgba(0,0,0,0.3);
-            --header-title-dark: #9fceff;
-            --title-border-dark: #444;
-            --button-bg-dark: #23272b;
-            --button-border-dark: #444;
-            --button-color-dark: #e0e0e0;
-            --button-hover-bg-dark: #2c3136;
-            --button-hover-border-dark: #666;
-            --table-bg-dark: #23272b;
+            --header-title-light: #1976d2;
+            --header-title-dark: #90caf9;
+            --table-row-even-bg-light: #f3f6fa;
+            --table-row-hover-bg-light: #e3f2fd;
             --table-row-even-bg-dark: #202124;
-            --table-row-hover-bg-dark: #2c3136;
-            --table-cell-border-dark: #444;
-            --footer-bg-dark: #23272b;
-            --footer-color-dark: #bbb;
-            --footer-border-dark: #444;
+            --table-row-hover-bg-dark: #263238;
         }
         body {
-            background: var(--body-bg-light) !important;
-            color: var(--body-color-light);
-            transition: background 0.3s, color 0.3s;
+            background: var(--bg-gradient) !important;
+            color: #1a237e;
+            font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
         }
         main, .container, .card, .card-body, .card-footer {
             background: var(--section-bg-light) !important;
-            box-shadow: var(--section-shadow-light);
+            box-shadow: var(--card-shadow);
+            border-radius: 10px;
         }
-        .navbar, .navbar * {
-            background: var(--section-bg-light) !important;
+        .navbar {
+            background: var(--main-blue) !important;
+            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.10);
         }
+        .navbar .navbar-brand {
+            color: #fff !important;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .navbar .nav-link {
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .navbar .nav-link.active, .navbar .nav-link:hover {
+            color: var(--accent-yellow) !important;
+        }
+        .navbar .btn-theme-toggle {
+            background: #fff;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--header-title-light);
+            font-weight: 700;
+        }
+        .card-title {
+            color: var(--main-blue);
+            font-weight: 600;
+        }
+        .btn-primary, .btn-success, .btn-danger {
+            border-radius: 8px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+        }
+        .btn-primary {
+            background: var(--main-blue);
+            border-color: var(--main-blue-dark);
+        }
+        .btn-primary:hover {
+            background: var(--main-blue-dark);
+            border-color: var(--main-blue-dark);
+        }
+        .btn-success {
+            background: var(--accent-green);
+            border-color: #388e3c;
+        }
+        .btn-danger {
+            background: var(--accent-red);
+            border-color: #b71c1c;
+        }
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .table th {
+            background: var(--main-blue);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+        }
+        .table-striped > tbody > tr:nth-of-type(even) {
+            background-color: var(--table-row-even-bg-light) !important;
+        }
+        .table-hover > tbody > tr:hover {
+            background-color: var(--table-row-hover-bg-light) !important;
+        }
+        .badge.bg-success {
+            background: var(--accent-green) !important;
+        }
+        .badge.bg-warning {
+            background: var(--accent-yellow) !important;
+            color: #222 !important;
+        }
+        .badge.bg-danger {
+            background: var(--accent-red) !important;
+        }
+        .card-footer, footer {
+            background: #f5f7fa !important;
+            color: #789;
+            border-top: 1px solid #e3e3e3;
+            border-radius: 0 0 14px 14px;
+        }
+        .piePag {
+            background: var(--main-blue);
+            color: #fff;
+            border-top: 3px solid var(--accent-yellow);
+            text-align: center;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+        /* Dark mode */
         body.dark-mode {
-            background: var(--body-bg-dark) !important;
-            color: var(--body-color-dark);
+            background: #181a1b !important;
+            color: #e0e0e0;
         }
         body.dark-mode main, body.dark-mode .container, body.dark-mode .card, body.dark-mode .card-body, body.dark-mode .card-footer {
             background: var(--section-bg-dark) !important;
@@ -75,11 +144,20 @@
         }
         body.dark-mode .navbar, body.dark-mode .navbar * {
             background: var(--section-bg-dark) !important;
+            color: #e3f2fd !important;
+        }
+        body.dark-mode .navbar .navbar-brand {
+            color: var(--header-title-dark) !important;
+        }
+        body.dark-mode .navbar .nav-link {
+            color: #b3e5fc !important;
+        }
+        body.dark-mode .navbar .nav-link.active, body.dark-mode .navbar .nav-link:hover {
+            color: var(--accent-yellow) !important;
         }
         body.dark-mode .table, body.dark-mode .table th, body.dark-mode .table td {
-            background: var(--table-bg-dark) !important;
-            color: var(--body-color-dark) !important;
-            border-color: var(--table-cell-border-dark) !important;
+            background: var(--section-bg-dark) !important;
+            color: #e0e0e0 !important;
         }
         body.dark-mode .table-striped > tbody > tr:nth-of-type(even) {
             background-color: var(--table-row-even-bg-dark) !important;
@@ -88,26 +166,33 @@
             background-color: var(--table-row-hover-bg-dark) !important;
         }
         body.dark-mode .btn, body.dark-mode .btn-outline-secondary, body.dark-mode .btn-primary {
-            color: var(--body-color-dark) !important;
+            color: #e0e0e0 !important;
         }
         body.dark-mode .card, body.dark-mode .card-body, body.dark-mode .card-footer {
             background: var(--section-bg-dark) !important;
         }
-        body.dark-mode label,
-        body.dark-mode .form-label,
-        body.dark-mode .form-select,
-        body.dark-mode .form-control {
-            color: var(--body-color-dark) !important;
+        body.dark-mode .card-title, body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+            color: var(--header-title-dark) !important;
         }
-        body.dark-mode input::placeholder,
-        body.dark-mode textarea::placeholder {
+        body.dark-mode .badge.bg-success {
+            background: #388e3c !important;
+        }
+        body.dark-mode .badge.bg-warning {
+            background: #ffd600 !important;
+            color: #222 !important;
+        }
+        body.dark-mode .badge.bg-danger {
+            background: #b71c1c !important;
+        }
+        body.dark-mode .card-footer, body.dark-mode footer {
+            background: #23272b !important;
             color: #bbb !important;
-            opacity: 1;
+            border-top: 1px solid #444 !important;
         }
-        body.dark-mode footer {
-            background: var(--footer-bg-dark) !important;
-            color: var(--footer-color-dark) !important;
-            border-top-color: var(--footer-border-dark) !important;
+        body.dark-mode .piePag {
+            background: #23272b !important;
+            color: #ffd600 !important;
+            border-top: 3px solid #ffd600;
         }
     </style>
 </head>
@@ -115,7 +200,7 @@
     {% block navBar %}
     <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold fs-4" href="{% url 'InicioAdm' %}">IVACOL ADMIN</a>
+            <a class="navbar-brand fw-bold fs-4 text-primary" style="color: var(--main-blue) !important;" href="{% url 'InicioAdm' %}">IVACOL ADMIN</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbarContent" aria-controls="mainNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>

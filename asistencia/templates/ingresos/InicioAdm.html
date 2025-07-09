@@ -49,4 +49,102 @@
         </div>
     </div>
 </div>
+<!-- Gráfica de facturas subidas por día -->
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title">Facturas subidas por día</h5>
+            <div class="row mb-3">
+                <div class="col-md-5">
+                    <label for="fechaInicio" class="form-label">Fecha inicio:</label>
+                    <input type="date" id="fechaInicio" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-5">
+                    <label for="fechaFin" class="form-label">Fecha fin:</label>
+                    <input type="date" id="fechaFin" class="form-control form-control-sm">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button id="filtrarFechas" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+            <canvas id="graficaFacturasDia" height="80"></canvas>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const facturasPorDia = JSON.parse('{{ facturas_dia_json|escapejs }}');
+const ctx = document.getElementById('graficaFacturasDia').getContext('2d');
+let chartFacturas = null;
+
+function filtrarDatosPorFecha(datos, inicio, fin) {
+    return datos.filter(d => {
+        if (!d.fecha) return false;
+        if (inicio && d.fecha < inicio) return false;
+        if (fin && d.fecha > fin) return false;
+        return true;
+    });
+}
+
+function renderGrafica(datos) {
+    const labels = datos.map(d => d.fecha);
+    const values = datos.map(d => d.total);
+    if (chartFacturas) chartFacturas.destroy();
+    chartFacturas = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Facturas subidas',
+                data: values,
+                backgroundColor: '#1976d2',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    callbacks: {
+                        label: function(context) {
+                            // Solo mostrar el número entero
+                            return ' ' + Math.round(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { title: { display: true, text: 'Fecha' } },
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Cantidad' },
+                    ticks: {
+                        // Solo enteros
+                        callback: function(value) { return Number.isInteger(value) ? value : null; }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function setDefaultFechas() {
+    if (facturasPorDia.length > 0) {
+        document.getElementById('fechaInicio').value = facturasPorDia[0].fecha;
+        document.getElementById('fechaFin').value = facturasPorDia[facturasPorDia.length-1].fecha;
+    }
+}
+
+document.getElementById('filtrarFechas').addEventListener('click', function() {
+    const inicio = document.getElementById('fechaInicio').value;
+    const fin = document.getElementById('fechaFin').value;
+    const datosFiltrados = filtrarDatosPorFecha(facturasPorDia, inicio, fin);
+    renderGrafica(datosFiltrados);
+});
+
+setDefaultFechas();
+renderGrafica(facturasPorDia);
+</script>
 {% endblock Contenido %}

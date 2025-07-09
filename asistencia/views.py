@@ -18,6 +18,12 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 from functools import wraps
 from django.http import HttpResponseForbidden
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+import json
+from django.core.serializers.json import DjangoJSONEncoder
+from django.core.mail import send_mail
+from django.conf import settings
 
 def admin_required(view_func):
     @wraps(view_func)
@@ -560,9 +566,6 @@ def perfil(request):
     return render(request, 'ivapp/perfil.html', {'usuario': usuario_obj})
 
 
-import json
-from django.core.serializers.json import DjangoJSONEncoder
-
 @login_required(login_url='login')
 def graficas(request):
     try:
@@ -660,7 +663,21 @@ def CrudAdm(request, id):
 @login_required(login_url='login')
 def InicioAdm(request):
     usuarios = Usuario.objects.all()
-    return render(request, 'ingresos/InicioAdm.html', {'usuarios': usuarios})
+    # Agrupar facturas por fecha
+    facturas_por_dia = (
+        FacturaSubida.objects.values('fecha')
+        .annotate(total=Count('id'))
+        .order_by('fecha')
+    )
+    # Convertir a lista de dicts para JS
+    facturas_dia_list = [
+        {'fecha': f['fecha'].strftime('%Y-%m-%d') if f['fecha'] else '', 'total': f['total']} for f in facturas_por_dia if f['fecha']
+    ]
+    facturas_dia_json = json.dumps(facturas_dia_list, cls=DjangoJSONEncoder)
+    return render(request, 'ingresos/InicioAdm.html', {
+        'usuarios': usuarios,
+        'facturas_dia_json': facturas_dia_json
+    })
 
 @admin_required
 @login_required(login_url='login')
@@ -958,3 +975,41 @@ def api_marcar_notificacion_leida(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@csrf_exempt
+def soporte_contacto(request):
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        nombre = data.get('name', '').strip()
+        email = data.get('email', '').strip()
+        mensaje = data.get('message', '').strip()
+        if not nombre or not email or not mensaje:
+            return JsonResponse({'success': False, 'error': 'Faltan campos obligatorios.'}, status=400)
+        try:
+            # 1. Enviar mensaje al equipo de soporte
+            cuerpo = f"""
+Nombre: {nombre}
+Correo: {email}
+Mensaje:
+{mensaje}
+"""
+            send_mail(
+                subject='[Contacto IVACOL] Nuevo mensaje de contacto',
+                message=cuerpo,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=['ivacolom.app@gmail.com'],
+                fail_silently=False,
+            )
+            # 2. Enviar confirmación al usuario
+            send_mail(
+                subject='IVACOL - Hemos recibido tu mensaje',
+                message='Hemos recibido tu mensaje, nos comunicaremos tan pronto como sea posible.\n\nGracias por contactarnos.\n\nEquipo IVACOL',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)

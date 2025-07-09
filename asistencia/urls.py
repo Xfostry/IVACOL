@@ -11,4 +11,5 @@ urlpatterns = [
     path('facturasAdmin/', views.facturasAdmin, name='facturasAdmin'),
     path('api/notificacioness/', views.api_notificaciones_usuario, name='api_notificaciones_usuario'),
     path('api/notificaciones/marcar_leida/', views.api_marcar_notificacion_leida, name='api_marcar_notificacion_leida'),
+    path('soporte_contacto/', views.soporte_contacto, name='soporte_contacto'),
 ]

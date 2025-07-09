@@ -39,7 +39,7 @@
                         <textarea id="message" name="message" rows="5" required placeholder="Escribe tu mensaje aquí..." class="input-contact"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary submit-button" style="width:100%;margin-top:10px;">Enviar Mensaje</button>
-                    <p id="form-message" class="form-status-message" role="alert" style="margin-top:10px;display:none;"></p>
+                    <div id="form-message" class="form-status-message" role="alert" style="margin-top:10px;display:none;"></div>
                 </form>
             </div>
         </div>
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     const formMessage = document.getElementById('form-message');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(event) {
+        contactForm.addEventListener('submit', async function(event) {
             event.preventDefault();
             formMessage.textContent = '';
             formMessage.classList.remove('success', 'error');
@@ -133,10 +133,31 @@ document.addEventListener('DOMContentLoaded', function() {
             else if (!validateEmail(email)) { isValid = false; errorMessages.push('El formato del correo electrónico no es válido.'); }
             if (message === '') { isValid = false; errorMessages.push('El mensaje es obligatorio.'); }
             if (isValid) {
-                formMessage.textContent = 'Mensaje enviado correctamente.';
-                formMessage.classList.add('success');
+                formMessage.textContent = 'Enviando...';
+                formMessage.classList.remove('success', 'error');
                 formMessage.style.display = 'block';
-                contactForm.reset();
+                try {
+                    const response = await fetch('/asistencia/soporte_contacto/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, message })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        formMessage.textContent = '¡Mensaje enviado! Revisa tu correo para la confirmación.';
+                        formMessage.classList.add('success');
+                        formMessage.style.display = 'block';
+                        contactForm.reset();
+                    } else {
+                        formMessage.textContent = 'Error al enviar el mensaje: ' + (result.error || '');
+                        formMessage.classList.add('error');
+                        formMessage.style.display = 'block';
+                    }
+                } catch (err) {
+                    formMessage.textContent = 'Error de red o servidor.';
+                    formMessage.classList.add('error');
+                    formMessage.style.display = 'block';
+                }
             } else {
                 formMessage.textContent = errorMessages.join(' ');
                 formMessage.classList.add('error');
