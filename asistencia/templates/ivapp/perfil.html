@@ -15,50 +15,40 @@
     <style>
         /* ... (Tus estilos CSS generales como :root, profile-page-wrapper, etc.) ... */
         :root {
-            --primary-color: #2c3e50; /* Azul oscuro */
-            --secondary-color: #3498db; /* Azul claro */
+            --primary-color: var(--title-color-light, #00bfff);
+            --secondary-color: var(--title-border-light, #4a90e2);
             --light-gray: #f8f9fa;
             --medium-gray: #bdc3c7;
             --dark-gray: #7f8c8d;
-            --text-color: #333;
+            --text-color: var(--body-color-light, #1a0033);
             --white: #ffffff;
-            --gradient-start: #e0eafc;
-            --gradient-end: #cfdef3;
+            --gradient-start: #eaf6ff;
+            --gradient-end: #dbeafe;
         }
 
         .profile-page-wrapper {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 80vh;
-            box-sizing: border-box;
-            color: var(--text-color);
+            background: linear-gradient(-45deg, #eaf6ff, #dbeafe, #f3f8ff, #e0e7ff);
+            color: var(--body-color-light);
         }
         .profile-container { width: 100%; max-width: 550px; }
-        .profile-card { background-color: var(--white); border-radius: 15px; box-shadow: 0 12px 35px rgba(44, 62, 80, 0.15); overflow: hidden; text-align: center; padding: 35px 30px; transition: transform 0.3s ease, box-shadow 0.3s ease; border-top: 5px solid var(--secondary-color); }
+        .profile-card { background-color: var(--section-bg-light); border-radius: 15px; box-shadow: 0 12px 35px rgba(44, 62, 80, 0.15); overflow: hidden; text-align: center; padding: 35px 30px; transition: transform 0.3s ease, box-shadow 0.3s ease; border-top: 5px solid var(--title-border-light); }
         /* .profile-card:hover { transform: translateY(-6px); box-shadow: 0 18px 45px rgba(44, 62, 80, 0.2); } */
         .profile-header { margin-bottom: 25px; position: relative; }
-        .user-name { margin: 15px 0 5px 0; font-size: 1.7em; font-weight: 700; color: var(--primary-color); }
-        .user-role { margin: 0 0 20px 0; font-size: 1.05em; color: var(--dark-gray); font-weight: 400; }
-        .profile-details { margin-bottom: 30px; text-align: left; border-top: 1px solid #eee; padding-top: 25px; }
-        .detail-item { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; font-size: 0.95em; color: var(--text-color); min-height: 2.5em; }
-        .detail-item i { color: var(--secondary-color); width: 20px; text-align: center; font-size: 1.1em; flex-shrink: 0; }
+        .user-name { margin: 15px 0 5px 0; font-size: 1.7em; font-weight: 700; color: var(--title-color-light) !important; transition: color 0.3s ease; }
+        .user-role { margin: 0 0 20px 0; font-size: 1.05em; color: var(--text-muted-light); font-weight: 400; }
+        .profile-details { margin-bottom: 30px; text-align: left; border-top: 1px solid var(--title-border-light); padding-top: 25px; }
+        .detail-item { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; font-size: 0.95em; color: var(--body-color-light); min-height: 2.5em; }
+        .detail-item i { color: var(--title-border-light); width: 20px; text-align: center; font-size: 1.1em; flex-shrink: 0; }
         .detail-item span, .detail-item a { word-break: break-word; flex-grow: 1; }
-        .detail-item strong { font-weight: 600; color: var(--primary-color); }
-        .detail-item a { color: var(--secondary-color); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-        .detail-item a:hover { color: var(--primary-color); text-decoration: underline; }
+        .detail-item strong { font-weight: 600; color: var(--title-color-light) !important; transition: color 0.3s ease; }
+        .detail-item a { color: var(--link-color-light); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .detail-item a:hover { color: var(--link-hover-light); text-decoration: underline; }
         .profile-actions { margin-top: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
         .btn { padding: 10px 25px; border: none; border-radius: 25px; font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; text-decoration: none; text-align: center; }
-        .btn-primary { background: linear-gradient(135deg, var(--secondary-color) 0%, #2980b9 100%); color: var(--white); box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3); }
-        .btn-primary:hover { background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color) 100%); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4); }
-        .btn-secondary { background-color: var(--light-gray); color: var(--dark-gray); border: 1px solid var(--medium-gray); }
-        .btn-secondary:hover { background-color: #e9ecef; border-color: #adb5bd; transform: translateY(-2px); }
-        .btn-success { background-color: #2ecc71; color: white; }
-        .btn-danger { background-color: #e74c3c; color: white; }
-
+        .btn-primary { background: linear-gradient(45deg,#00bfff,#4a90e2); color: #fff; }
+        .btn-primary:hover { background: linear-gradient(45deg,#4a90e2,#00bfff); }
+        .btn-secondary { background: rgba(0,191,255,0.08); color: var(--link-color-light); border: 1px solid var(--section-border-light); }
+        .btn-secondary:hover { background: rgba(0,191,255,0.18); color: #1a0033; border-color: var(--title-border-light); }
         /* --- ESTILOS PARA EDICIÓN IN-PLACE Y VISIBILIDAD DE BOTONES --- */
         .edit-input {
             display: none; /* Oculto por defecto */
@@ -132,12 +122,12 @@
 .profile-header { margin-bottom: 25px; position: relative; }
 .user-name {
     margin: 15px 0 5px 0; font-size: 1.7em; font-weight: 700;
-    color: var(--primary-color, #2c3e50); /* Variable o color específico */
+    color: var(--title-color-light) !important; /* Verde vibrante */
     transition: color 0.3s ease;
 }
 .user-role {
     margin: 0 0 20px 0; font-size: 1.05em;
-    color: var(--dark-gray, #7f8c8d); /* Variable o color específico */
+    color: var(--text-muted-light); /* Variable o color específico */
     font-weight: 400;
      transition: color 0.3s ease;
 }
@@ -152,22 +142,22 @@
     font-size: 0.95em; color: var(--body-color-light); min-height: 2.5em;
 }
 .detail-item i {
-    color: var(--secondary-color, #3498db); /* Variable o color */
+    color: var(--title-border-light); /* Variable o color */
     width: 20px; text-align: center; font-size: 1.1em; flex-shrink: 0;
     transition: color 0.3s ease;
 }
 .detail-item span, .detail-item a { word-break: break-word; flex-grow: 1; }
 .detail-item strong {
     font-weight: 600;
-    color: var(--primary-color, #2c3e50); /* Variable o color */
+    color: var(--title-color-light) !important; /* Verde vibrante para tipo de doc */
     transition: color 0.3s ease;
 }
 .detail-item a {
-    color: var(--secondary-color, #3498db); /* Variable o color */
+    color: var(--link-color-light); /* Variable o color */
     text-decoration: none; font-weight: 500; transition: color 0.3s ease;
 }
 .detail-item a:hover {
-    color: var(--primary-color, #2c3e50); /* Variable o color */
+    color: var(--link-hover-light); /* Variable o color */
     text-decoration: underline;
 }
 .profile-actions { margin-top: 25px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
@@ -178,24 +168,21 @@
     padding: 10px 25px; border: none; border-radius: 25px; font-size: 0.9em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; text-decoration: none; text-align: center;
 }
 .btn-primary { /* Definición base si no existe fuera del perfil */
-    background: linear-gradient(135deg, var(--secondary-color, #3498db) 0%, #2980b9 100%);
-    color: var(--white, #ffffff);
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    background: linear-gradient(45deg,#00bfff,#4a90e2);
+    color: #fff;
 }
 .btn-primary:hover { /* Definición base */
-    background: linear-gradient(135deg, #2980b9 0%, var(--secondary-color, #3498db) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    background: linear-gradient(45deg,#4a90e2,#00bfff);
 }
 .btn-secondary { /* Definición base si no existe fuera del perfil */
-    background-color: var(--light-gray, #f8f9fa);
-    color: var(--dark-gray, #7f8c8d);
-    border: 1px solid var(--medium-gray, #bdc3c7);
+    background: rgba(0,191,255,0.08);
+    color: var(--link-color-light);
+    border: 1px solid var(--section-border-light);
 }
 .btn-secondary:hover { /* Definición base */
-    background-color: #e9ecef;
-    border-color: #adb5bd;
-    transform: translateY(-2px);
+    background: rgba(0,191,255,0.18);
+    color: #1a0033;
+    border-color: var(--title-border-light);
 }
 /* .btn-success, .btn-danger ya deberían estar definidos con sus contrapartes dark */
 
@@ -221,68 +208,56 @@
 
 /* --- Estilos Dark Mode para Página de Perfil (Añadir DENTRO de body.dark-mode {...}) --- */
 body.dark-mode .profile-page-wrapper {
-    background: #181a1b !important;
-    color: var(--body-color-dark); /* Color texto dark mode */
+    background: var(--body-bg-dark);
+    color: var(--body-color-dark);
 }
 body.dark-mode .profile-card {
     background-color: var(--section-bg-dark);
-    box-shadow: var(--section-shadow-dark); /* Sombra oscura */
-    border-top-color: var(--link-color-dark); /* Azul brillante para el borde superior */
-    border: 1px solid var(--section-border-dark); /* Borde general oscuro */
-    color: var(--body-color-dark); /* Asegurar herencia texto */
+    box-shadow: var(--section-shadow-dark);
+    border-top: 5px solid var(--title-border-dark);
+    color: var(--body-color-dark);
 }
-body.dark-mode .user-name {
-    color: var(--header-title-dark); /* Usar color brillante del título del header */
+body.dark-mode .user-name,
+body.dark-mode .detail-item strong {
+    color: var(--title-color-dark) !important;
 }
 body.dark-mode .user-role {
-    color: var(--footer-color-dark); /* Gris claro */
+    color: var(--text-muted-dark);
 }
 body.dark-mode .profile-details {
-    border-top-color: var(--section-border-dark); /* Borde oscuro */
+    border-top: 1px solid var(--title-border-dark);
 }
 body.dark-mode .detail-item {
-    color: var(--body-color-dark); /* Hereda color principal */
+    color: var(--body-color-dark);
 }
 body.dark-mode .detail-item i {
-    color: var(--link-color-dark); /* Iconos color azul brillante */
-}
-body.dark-mode .detail-item strong {
-    color: var(--header-title-dark); /* Texto strong igual que user-name */
+    color: var(--title-border-dark);
 }
 body.dark-mode .detail-item a {
-    color: var(--link-color-dark); /* Enlaces azul brillante */
+    color: var(--link-color-dark);
 }
 body.dark-mode .detail-item a:hover {
-    color: var(--nav-link-hover-dark); /* Hover de enlace estándar */
+    color: var(--link-hover-dark);
 }
-body.dark-mode .edit-input { /* Estilos input edición dark */
+body.dark-mode .edit-input {
     background-color: var(--input-bg-dark);
-    border-color: var(--input-border-dark);
     color: var(--input-color-dark);
-    color-scheme: dark;
 }
-/* Ajustes botones dark mode */
 body.dark-mode .btn-primary {
-     /* Mantener gradiente o simplificar */
-     /* background: linear-gradient(135deg, var(--link-color-dark) 0%, var(--nav-link-hover-dark) 100%); */
-     background: var(--link-color-dark); /* O color sólido brillante */
-     color: #111; /* Texto oscuro para contraste */
-     box-shadow: 0 4px 15px rgba(88, 166, 255, 0.2); /* Sombra más clara */
+    background: var(--link-color-dark);
+    color: #111;
 }
 body.dark-mode .btn-primary:hover {
-    background: var(--nav-link-hover-dark);
-    box-shadow: 0 6px 20px rgba(88, 166, 255, 0.3);
+    background: var(--link-hover-dark);
 }
-body.dark-mode .btn-secondary { /* Ya está definido en el CSS general de botones dark */
-    background-color: var(--button-bg-dark);
-    color: var(--button-color-dark);
-    border-color: var(--button-border-dark);
+body.dark-mode .btn-secondary {
+    background-color: #3b434a;
+    color: #c4c8cc;
+    border-color: #555e66;
 }
 body.dark-mode .btn-secondary:hover {
-    background-color: var(--button-hover-bg-dark);
+    background-color: #4f5860;
 }
-/* .btn-success, .btn-danger deberían usar las definiciones generales dark que ya existen */
-
 /* --- FIN DE LAS REGLAS PARA AÑADIR --- */
 :root {
     --header-bg-light: #0d47a1;     
