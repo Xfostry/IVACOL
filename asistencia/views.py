@@ -30,7 +30,9 @@ def admin_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated and (request.user.is_superuser or (hasattr(request.user, 'rol') and request.user.rol == 'admin')):
             return view_func(request, *args, **kwargs)
-        return HttpResponseForbidden("No tienes permiso para acceder a esta página.")
+        # Renderizar página estética de acceso restringido para admin
+        from django.shortcuts import render
+        return render(request, 'paginas/sin_permiso_admin.html', status=403)
     return _wrapped_view
 
 @login_required(login_url='login')
