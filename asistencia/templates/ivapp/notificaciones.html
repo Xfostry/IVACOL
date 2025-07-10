@@ -475,7 +475,7 @@
 
                     // --- Notificación Devolución IVA cada 24h ---
                     const IVA_NOTIF_KEY = 'ivaDevolucionNotificacionLastShown';
-                    const HOURS_24 = 60 * 1000; // 1 minuto para pruebas
+                    const HOURS_24 = 10 * 1000; // 10 segundos para pruebas DIAN
                     const now = Date.now();
                     const lastShown = localStorage.getItem(IVA_NOTIF_KEY);
                     const existeNotificacionIVA = notificaciones.some(n => n.id === 'iva-devolucion-info');
