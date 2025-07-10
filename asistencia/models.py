@@ -42,6 +42,15 @@ class FacturaSubida(models.Model):
     factus_pdf_url = models.URLField(null=True, blank=True, help_text='URL del PDF generado por Factus')
     factus_public_url = models.URLField(null=True, blank=True, help_text='URL pública de visualización de la factura en Factus')
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.monto < 0:
+            raise ValidationError({'monto': 'El monto no puede ser negativo.'})
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'Factura {self.numero} de {self.usuario}'
 

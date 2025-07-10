@@ -55,7 +55,7 @@
                 {% if error %}
                 <div id="feedback-message" class="alert alert-danger" role="alert">{{ error }}</div>
                 {% elif success %}
-                <div id="feedback-message" class="alert alert-success" role="alert">Si existe una cuenta asociada a este correo, recibirás un enlace para restablecer tu contraseña en breve.</div>
+                <div id="feedback-message" class="alert alert-success" role="alert">Recibirás un enlace para restablecer tu contraseña en breve.</div>
                 {% endif %}
                 <form id="forgot-password-form" method="POST" autocomplete="off">
                     {% csrf_token %}

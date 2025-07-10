@@ -107,17 +107,36 @@
                 <h2>Iniciar Sesión</h2>
                 <p class="subtitle">Introduce tus datos de usuario</p>
 
-                {% if form.non_field_errors %}
-                    <div class="server-error-message">
-                        {% for error in form.non_field_errors %}
-                            <p>{{ error }}</p>
+                {# Bloque para mostrar mensajes de Django con Bootstrap mejorado #}
+                {% if messages %}
+                    <div style="margin-bottom: 18px;">
+                        {% for message in messages %}
+                            <div class="alert {% if 'error' in message.tags or 'danger' in message.tags %}alert-danger{% elif 'success' in message.tags %}alert-success{% elif 'warning' in message.tags %}alert-warning{% else %}alert-info{% endif %} fade show d-flex align-items-center" role="alert" style="margin-bottom: 8px; font-size: 1em;">
+                                {% if 'error' in message.tags or 'danger' in message.tags %}
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                {% elif 'success' in message.tags %}
+                                    <i class="fas fa-check-circle me-2"></i>
+                                {% elif 'warning' in message.tags %}
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle me-2"></i>
+                                {% endif %}
+                                <span>{{ message }}</span>
+                            </div>
                         {% endfor %}
                     </div>
                 {% endif %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <div class="server-error-message {{ message.tags }}">{{ message }}</div>
-                    {% endfor %}
+
+                {# Errores generales del formulario (por ejemplo, credenciales inválidas) #}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger fade show d-flex align-items-center" role="alert" style="margin-bottom: 12px;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <div>
+                        {% for error in form.non_field_errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                        </div>
+                    </div>
                 {% endif %}
                 <p id="client-error-message" class="client-error-message" role="alert"></p>
 

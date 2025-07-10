@@ -345,12 +345,27 @@ def registrarse(request):
         from django.core.mail import send_mail
         from django.conf import settings
         asunto = 'Bienvenido a IVACOL'
-        mensaje = f'Hola {first_name}, tu usuario ha sido creado exitosamente. Ya puedes iniciar sesión en IVACOL.'
+        mensaje = f'''
+        <div style="border:2px solid #4CAF50; border-radius:10px; padding:20px; background:#f6fff6; font-family:sans-serif; max-width:500px; margin:auto;">
+            <h2 style="color:#388e3c;">¡Bienvenido a IVACOL, {first_name}!</h2>
+            <p>Tu usuario ha sido creado exitosamente. Ya puedes iniciar sesión en nuestra plataforma.</p>
+            <ul style="list-style:none; padding:0;">
+                <li><b>Nombre:</b> {first_name} {last_name}</li>
+                <li><b>Correo:</b> {email}</li>
+                <li><b>Tipo de documento:</b> {tipo_documento}</li>
+                <li><b>Número de documento:</b> {numero_documento}</li>
+                <li><b>Ciudad:</b> {ciudad}</li>
+                <li><b>Teléfono:</b> {telefono}</li>
+            </ul>
+            <p style="margin-top:20px;">¡Gracias por registrarte!<br>El equipo de IVACOL</p>
+        </div>
+        '''
         send_mail(
             asunto,
-            mensaje,
+            '',  # Texto plano vacío
             settings.DEFAULT_FROM_EMAIL,
             [email],
+            html_message=mensaje,
             fail_silently=True
         )
         messages.success(request, 'Usuario registrado exitosamente. Ahora puedes iniciar sesión.')
@@ -390,6 +405,9 @@ def contactenos(request):
 def diccionario(request):
     return render(request, 'paginas/diccionario.html')
 
+def manuales(request):
+    return render(request, 'paginas/manuales.html')
+
 def dml(request):
     return render(request, 'paginas/dml.html')
 
@@ -411,13 +429,25 @@ def invitar_registro(request):
         # Construir enlace a tratamiento
         url_tratamiento = request.build_absolute_uri(reverse('tratamiento'))
         asunto = 'Invitación a registrarte en IVACOL'
-        mensaje = f"Hola {nombre}, ya puedes iniciar tu registro en nuestra página, haz clic aquí: {url_tratamiento}"
+        mensaje = f'''
+        <div style="border:2px solid #1976d2; border-radius:10px; padding:24px; background:#e3f2fd; font-family:sans-serif; max-width:520px; margin:auto;">
+            <h2 style="color:#1976d2; margin-top:0;">¡Hola {nombre}!</h2>
+            <p style="font-size:1.1em;">Te invitamos a unirte a <b>IVACOL</b>, la plataforma donde <span style="color:#388e3c; font-weight:bold;">nunca fue tan fácil declarar el IVA</span>.</p>
+            <p>Haz clic en el siguiente botón para comenzar tu registro:</p>
+            <div style="text-align:center; margin:24px 0;">
+                <a href="{url_tratamiento}" style="background:#388e3c; color:#fff; padding:12px 28px; border-radius:6px; text-decoration:none; font-size:1.1em; font-weight:bold; display:inline-block;">Registrarme ahora</a>
+            </div>
+            <p style="color:#555;">Con IVACOL puedes gestionar tus facturas, calcular tu IVA y mantener todo en orden de manera sencilla y segura.</p>
+            <p style="margin-top:24px; font-size:0.95em; color:#888;">Si tienes dudas, contáctanos.<br>Equipo IVACOL</p>
+        </div>
+        '''
         try:
             send_mail(
                 asunto,
-                mensaje,
+                '',  # Texto plano vacío
                 settings.DEFAULT_FROM_EMAIL,
                 [correo],
+                html_message=mensaje,
                 fail_silently=False,
             )
             return render(request, 'paginas/inicio.html', {'success': 'Correo enviado correctamente.'})
@@ -724,12 +754,28 @@ def CrearAdm(request):
             from django.core.mail import send_mail
             from django.conf import settings
             asunto = 'Bienvenido a IVACOL'
-            mensaje = f'Hola {usuario.first_name}, tu usuario ha sido creado exitosamente. Ya puedes iniciar sesión en IVACOL.'
+            mensaje = f'''
+            <div style="border:2px solid #4CAF50; border-radius:10px; padding:20px; background:#f6fff6; font-family:sans-serif; max-width:500px; margin:auto;">
+                <h2 style="color:#388e3c;">¡Bienvenido a IVACOL, {usuario.first_name}!</h2>
+                <p>Tu usuario ha sido creado exitosamente. Ya puedes iniciar sesión en nuestra plataforma.</p>
+                <ul style="list-style:none; padding:0;">
+                    <li><b>Nombre:</b> {usuario.first_name} {usuario.last_name}</li>
+                    <li><b>Correo:</b> {usuario.email}</li>
+                    <li><b>Tipo de documento:</b> {usuario.tipo_documento}</li>
+                    <li><b>Número de documento:</b> {usuario.numero_documento}</li>
+                    <li><b>Ciudad:</b> {usuario.ciudad}</li>
+                    <li><b>Teléfono:</b> {usuario.telefono}</li>
+                    <li><b>Rol:</b> {usuario.rol}</li>
+                </ul>
+                <p style="margin-top:20px;">¡Gracias por registrarte!<br>El equipo de IVACOL</p>
+            </div>
+            '''
             send_mail(
                 asunto,
-                mensaje,
+                '',  # Texto plano vacío
                 settings.DEFAULT_FROM_EMAIL,
                 [usuario.email],
+                html_message=mensaje,
                 fail_silently=True
             )
             messages.success(request, 'Usuario creado exitosamente.')
