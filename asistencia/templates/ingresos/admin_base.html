@@ -15,44 +15,58 @@
     <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
     <style>
         :root {
-            --main-blue: #1976d2;
-            --main-blue-dark: #1565c0;
+            --main-red: #e57373;
+            --main-red-dark: #b71c1c;
+            --main-red-light: #ffebee;
             --accent-green: #43a047;
-            --accent-yellow: #ffd600;
-            --accent-red: #e53935;
-            --bg-gradient: linear-gradient(135deg, #e3f2fd 0%, #fff 100%);
-            --card-shadow: 0 8px 32px rgba(25, 118, 210, 0.10);
+            --accent-yellow: rgb(255, 0, 0);
+            --bg-gradient: linear-gradient(135deg, #fff6f6 0%, #ffeaea 100%);
+            --card-shadow: 0 8px 32px rgba(229, 57, 53, 0.08);
             --section-bg-light: #fff;
-            --section-bg-dark: #23272b;
-            --header-title-light: #1976d2;
-            --header-title-dark: #90caf9;
-            --table-row-even-bg-light: #f3f6fa;
-            --table-row-hover-bg-light: #e3f2fd;
-            --table-row-even-bg-dark: #202124;
-            --table-row-hover-bg-dark: #263238;
+            --section-bg-dark: #2d2323;
+            --header-title-light: #d32f2f;
+            --header-title-dark: #ff8a80;
+            --table-row-even-bg-light: #fff5f5;
+            --table-row-hover-bg-light: #ffeaea;
+            --table-row-even-bg-dark: #23272b;
+            --table-row-hover-bg-dark: #3e2323;
         }
+        /* MODO CLARO ROJO SUAVE */
         body {
             background: var(--bg-gradient) !important;
-            color: #1a237e;
+            color: #b71c1c;
             font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
         }
         main, .container, .card, .card-body, .card-footer {
             background: var(--section-bg-light) !important;
             box-shadow: var(--card-shadow);
-            border-radius: 10px;
+            border-radius: 8px;
+        }
+        /* Aumentar el ancho máximo de .container y main y centrar */
+        .container, main {
+            max-width: 1300px !important;
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
         }
         .navbar {
-            background: var(--main-blue) !important;
-            box-shadow: 0 4px 16px rgba(25, 118, 210, 0.10);
+            background: linear-gradient(90deg, #fbe9e7 0%, #ffcdd2 100%) !important;
+            box-shadow: 0 4px 16px rgba(229, 57, 53, 0.08);
+            border-radius: 0 0 10px 10px;
+            max-width: 1200px;
+            margin: 0 auto 0 auto; /* Elimina el margen superior */
+            padding-left: 32px;
+            padding-right: 32px;
         }
         .navbar .navbar-brand {
-            color: #fff !important;
+            color: #d32f2f !important;
             font-weight: 700;
             letter-spacing: 1px;
         }
         .navbar .nav-link {
             font-weight: 500;
+            color: #b71c1c !important;
             transition: color 0.2s;
         }
         .navbar .nav-link.active, .navbar .nav-link:hover {
@@ -61,45 +75,47 @@
         .navbar .btn-theme-toggle {
             background: #fff;
             border: none;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.10);
+            border-radius: 20%;
+            box-shadow: 0 2px 8px rgba(229, 57, 53, 0.08);
         }
         h1, h2, h3, h4, h5, h6 {
             color: var(--header-title-light);
             font-weight: 700;
+            text-shadow: 0 0 6px #ffcdd2, 0 0 12px #ffebee;
         }
         .card-title {
-            color: var(--main-blue);
+            color: #d32f2f;
             font-weight: 600;
         }
         .btn-primary, .btn-success, .btn-danger {
             border-radius: 8px;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+            box-shadow: 0 2px 8px rgba(229, 57, 53, 0.06);
         }
         .btn-primary {
-            background: var(--main-blue);
-            border-color: var(--main-blue-dark);
+            background: linear-gradient(90deg, #e57373 0%, #ffcdd2 100%) !important;
+            border-color: #d32f2f !important;
+            color: #b71c1c !important;
         }
         .btn-primary:hover {
-            background: var(--main-blue-dark);
-            border-color: var(--main-blue-dark);
+            background: linear-gradient(90deg, #d32f2f 0%, #e57373 100%) !important;
+            color: #fff !important;
         }
         .btn-success {
-            background: var(--accent-green);
-            border-color: #388e3c;
+            background: linear-gradient(90deg, #43a047 0%, #66bb6a 100%) !important;
+            border-color: #388e3c !important;
         }
         .btn-danger {
-            background: var(--accent-red);
-            border-color: #b71c1c;
+            background: linear-gradient(90deg, #e57373 0%, #d32f2f 100%) !important;
+            border-color: #b71c1c !important;
         }
         .table {
             border-radius: 10px;
             overflow: hidden;
         }
         .table th {
-            background: var(--main-blue);
-            color: #fff;
+            background: #e57373 !important;
+            color: #b71c1c;
             font-weight: 600;
             border: none;
         }
@@ -117,89 +133,110 @@
             color: #222 !important;
         }
         .badge.bg-danger {
-            background: var(--accent-red) !important;
+            background: #e57373 !important;
+            color: #b71c1c !important;
         }
         .card-footer, footer {
-            background: #f5f7fa !important;
-            color: #789;
-            border-top: 1px solid #e3e3e3;
+            background: #fff5f5 !important;
+            color: #b71c1c;
+            border-top: 1px solid #ffcdd2;
             border-radius: 0 0 14px 14px;
         }
         .piePag {
-            background: var(--main-blue);
+            background: #e57373;
             color: #fff;
             border-top: 3px solid var(--accent-yellow);
             text-align: center;
             font-size: 1rem;
             letter-spacing: 1px;
         }
-        /* Dark mode */
+        /* MODO OSCURO ROJO SUAVE */
         body.dark-mode {
-            background: #181a1b !important;
-            color: #e0e0e0;
+            background: linear-gradient(135deg, #2d2323 0%, #1a0a0a 100%) !important;
+            color: #ffeaea;
+        }
+        body.dark-mode .navbar {
+            background: linear-gradient(90deg, #b71c1c 0%, #e57373 100%) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 24px rgba(229,57,53,0.12);
+            border-radius: 0 0 18px 18px;
+            max-width: 1200px;
+            margin: 0 auto 0 auto; /* Elimina el margen superior */
+            padding-left: 32px;
+            padding-right: 32px;
+        }
+        body.dark-mode .navbar * {
+            background: none !important;
+            color: #fff !important;
         }
         body.dark-mode main, body.dark-mode .container, body.dark-mode .card, body.dark-mode .card-body, body.dark-mode .card-footer {
-            background: var(--section-bg-dark) !important;
-            box-shadow: var(--section-shadow-dark);
+            background: linear-gradient(120deg, #2d2323 0%, #1a0a0a 100%) !important;
+            box-shadow: 0 2px 16px 0 rgba(229,57,53,0.08), 0 0 24px 2px #ff8a801a inset;
+            border-radius: 10px;
         }
-        body.dark-mode .navbar, body.dark-mode .navbar * {
-            background: var(--section-bg-dark) !important;
-            color: #e3f2fd !important;
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+            color: #ff8a80 !important;
+            text-shadow: 0 0 6px #e57373, 0 0 12px #ff8a80;
         }
-        body.dark-mode .navbar .navbar-brand {
-            color: var(--header-title-dark) !important;
+        body.dark-mode .card-title {
+            color: #ff8a80 !important;
         }
-        body.dark-mode .navbar .nav-link {
-            color: #b3e5fc !important;
+        body.dark-mode .btn-primary {
+            background: linear-gradient(90deg, #e57373 0%, #b71c1c 100%) !important;
+            border-color: #b71c1c !important;
+            color: #fff !important;
         }
-        body.dark-mode .navbar .nav-link.active, body.dark-mode .navbar .nav-link:hover {
-            color: var(--accent-yellow) !important;
+        body.dark-mode .btn-primary:hover {
+            background: linear-gradient(90deg, #b71c1c 0%, #e57373 100%) !important;
+        }
+        body.dark-mode .btn-success {
+            background: linear-gradient(90deg, #43a047 0%, #66bb6a 100%) !important;
+            border-color: #388e3c !important;
+        }
+        body.dark-mode .btn-danger {
+            background: linear-gradient(90deg, #e57373 0%, #b71c1c 100%) !important;
+            border-color: #b71c1c !important;
         }
         body.dark-mode .table, body.dark-mode .table th, body.dark-mode .table td {
-            background: var(--section-bg-dark) !important;
-            color: #e0e0e0 !important;
+            background: #2d2323 !important;
+            color: #ffeaea !important;
+        }
+        body.dark-mode .table th {
+            background: #b71c1c !important;
+            color: #fff !important;
         }
         body.dark-mode .table-striped > tbody > tr:nth-of-type(even) {
-            background-color: var(--table-row-even-bg-dark) !important;
+            background-color: #23272b !important;
         }
         body.dark-mode .table-hover > tbody > tr:hover {
-            background-color: var(--table-row-hover-bg-dark) !important;
-        }
-        body.dark-mode .btn, body.dark-mode .btn-outline-secondary, body.dark-mode .btn-primary {
-            color: #e0e0e0 !important;
-        }
-        body.dark-mode .card, body.dark-mode .card-body, body.dark-mode .card-footer {
-            background: var(--section-bg-dark) !important;
-        }
-        body.dark-mode .card-title, body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
-            color: var(--header-title-dark) !important;
+            background-color: #3e2323 !important;
         }
         body.dark-mode .badge.bg-success {
             background: #388e3c !important;
         }
         body.dark-mode .badge.bg-warning {
-            background: #ffd600 !important;
+            background: rgb(255, 0, 0) !important;
             color: #222 !important;
         }
         body.dark-mode .badge.bg-danger {
-            background: #b71c1c !important;
+            background: #e57373 !important;
+            color: #b71c1c !important;
         }
         body.dark-mode .card-footer, body.dark-mode footer {
-            background: #23272b !important;
-            color: #bbb !important;
-            border-top: 1px solid #444 !important;
+            background: #2d2323 !important;
+            color: #ff8a80 !important;
+            border-top: 1px solid #b71c1c !important;
         }
         body.dark-mode .piePag {
-            background: #23272b !important;
-            color: #ffd600 !important;
-            border-top: 3px solid #ffd600;
+            background: #2d2323 !important;
+            color: rgb(255, 0, 0) !important;
+            border-top: 3px solid rgb(255, 0, 0);
         }
     </style>
 </head>
 <body>
     {% block navBar %}
     <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
-        <div class="container">
             <a class="navbar-brand fw-bold fs-4 text-primary" style="color: var(--main-blue) !important;" href="{% url 'InicioAdm' %}">IVACOL ADMIN</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbarContent" aria-controls="mainNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -233,8 +270,7 @@
                     </span>
                 </button>
             </div>
-        </div>
-    </nav>
+    </nav><br>
     {% endblock navBar %}
     <main>
         {% block Contenido %}{% endblock Contenido %}

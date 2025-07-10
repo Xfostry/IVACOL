@@ -196,9 +196,16 @@
             vertical-align: middle;
         }
 
-        /* --- ESTILOS FOOTER (VERDE) --- */
+        /* --- ESTILOS FOOTER (MODO CLARO) --- */
         footer.piePag {
-            background: rgba(10,10,30,0.95);
+            background: linear-gradient(90deg, rgb(18, 100, 208) 0%, rgb(14, 89, 202) 100%) !important;
+            color: #4a90e2;
+            border-top: 2px solid #4a90e2;
+            text-shadow: none;
+        }
+        /* --- ESTILOS FOOTER (MODO OSCURO) --- */
+        body.dark-mode footer.piePag {
+            background: rgba(10,10,30,0.95) !important;
             color: #9dceff;
             border-top: 2px solid #4a00e0;
             text-shadow: 0 0 6px #4a00e0;

@@ -1,51 +1,104 @@
 {% extends "plantillas.html" %}
 {% load static %}
 {% block Contenido %}
-<main class="container"><br>
-    <section class="welcome-section">
-        <h2>Contáctanos</h2>
-        <p>¿Tienes dudas, sugerencias o necesitas ayuda? Completa el formulario y nos pondremos en contacto contigo lo antes posible.</p>
-    </section>
-    <section class="actions-section" style="margin-bottom: 0;">
-        <div class="actions-grid" style="grid-template-columns: 1fr 1fr; gap: 40px;">
-            <!-- Información de contacto -->
-            <div class="contact-section" style="padding: 25px;">
-                <h3 style="margin-top:0;">Información de Contacto</h3>
-                <ul style="list-style:none; padding:0;">
-                    <li style="margin-bottom: 18px;">Dirección: Cra. 93 #80-72, Bogotá</li>
-                    <li style="margin-bottom: 18px;">Número: 324 9623203</li>
-                    <li style="margin-bottom: 18px;">Correo: <a href="mailto:ivacol.app@gmail.com">ivacol.app@gmail.com</a></li>
-                    <li>Horario: Lunes a Viernes, 9:00 AM - 6:00 PM</li>
-                </ul>
-            </div>
-            <!-- Formulario de contacto -->
-            <div class="contact-section" style="padding: 25px;">
-                <h3 style="margin-top:0;">Envíanos un Mensaje</h3>
-                <form id="contactForm" novalidate>
-                    <div class="form-group">
-                        <label for="name">Nombre Completo <span style="color:#dc3545;">*</span></label>
-                        <input type="text" id="name" name="name" required placeholder="Ej: Juan Pérez" class="input-contact">
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Correo Electrónico <span style="color:#dc3545;">*</span></label>
-                        <input type="email" id="email" name="email" required placeholder="Ej: juan.perez@correo.com" class="input-contact">
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Asunto</label>
-                        <input type="text" id="subject" name="subject" placeholder="Ej: Problema al subir un archivo" class="input-contact">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Mensaje <span style="color:#dc3545;">*</span></label>
-                        <textarea id="message" name="message" rows="5" required placeholder="Escribe tu mensaje aquí..." class="input-contact"></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary submit-button" style="width:100%;margin-top:10px;">Enviar Mensaje</button>
-                    <div id="form-message" class="form-status-message" role="alert" style="margin-top:10px;display:none;"></div>
-                </form>
-            </div>
-        </div>
-    </section>
-</main>
 <style>
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(120deg,rgba(185, 214, 255, 0.33) 0%,rgba(187, 231, 255, 0.31) 100%); color: var(--body-color-light); line-height: 1.6; transition: background-color 0.3s ease, color 0.3s ease; }
+
+        body.dark-mode {
+            background: linear-gradient(-45deg, #0b001a, #1a0033, #0d0d2e, #001f3f);
+            background-size: 400% 400%;
+            animation: cosmicGradient 25s ease infinite;
+            color: var(--body-color-dark);
+        }
+
+        body:not(.dark-mode) section {
+            background: linear-gradient(120deg,rgba(255,255,255,0.97) 0%,rgba(240,247,255,0.99) 100%);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: var(--section-shadow-light, 0 1px 3px rgba(0,0,0,0.05));
+            border: 1px solid rgb(180, 180, 180);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+
+    body:not(.dark-mode) .actions-grid,
+    body:not(.dark-mode) .actions-grid * {
+        color: #1a1a1a !important;
+}
+    body:not(.dark-mode) .welcome-section,
+    body:not(.dark-mode) .welcome-section, * {
+        color: #1a1a1a !important;
+}
+section {
+    /* Elimina el fondo anterior para evitar conflicto, solo se usará en modo claro con body:not(.dark-mode) */
+}
+
+section h2, section h3 {
+    color: rgb(0, 140, 255); /* Azul neón */
+    margin-top: 0;
+    border-bottom: 2px solid var(--title-border-light);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 600;
+    text-shadow: 0 0 8px #008cff, 0 0 16px #008cff, 0 0 24px #008cff; /* Efecto neón azul */
+}
+
+
+        /* --- Navbar Styles --- */
+        .navbar {
+            background: linear-gradient(90deg,rgb(18, 100, 208) 0%,rgb(14, 89, 202) 100%) !important;
+            border-bottom: 2px solid #4a90e2 !important;
+            box-shadow: 0 2px 12px #b3d1f7;
+        }
+        body.dark-mode .navbar {
+            background: linear-gradient(90deg, #181a2a 0%, #1a0033 100%) !important;
+            border-bottom: 2px solid #4a00e0 !important;
+            box-shadow: 0 2px 12px #1a0033;
+        }
+
+        /* ========================== */
+        /* === ANIMACIONES (KEYFRAMES) === */
+        /* ========================== */
+        @keyframes cosmicGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Toast Notification Styles */
+        .toast-notification {
+            visibility: hidden;
+            min-width: 250px;
+            margin-left: -125px;
+            background-color: #323232;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 9999;
+            left: 50%;
+            bottom: 40px;
+            font-size: 1.1em;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+            opacity: 0;
+            transition: opacity 0.4s, visibility 0.4s;
+        }
+        .toast-notification.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .toast-notification.success { background-color: #28a745; }
+        .toast-notification.error { background-color: #dc3545; }
+        .toast-notification.info { background-color: #007bff; }
+        body.dark-mode .toast-notification { background-color: #222; color: #fff; }
+        body.dark-mode .toast-notification.success { background-color: #218838; }
+        body.dark-mode .toast-notification.error { background-color: #c82333; }
+        body.dark-mode .toast-notification.info { background-color: #0056b3; }
+        
 .contact-section {
     background: var(--section-bg-light);
     border-radius: 8px;
@@ -113,6 +166,50 @@ body.dark-mode .form-status-message.error {
     border-color: #8b3a44;
 }
 </style>
+<main class="container"><br>
+    <section class="welcome-section">
+        <h2>Contáctanos</h2>
+        <p>¿Tienes dudas, sugerencias o necesitas ayuda? Completa el formulario y nos pondremos en contacto contigo lo antes posible.</p>
+    </section>
+    <section class="actions-section" style="margin-bottom: 0;">
+        <div class="actions-grid" style="grid-template-columns: 1fr 1fr; gap: 40px;">
+            <!-- Información de contacto -->
+            <div class="contact-section" style="padding: 25px;">
+                <h3 style="margin-top:0;">Información de Contacto</h3>
+                <ul style="list-style:none; padding:0;">
+                    <li style="margin-bottom: 18px;">Dirección: Cra. 93 #80-72, Bogotá</li>
+                    <li style="margin-bottom: 18px;">Número: 324 9623203</li>
+                    <li style="margin-bottom: 18px;">Correo: <a href="mailto:ivacol.app@gmail.com">ivacol.app@gmail.com</a></li>
+                    <li>Horario: Lunes a Viernes, 9:00 AM - 6:00 PM</li>
+                </ul>
+            </div>
+            <!-- Formulario de contacto -->
+            <div class="contact-section" style="padding: 25px;">
+                <h3 style="margin-top:0;">Envíanos un Mensaje</h3>
+                <form id="contactForm" novalidate>
+                    <div class="form-group">
+                        <label for="name">Nombre Completo <span style="color:#dc3545;">*</span></label>
+                        <input type="text" id="name" name="name" required placeholder="Ej: Juan Pérez" class="input-contact">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico <span style="color:#dc3545;">*</span></label>
+                        <input type="email" id="email" name="email" required placeholder="Ej: juan.perez@correo.com" class="input-contact">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Asunto</label>
+                        <input type="text" id="subject" name="subject" placeholder="Ej: Problema al subir un archivo" class="input-contact">
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensaje <span style="color:#dc3545;">*</span></label>
+                        <textarea id="message" name="message" rows="5" required placeholder="Escribe tu mensaje aquí..." class="input-contact"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary submit-button" style="width:100%;margin-top:10px;">Enviar Mensaje</button>
+                    <div id="form-message" class="form-status-message" role="alert" style="margin-top:10px;display:none;"></div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');

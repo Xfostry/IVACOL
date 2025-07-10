@@ -12,46 +12,104 @@
     <link rel="stylesheet" href="{% static 'css/plantillapp.css' %}">
     <style>
         /* --- Estilos Base (Modo Claro) --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; margin: 0; padding: 0; background-color: var(--body-bg-light, #f4f7f6); transition: background-color 0.3s ease, color 0.3s ease; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: var(--body-bg-light, #f4f7f6);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        body:not(.dark-mode) {
+            background: linear-gradient(120deg,rgba(185, 214, 255, 0.33) 0%,rgba(187, 231, 255, 0.31) 100%);
+            color: var(--body-color-light, #222);
+        }
+        .navbar {
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        body:not(.dark-mode) .navbar {
+            background: linear-gradient(90deg, rgb(18, 100, 208) 0%, rgb(14, 89, 202) 100%) !important;
+            border-bottom: 2px solid #4a90e2 !important;
+            box-shadow: 0 2px 12px #b3d1f7;
+        }
         .container-historial {
-            max-width: 1350px; margin: 40px auto; padding: 25px 30px;
+            max-width: 1350px;
+            margin: 40px auto;
+            padding: 25px 30px;
             background-color: var(--section-bg-light);
-            border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             overflow-x: auto;
             border: 1px solid transparent;
             transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
+        body:not(.dark-mode) .container-historial {
+            background: linear-gradient(120deg,rgba(255,255,255,0.97) 0%,rgba(240,247,255,0.99) 100%);
+            border: 1px solid rgb(180, 180, 180);
+            box-shadow: var(--section-shadow-light, 0 1px 3px rgba(0,0,0,0.05));
+        }
         .titulo-contenedor {
-            position: relative; padding-bottom: 10px; margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
             border-bottom: 2px solid var(--title-border-light);
             transition: border-color 0.3s ease;
         }
         .titulo-historial {
             color: var(--header-title-light, #2c3e50);
-            font-weight: 600; text-align: center; font-size: 1.8em; margin: 0; padding: 0;
+            font-weight: 600;
+            text-align: center;
+            font-size: 1.8em;
+            margin: 0;
+            padding: 0;
             transition: color 0.3s ease;
         }
         .btn-descargar-facturas {
-            position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-            padding: 8px 15px; background-color: #2980b9; color: white;
-            text-decoration: none; border: none; border-radius: 5px; cursor: pointer;
-            font-size: 0.9em; font-weight: 500; transition: background-color 0.3s ease; white-space: nowrap;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 15px;
+            background-color: #2980b9;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
         }
-        .btn-descargar-facturas:hover { background-color: #1f618d; }
+        .btn-descargar-facturas:hover {
+            background-color: #1f618d;
+        }
 
         /* --- Estilos Tabla Historial --- */
-        .tabla-historial { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .tabla-historial {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
         .tabla-historial th, .tabla-historial td {
-            padding: 12px 15px; text-align: left;
+            padding: 12px 15px;
+            text-align: left;
             border-bottom: 1px solid var(--table-cell-border-light);
-            vertical-align: middle; white-space: nowrap;
+            vertical-align: middle;
+            white-space: nowrap;
             transition: border-color 0.3s ease, background-color 0.2s ease, color 0.3s ease; /* Añadido color a transition */
             color: var(--body-color-light, #333); /* Color base modo claro */
         }
         .tabla-historial th {
-            background-color: #3498db; color: #ffffff; font-weight: 600;
-            text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px;
-            position: sticky; top: 0; z-index: 1; /* Para cabecera fija si hace scroll */
+            background-color: #3498db;
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 1; /* Para cabecera fija si hace scroll */
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         /* Alineación derecha para columnas numéricas Y NIT */
@@ -60,69 +118,254 @@
             text-align: right;
             font-variant-numeric: tabular-nums; /* Mantiene ancho de números */
         }
-        .tabla-historial tr:nth-child(even) { background-color: var(--table-row-even-bg-light); }
-        .tabla-historial tr:nth-child(odd) { background-color: var(--body-bg-light); } /* Fondo impar claro */
-        .tabla-historial tr:hover { background-color: var(--table-row-hover-bg-light); cursor: default; }
+        .tabla-historial tr:nth-child(even) {
+            background-color: var(--table-row-even-bg-light);
+        }
+        .tabla-historial tr:nth-child(odd) {
+            background-color: var(--body-bg-light);
+        } /* Fondo impar claro */
+        .tabla-historial tr:hover {
+            background-color: var(--table-row-hover-bg-light);
+            cursor: default;
+        }
 
         /* Resto de estilos modo claro (mensaje, botones acciones, modal...) sin cambios */
-        .mensaje-vacio { text-align: center; padding: 40px 20px; color: #7f8c8d; font-size: 1.1em; background-color: var(--body-bg-light); border: 1px dashed #bdc3c7; border-radius: 8px; margin-top: 30px; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
-        .mensaje-vacio.oculto { display: none; }
-        .action-button-historial { background: none; border: none; cursor: pointer; padding: 5px; margin: 0 3px; font-size: 1.1em; transition: color 0.3s ease, opacity 0.3s ease; }
-        .action-button-historial.edit { color: #f39c12; }
-        .action-button-historial.delete { color: #e74c3c; }
-        .action-button-historial:hover { opacity: 0.7; }
-        .tabla-historial th.acciones-header, .tabla-historial td.acciones-cell { text-align: center; white-space: nowrap; }
+        .mensaje-vacio {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            background-color: var(--body-bg-light);
+            border: 1px dashed #bdc3c7;
+            border-radius: 8px;
+            margin-top: 30px;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        .mensaje-vacio.oculto {
+            display: none;
+        }
+        .action-button-historial {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin: 0 3px;
+            font-size: 1.1em;
+            transition: color 0.3s ease, opacity 0.3s ease;
+        }
+        .action-button-historial.edit {
+            color: #f39c12;
+        }
+        .action-button-historial.delete {
+            color: #e74c3c;
+        }
+        .action-button-historial:hover {
+            opacity: 0.7;
+        }
+        .tabla-historial th.acciones-header, .tabla-historial td.acciones-cell {
+            text-align: center;
+            white-space: nowrap;
+        }
 
         /* Estilos del Modal (como los tenías) */
-        .modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0, 0, 0, 0.5); }
-        .modal-content { background-color: var(--modal-bg-light, #fefefe); margin: 10% auto; padding: 25px 35px; border: 1px solid var(--modal-border-light, #ccc); width: 90%; max-width: 550px; border-radius: 8px; position: relative; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
-        .modal-content .close-button { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; line-height: 1; cursor: pointer; transition: color 0.2s ease; }
-        .modal-content .close-button:hover, .modal-content .close-button:focus { color: #333; text-decoration: none; }
-        .modal-content h2 { margin-top: 0; margin-bottom: 25px; font-size: 1.6em; color: var(--header-title-light, #333); text-align: center; border-bottom: 1px solid var(--title-border-light, #eee); padding-bottom: 15px; transition: color 0.3s ease, border-color 0.3s ease; }
-        .modal-content .form-group { margin-bottom: 20px; }
-        .modal-content .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--body-color-light, #555); font-size: 0.95em; transition: color 0.3s ease; }
-        .modal-content .form-group input[type="text"], .modal-content .form-group input[type="date"], .modal-content .form-group input[type="number"], .modal-content .form-group select { box-sizing: border-box; width: 100%; padding: 10px 12px; border: 1px solid var(--input-border-light, #ccc); border-radius: 5px; font-size: 1rem; background-color: var(--input-bg-light, #fff); color: var(--body-color-light, #333); transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease; }
-        .modal-content .form-group input:focus, .modal-content .form-group select:focus { border-color: #3498db; outline: none; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
-        .modal-content .submit-button { background-color: var(--submit-button-bg-light, #28a745); color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.3s ease, transform 0.1s ease; display: block; width: 100%; margin-top: 15px; }
-        .modal-content .submit-button:hover { background-color: var(--submit-button-hover-bg-light, #218838); transform: translateY(-1px); }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: var(--modal-bg-light, #fefefe);
+            margin: 10% auto;
+            padding: 25px 35px;
+            border: 1px solid var(--modal-border-light, #ccc);
+            width: 90%;
+            max-width: 550px;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .modal-content .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .modal-content .close-button:hover, .modal-content .close-button:focus {
+            color: #333;
+            text-decoration: none;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 1.6em;
+            color: var(--header-title-light, #333);
+            text-align: center;
+            border-bottom: 1px solid var(--title-border-light, #eee);
+            padding-bottom: 15px;
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .modal-content .form-group {
+            margin-bottom: 20px;
+        }
+        .modal-content .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--body-color-light, #555);
+            font-size: 0.95em;
+            transition: color 0.3s ease;
+        }
+        .modal-content .form-group input[type="text"], .modal-content .form-group input[type="date"], .modal-content .form-group input[type="number"], .modal-content .form-group select {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--input-border-light, #ccc);
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: var(--input-bg-light, #fff);
+            color: var(--body-color-light, #333);
+            transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease, box-shadow 0.2s ease;
+        }
+        .modal-content .form-group input:focus, .modal-content .form-group select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        .modal-content .submit-button {
+            background-color: var(--submit-button-bg-light, #28a745);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            display: block;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .modal-content .submit-button:hover {
+            background-color: var(--submit-button-hover-bg-light, #218838);
+            transform: translateY(-1px);
+        }
 
         /* === ESTILOS DARK MODE === */
-        body.dark-mode { background-color: var(--body-bg-dark, #121212); color: var(--body-color-dark, #e0e0e0); }
-        body.dark-mode .container-historial { background-color: var(--section-bg-dark); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); border-color: var(--section-border-dark); }
-        body.dark-mode .titulo-contenedor { border-bottom-color: var(--title-border-dark); }
-        body.dark-mode .titulo-historial { color: var(--header-title-dark); }
-        body.dark-mode .btn-descargar-facturas { background-color: #5dade2; color: #1c1c1c; }
-        body.dark-mode .btn-descargar-facturas:hover { background-color: #85c1e9; }
+        body.dark-mode {
+            background-color: var(--body-bg-dark, #121212);
+            color: var(--body-color-dark, #e0e0e0);
+        }
+        body.dark-mode .container-historial {
+            background-color: var(--section-bg-dark);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-color: var(--section-border-dark);
+        }
+        body.dark-mode .titulo-contenedor {
+            border-bottom-color: var(--title-border-dark);
+        }
+        body.dark-mode .titulo-historial {
+            color: var(--header-title-dark);
+        }
+        body.dark-mode .btn-descargar-facturas {
+            background-color: #5dade2;
+            color: #1c1c1c;
+        }
+        body.dark-mode .btn-descargar-facturas:hover {
+            background-color: #85c1e9;
+        }
 
         /* Tabla Dark Mode */
-        body.dark-mode .tabla-historial th { background-color: #2c3e50; color: var(--table-head-color-dark); border-bottom-color: #4a5a6a; }
-        body.dark-mode .tabla-historial td { border-bottom-color: var(--table-cell-border-dark); color: var(--body-color-dark); } /* Hereda o define color claro */
+        body.dark-mode .tabla-historial th {
+            background-color: #2c3e50;
+            color: var(--table-head-color-dark);
+            border-bottom-color: #4a5a6a;
+        }
+        body.dark-mode .tabla-historial td {
+            border-bottom-color: var(--table-cell-border-dark);
+            color: var(--body-color-dark);
+        } /* Hereda o define color claro */
         body.dark-mode .tabla-historial td.numero,
         body.dark-mode .tabla-historial td.nit-cell { /* NUEVO: Añadida .nit-cell */
              color: var(--body-color-dark); /* Asegura color en columnas alineadas a la derecha */
         }
-        body.dark-mode .tabla-historial tr:nth-child(even) { background-color: var(--table-row-even-bg-dark); }
-        body.dark-mode .tabla-historial tr:nth-child(odd) { background-color: var(--section-bg-dark); }
-        body.dark-mode .tabla-historial tr:hover { background-color: var(--table-row-hover-bg-dark); }
+        body.dark-mode .tabla-historial tr:nth-child(even) {
+            background-color: var(--table-row-even-bg-dark);
+        }
+        body.dark-mode .tabla-historial tr:nth-child(odd) {
+            background-color: var(--section-bg-dark);
+        }
+        body.dark-mode .tabla-historial tr:hover {
+            background-color: var(--table-row-hover-bg-dark);
+        }
 
         /* Resto de Dark Mode (mensaje, botones, modal...) */
-        body.dark-mode .mensaje-vacio { color: var(--footer-color-dark); background-color: var(--section-bg-dark); border-color: var(--button-border-dark); }
-        body.dark-mode .action-button-historial.edit { color: #f8c471; }
-        body.dark-mode .action-button-historial.delete { color: #f1948a; }
+        body.dark-mode .mensaje-vacio {
+            color: var(--footer-color-dark);
+            background-color: var(--section-bg-dark);
+            border-color: var(--button-border-dark);
+        }
+        body.dark-mode .action-button-historial.edit {
+            color: #f8c471;
+        }
+        body.dark-mode .action-button-historial.delete {
+            color: #f1948a;
+        }
 
         /* Modal Dark Mode */
-        body.dark-mode .modal-content { background-color: var(--modal-bg-dark, #252525); border-color: var(--modal-border-dark, #444); color: var(--body-color-dark, #e0e0e0); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); }
-        body.dark-mode .modal-content .close-button { color: #888; }
-        body.dark-mode .modal-content .close-button:hover { color: #ccc; }
-        body.dark-mode .modal-content h2 { color: var(--header-title-dark, #ccc); border-bottom-color: var(--title-border-dark, #444); }
-        body.dark-mode .modal-content .form-group label { color: var(--body-color-dark-muted, #bbb); }
-        body.dark-mode .modal-content .form-group input[type="text"], body.dark-mode .modal-content .form-group input[type="date"], body.dark-mode .modal-content .form-group input[type="number"], body.dark-mode .modal-content .form-group select { background-color: var(--input-bg-dark, #333); border-color: var(--input-border-dark, #555); color: var(--body-color-dark, #e0e0e0); }
-        body.dark-mode .modal-content .form-group input:-webkit-autofill, body.dark-mode .modal-content .form-group select:-webkit-autofill { -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark, #333) inset !important; -webkit-text-fill-color: var(--body-color-dark, #e0e0e0) !important; }
-        body.dark-mode .modal-content .form-group input:focus, body.dark-mode .modal-content .form-group select:focus { border-color: #5dade2; box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.25); }
-        body.dark-mode .modal-content .submit-button { background-color: var(--submit-button-bg-dark, #2a8a44); }
-        body.dark-mode .modal-content .submit-button:hover { background-color: var(--submit-button-hover-bg-dark, #217336); }
+        body.dark-mode .modal-content {
+            background-color: var(--modal-bg-dark, #252525);
+            border-color: var(--modal-border-dark, #444);
+            color: var(--body-color-dark, #e0e0e0);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+        body.dark-mode .modal-content .close-button {
+            color: #888;
+        }
+        body.dark-mode .modal-content .close-button:hover {
+            color: #ccc;
+        }
+        body.dark-mode .modal-content h2 {
+            color: var(--header-title-dark, #ccc);
+            border-bottom-color: var(--title-border-dark, #444);
+        }
+        body.dark-mode .modal-content .form-group label {
+            color: var(--body-color-dark-muted, #bbb);
+        }
+        body.dark-mode .modal-content .form-group input[type="text"], body.dark-mode .modal-content .form-group input[type="date"], body.dark-mode .modal-content .form-group input[type="number"], body.dark-mode .modal-content .form-group select {
+            background-color: var(--input-bg-dark, #333);
+            border-color: var(--input-border-dark, #555);
+            color: var(--body-color-dark, #e0e0e0);
+        }
+        body.dark-mode .modal-content .form-group input:-webkit-autofill, body.dark-mode .modal-content .form-group select:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 30px var(--input-bg-dark, #333) inset !important;
+            -webkit-text-fill-color: var(--body-color-dark, #e0e0e0) !important;
+        }
+        body.dark-mode .modal-content .form-group input:focus, body.dark-mode .modal-content .form-group select:focus {
+            border-color: #5dade2;
+            box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.25);
+        }
+        body.dark-mode .modal-content .submit-button {
+            background-color: var(--submit-button-bg-dark, #2a8a44);
+        }
+        body.dark-mode .modal-content .submit-button:hover {
+            background-color: var(--submit-button-hover-bg-dark, #217336);
+        }
 
-        body.modal-open-no-scroll { overflow: hidden; }
+        body.modal-open-no-scroll {
+            overflow: hidden;
+        }
     /* Estilos para el cuadro de totales en modo oscuro */
     body.dark-mode #totales-cuadro {
         background: #232b36;
@@ -193,7 +436,7 @@
                         <th class="numero-header">Neto (COP)</th>
                         <th class="numero-header">IVA (COP)</th>
                         <th class="numero-header">Total (COP)</th>
-                        <th>Factura </th>
+                        <th>Factura</th>
                         <th class="acciones-header">Acciones</th>
                     </tr>
                 </thead>

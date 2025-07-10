@@ -622,6 +622,11 @@ def facturasAdmin(request):
                     archivo_url = reverse('factura_archivo', args=[f.id])
             except Exception:
                 archivo_url = None
+        # Obtener el public_url real (de factus_public_url si existe, o public_url si existe como método/propiedad)
+        public_url = getattr(f, 'factus_public_url', None)
+        if not public_url:
+            # fallback a public_url si existe como método o propiedad
+            public_url = getattr(f, 'public_url', None)
         facturas_context.append({
             'date': f.fecha.strftime('%Y-%m-%d') if f.fecha else '',
             'numero': f.numero,
@@ -635,7 +640,8 @@ def facturasAdmin(request):
             'usuario_id': f.usuario.id,
             'id': f.id,
             'estado': estado,
-            'archivo_url': reverse('factura_archivo', args=[f.id]) if getattr(f, 'archivo', None) else None,
+            'public_url': public_url or '',
+            # ...otros campos necesarios
         })
     facturas_json = json.dumps(facturas_context, cls=DjangoJSONEncoder)
     return render(request, 'ingresos/facturasAdmin.html', {'facturas_json': facturas_json})

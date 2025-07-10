@@ -1,7 +1,8 @@
 {% extends 'ingresos/admin_base.html' %}
 {% block Contenido %}
+
 <div class="container py-4">
-    <h1 class="h4 mb-3">Facturas (Admin)</h1>
+    <h1 class="h4 mb-3">Facturas</h1>
     <div class="card shadow-sm mb-3">
         <div class="card-body row g-2 align-items-center">
             <div class="col-md-4 mb-2 mb-md-0">
@@ -24,7 +25,8 @@
                     <th class="text-end">Neto</th>
                     <th class="text-end">Total</th>
                     <th>Estado</th>
-                    <th>Acción</th>
+                    <th>Datos</th>
+                    <th>Factura</th>
                     <th>Borrar</th>
                 </tr>
             </thead>
@@ -116,14 +118,22 @@ try {
         }
         filtradas.forEach(f => {
             const tr = document.createElement('tr');
+            // Solo usar public_url para la celda de Factura, igual que en historial_facturas.html
+            let facturaCell = '';
+            if (f.public_url) {
+                facturaCell = `<a href='${f.public_url}' target='_blank' rel='noopener' class='btn btn-sm btn-outline-primary' style='min-width:90px;'><i class='bi bi-file-earmark-pdf'></i> Ver factura</a>`;
+            } else {
+                facturaCell = `<span class='text-muted'>Sin enlace</span>`;
+            }
             tr.innerHTML = `
                 <td>${f.usuario ? f.usuario.toUpperCase() : ''}</td>
                 <td>${f.date || ''}</td>
                 <td>${f.numero || ''}</td>
-                <td class="text-end">${f.neto?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</td>
-                <td class="text-end">${f.acumulado?.toLocaleString('es-CO', {style:'currency', currency:'COP'}) || ''}</td>
+                <td class="text-end">${f.neto !== undefined && f.neto !== null ? Number(f.neto).toLocaleString('es-CO', {style:'currency', currency:'COP'}) : ''}</td>
+                <td class="text-end">${f.acumulado !== undefined && f.acumulado !== null ? Number(f.acumulado).toLocaleString('es-CO', {style:'currency', currency:'COP'}) : ''}</td>
                 <td><span class="badge ${f.estado === 'Completa' ? 'bg-success' : 'bg-warning text-dark'}">${f.estado || ''}</span></td>
                 <td><button class="btn btn-sm btn-primary" onclick="verDetalleFactura('${f.id}')">Ver</button></td>
+                <td>${facturaCell}</td>
                 <td><button class="btn btn-sm btn-danger" onclick="abrirBorrarFactura('${f.id}')">Borrar</button></td>
             `;
             tbody.appendChild(tr);

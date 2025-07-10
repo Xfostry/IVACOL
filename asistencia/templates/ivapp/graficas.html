@@ -13,6 +13,85 @@
     {# <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script> #}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="{% static 'css/graficas.css' %}">
+    <style>
+        /* Fondo general modo claro */
+        body:not(.dark-mode) {
+            background: linear-gradient(120deg,rgba(185, 214, 255, 0.33) 0%,rgba(187, 231, 255, 0.31) 100%);
+            color: #222;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        /* Navbar principal modo claro igual que paginaPrincipal.html */
+        body:not(.dark-mode) nav.navbar-principal,
+        body:not(.dark-mode) .navbar.navbar-principal,
+        body:not(.dark-mode) nav.navbar,
+        body:not(.dark-mode) .navbar {
+            background: linear-gradient(90deg,rgb(18, 100, 208) 0%,rgb(14, 89, 202) 100%) !important;
+            border-bottom: 2px solid #4a90e2 !important;
+            box-shadow: 0 2px 12px #b3d1f7;
+        }
+        body:not(.dark-mode) nav.navbar-principal *,
+        body:not(.dark-mode) .navbar.navbar-principal *,
+        body:not(.dark-mode) nav.navbar *,
+        body:not(.dark-mode) .navbar * {
+            color: #fff !important;
+        }
+        /* Contenedor principal y cards modo claro */
+        body:not(.dark-mode) .main-container {
+            background: linear-gradient(120deg,rgba(255,255,255,0.97) 0%,rgba(255,255,255,0.99) 100%);
+            border-radius: 14px;
+            box-shadow: 0 2px 16px 0 rgba(0,191,255,0.10), 0 0 24px 2px #b3e6ff inset;
+            padding: 32px 28px;
+            margin: 40px auto 30px auto;
+            max-width: 1200px;
+        }
+        body:not(.dark-mode) .chart-card {
+            background: linear-gradient(120deg,rgba(255,255,255,0.98) 0%,rgba(230,245,255,0.98) 100%);
+            border-radius: 10px;
+            box-shadow: 0 1px 8px 0 rgba(0,191,255,0.07), 0 0 12px 1px #b3e6ff1a inset;
+            border: 1px solid #b3e6ff;
+            padding: 22px 18px 18px 18px;
+            margin-bottom: 24px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        /* Títulos h2/h3 modo claro con neón azul */
+        body:not(.dark-mode) h2, body:not(.dark-mode) h3 {
+            color: rgb(0, 140, 255);
+            text-shadow: 0 0 8px #2196f3, 0 0 16px #2196f3, 0 0 24px #2196f3;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-weight: 600;
+            border-bottom: 2px solid #b3e6ff;
+            padding-bottom: 8px;
+            margin-bottom: 18px;
+            margin-top: 0;
+            transition: color 0.3s, border-color 0.3s;
+        }
+        /* Botones y filtros modo claro */
+        body:not(.dark-mode) .filters-container label,
+        body:not(.dark-mode) .filters-container select,
+        body:not(.dark-mode) .filters-container input[type="date"] {
+            color: #1a237e;
+        }
+        body:not(.dark-mode) .filters-container button {
+            background: linear-gradient(90deg, #1976d2 0%, #2196f3 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 18px;
+            font-weight: 500;
+            box-shadow: 0 1px 4px rgba(33,150,243,0.08);
+            transition: background 0.3s;
+        }
+        body:not(.dark-mode) .filters-container button:hover {
+            background: linear-gradient(90deg, #1565c0 0%, #1976d2 100%);
+        }
+        /* Mensajes de no datos modo claro */
+        body:not(.dark-mode) .no-data-message {
+            color: #1976d2;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border: 1px dashed #90caf9;
+        }
+    </style>
 </head>
 <body>
 <br><br>
@@ -192,11 +271,7 @@
         // Opciones para Barras Horizontales (IVA)
         const horizontalBarOptions = {
             ...commonChartOptions,
-            indexAxis: 'y', // <-- Eje de categorías en Y
-            scales: {
-                x: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.07)' }, ticks: { font: { size: 11 }, callback: value => currencyFormatter.format(value) } }, // Eje de valores en X
-                y: { grid: { display: false }, ticks: { font: { size: 11 } } } // Eje de categorías en Y
-            }
+            indexAxis: 'y' // <-- Eje de categorías en Y
         };
 
         // Opciones para Líneas (Acumulado)

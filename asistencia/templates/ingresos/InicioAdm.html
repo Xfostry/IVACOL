@@ -1,5 +1,6 @@
 {% extends 'ingresos/admin_base.html' %}
 {% block Contenido %}
+
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -97,7 +98,9 @@ function renderGrafica(datos) {
             datasets: [{
                 label: 'Facturas subidas',
                 data: values,
-                backgroundColor: '#1976d2',
+                backgroundColor: '#e57373', // Rojo suave
+                borderColor: '#b71c1c', // Rojo oscuro
+                borderWidth: 2,
                 borderRadius: 5
             }]
         },
