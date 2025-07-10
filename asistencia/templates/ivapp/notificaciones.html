@@ -24,9 +24,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: var(--color-fondo);
+            background: linear-gradient(120deg,rgba(185, 214, 255, 0.33) 0%,rgba(187, 231, 255, 0.31) 100%) !important;
             color: var(--color-texto);
-            line-height: 1.6;
         }
 
         .contenedor-principal {
@@ -311,6 +310,19 @@
         body.dark-mode .notificacion .fecha { color: var(--notif-fecha-dark); }
         body.dark-mode .notificacion .boton-cerrar { color: var(--notif-close-dark); }
         body.dark-mode .notificacion .boton-cerrar:hover { color: var(--notif-close-hover-dark); }
+
+        /* --- NAVBAR ESTILO CLARO (igual que historial_facturas) --- */
+        .navbar {
+            background: linear-gradient(90deg, rgb(18, 100, 208) 0%, rgb(14, 89, 202) 100%) !important;
+            border-bottom: 2px solid #4a90e2 !important;
+            box-shadow: 0 2px 12px #b3d1f7;
+        }
+
+        /* Fondo modo claro igual que pagina principal */
+        body {
+            background: linear-gradient(120deg,rgba(185, 214, 255, 0.33) 0%,rgba(187, 231, 255, 0.31) 100%) !important;
+            color: var(--color-texto);
+        }
     </style>
 </head>
 <body>

@@ -275,6 +275,25 @@ body.dark-mode .btn-secondary:hover {
     body.dark-mode {
         background-color: #181a1b !important;
     }
+            /* --- NAVBAR ESTILO CLARO (igual que historial_facturas) --- */
+        .navbar {
+            background: linear-gradient(90deg, rgb(18, 100, 208) 0%, rgb(14, 89, 202) 100%) !important;
+            border-bottom: 2px solid #4a90e2 !important;
+            box-shadow: 0 2px 12px #b3d1f7;
+        }
+
+        /* --- NAVBAR ESTILO OSCURO (igual que historial_facturas) --- */
+        body.dark-mode .navbar {
+            background: linear-gradient(90deg, rgb(0 0 0 / 80%) 0%, rgb(0 0 0 / 60%) 100%) !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Fondo modo claro igual que pagina principal */
+        body {
+            background: linear-gradient(120deg,rgba(185, 214, 255, 0.33) 0%,rgba(187, 231, 255, 0.31) 100%) !important;
+            color: var(--body-color-light, #1a0033);
+        }
     </style>
 </head>
 <body>

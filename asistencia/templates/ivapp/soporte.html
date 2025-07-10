@@ -26,28 +26,23 @@
     body:not(.dark-mode) .actions-grid * {
         color: #1a1a1a !important;
 }
-    body:not(.dark-mode) .welcome-section,
-    body:not(.dark-mode) .welcome-section, * {
+    body:not(.dark-mode) .actions-grid,
+    body:not(.dark-mode) .actions-grid * {
         color: #1a1a1a !important;
 }
 section {
     /* Elimina el fondo anterior para evitar conflicto, solo se usará en modo claro con body:not(.dark-mode) */
 }
 
-section h2, section h3 {
-    color: rgb(0, 140, 255); /* Azul neón */
-    margin-top: 0;
-    border-bottom: 2px solid var(--title-border-light);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    transition: color 0.3s ease, border-color 0.3s ease;
-    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 600;
-    text-shadow: 0 0 8px #008cff, 0 0 16px #008cff, 0 0 24px #008cff; /* Efecto neón azul */
+body:not(.dark-mode) section h2, body:not(.dark-mode) section h3 {
+    color: #1565c0 !important; /* Azul institucional */
+    border-bottom: none !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    background: none !important;
 }
 
-
-        /* --- Navbar Styles --- */
+/* --- Navbar Styles --- */
         .navbar {
             background: linear-gradient(90deg,rgb(18, 100, 208) 0%,rgb(14, 89, 202) 100%) !important;
             border-bottom: 2px solid #4a90e2 !important;
