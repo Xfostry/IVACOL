@@ -261,7 +261,15 @@ def subir_factura(request):
             factura.factus_public_url = factus_data['data']['bill']['public_url']
         if archivo:
             factura.archivo = archivo
-        factura.save()
+        try:
+            factura.save()
+        except Exception as e:
+            from django.core.exceptions import ValidationError
+            if isinstance(e, ValidationError):
+                if 'fecha' in e.message_dict and 'futura' in str(e.message_dict['fecha']).lower():
+                    return JsonResponse({'success': False, 'error': 'No se puede registrar una factura con fecha futura.'}, status=400)
+                return JsonResponse({'success': False, 'error': str(e)}, status=400)
+            return JsonResponse({'success': False, 'error': 'Error al guardar la factura.'}, status=500)
         # Notificación de subida exitosa
         from .models import Notification
         Notification.objects.create(

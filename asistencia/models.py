@@ -44,8 +44,11 @@ class FacturaSubida(models.Model):
 
     def clean(self):
         from django.core.exceptions import ValidationError
+        from datetime import date
         if self.monto < 0:
             raise ValidationError({'monto': 'El monto no puede ser negativo.'})
+        if self.fecha and self.fecha > date.today():
+            raise ValidationError({'fecha': 'La fecha de la factura no puede ser futura.'})
 
     def save(self, *args, **kwargs):
         self.clean()

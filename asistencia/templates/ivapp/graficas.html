@@ -121,9 +121,9 @@
         <!-- Gráficos -->
         <div id="chartsArea" style="display: none;"> 
              <div class="charts-grid">
-                 <!-- Card 1: Neto (Barra Vertical - sin cambios) -->
+                 <!-- Card 1: Neto + IVA (Barras Verticales con doble eje Y) -->
                  <div class="chart-card">
-                     <h2>Valor Neto (Sin IVA)</h2>
+                     <h2>Valor Neto (Sin IVA) y IVA</h2>
                      <div class="max-value-control">
                          <label for="maxNeto">Mostrar hasta:</label>
                          <input type="number" id="maxNeto" class="max-value-input" placeholder="Precio" min="0" step="50000">
@@ -131,18 +131,6 @@
                      <div class="chart-content-wrapper">
                         <div class="canvas-wrapper"><canvas id="netoChart"></canvas></div>
                         <p id="noDataNeto" class="no-data-message">No hay datos que cumplan los filtros.</p>
-                     </div>
-                 </div>
-                 <!-- Card 2: IVA (Barra Horizontal - sin cambios) -->
-                 <div class="chart-card">
-                     <h2>IVA</h2>
-                      <div class="max-value-control">
-                         <label for="maxIva">Mostrar hasta:</label>
-                         <input type="number" id="maxIva" class="max-value-input" placeholder="Precio" min="0" step="10000">
-                     </div>
-                     <div class="chart-content-wrapper">
-                        <div class="canvas-wrapper"><canvas id="ivaChart"></canvas></div>
-                        <p id="noDataIva" class="no-data-message">No hay datos que cumplan los filtros.</p>
                      </div>
                  </div>
                  <!-- Card 3: Acumulado (GRÁFICO DE LÍNEA - MODIFICADO) -->
@@ -205,16 +193,13 @@
         const chartsArea = document.getElementById('chartsArea');
         const noDataGlobalMessage = document.getElementById('noDataGlobal');
         const ctxNeto = document.getElementById('netoChart')?.getContext('2d');
-        const ctxIva = document.getElementById('ivaChart')?.getContext('2d');
         const ctxAcumulado = document.getElementById('acumuladoChart')?.getContext('2d');
         const ctxPie = document.getElementById('categoryPieChart')?.getContext('2d');
         const maxNetoInput = document.getElementById('maxNeto');
-        const maxIvaInput = document.getElementById('maxIva');
         const maxAcumuladoInput = document.getElementById('maxAcumulado');
 
-        // --- CHART INSTANCES (sin cambios) ---
+        // --- CHART INSTANCES (ajustado) ---
         let netoChartInstance = null;
-        let ivaChartInstance = null;
         let acumuladoChartInstance = null;
         let categoryPieChartInstance = null;
 
@@ -255,14 +240,8 @@
             },
         };
 
-        // Opciones para Barras Verticales (Neto)
-        const verticalBarOptions = {
-            ...commonChartOptions,
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.07)' }, ticks: { font: { size: 11 }, callback: value => currencyFormatter.format(value) } },
-                x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45, minRotation: 0 } }
-            }
-        };
+        // Opciones para Barras Verticales (Neto + IVA con doble eje Y, forzando misma escala)
+        let verticalBarOptions = null; // Se define dinámicamente en updateCharts
 
         // Opciones para Barras Horizontales (IVA)
         const horizontalBarOptions = {
@@ -348,7 +327,7 @@
 
         // --- FUNCIÓN PARA CREAR/ACTUALIZAR GRÁFICOS (MODIFICADA para Acumulado) ---
         function updateCharts(dataFilteredByDate) {
-            if (!ctxNeto || !ctxIva || !ctxAcumulado || !ctxPie) { /* ... manejo de error canvas ... */ return; }
+            if (!ctxNeto || !ctxAcumulado || !ctxPie) { /* ... manejo de error canvas ... */ return; }
 
             const hasDataForDateRange = dataFilteredByDate.length > 0;
             chartsArea.style.display = hasDataForDateRange ? 'block' : 'none';
@@ -358,27 +337,44 @@
             // Formato etiquetas (sin cambios)
             const formatLabel = item => `${item.label || 'S.D.'} (${item.date ? item.date.substring(5) : 'S.F.'})`; // Más corto
 
-            // --- 1. Gráfico Neto (Barra Vertical - usa verticalBarOptions) ---
+            // --- 1. Gráfico Neto + IVA (Barras Verticales con doble eje Y, misma escala) ---
             const maxNetoValue = parseFloat(maxNetoInput.value);
             let finalNetoData = dataFilteredByDate;
             if (!isNaN(maxNetoValue) && maxNetoValue >= 0) { finalNetoData = finalNetoData.filter(item => (item.neto || 0) <= maxNetoValue); }
             const netoLabels = finalNetoData.map(formatLabel);
             const netoValues = finalNetoData.map(item => item.neto || 0);
+            const ivaValues = finalNetoData.map(item => item.iva || 0);
+            // Calcular el máximo de ambos para forzar la misma escala
+            const maxY = Math.max(...netoValues, ...ivaValues, 1000);
+            verticalBarOptions = {
+                ...commonChartOptions,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: maxY,
+                        grid: { color: 'rgba(0, 0, 0, 0.07)' },
+                        ticks: { font: { size: 11 }, callback: value => currencyFormatter.format(value) },
+                        title: { display: true, text: 'Neto', color: netoColor },
+                        position: 'left',
+                    },
+                    y1: {
+                        beginAtZero: true,
+                        max: maxY,
+                        grid: { drawOnChartArea: false },
+                        ticks: { font: { size: 11 }, callback: value => currencyFormatter.format(value), color: ivaColor },
+                        title: { display: true, text: 'IVA', color: ivaColor },
+                        position: 'right',
+                    },
+                    x: { grid: { display: false }, ticks: { font: { size: 11 }, maxRotation: 45, minRotation: 0 } }
+                }
+            };
             netoChartInstance = updateSingleChart(ctxNeto, netoChartInstance, 'bar', {
                 labels: netoLabels,
-                datasets: [{ label: 'Neto', data: netoValues, backgroundColor: netoColor, borderRadius: 4 }]
+                datasets: [
+                    { label: 'Neto', data: netoValues, backgroundColor: netoColor, borderRadius: 4, yAxisID: 'y' },
+                    { label: 'IVA', data: ivaValues, backgroundColor: ivaColor, borderRadius: 4, yAxisID: 'y1' }
+                ]
             }, verticalBarOptions);
-
-            // --- 2. Gráfico IVA (Barra Horizontal - usa horizontalBarOptions) ---
-            const maxIvaValue = parseFloat(maxIvaInput.value);
-            let finalIvaData = dataFilteredByDate;
-            if (!isNaN(maxIvaValue) && maxIvaValue >= 0) { finalIvaData = finalIvaData.filter(item => (item.iva || 0) <= maxIvaValue); }
-            const ivaLabels = finalIvaData.map(formatLabel);
-            const ivaValues = finalIvaData.map(item => item.iva || 0);
-            ivaChartInstance = updateSingleChart(ctxIva, ivaChartInstance, 'bar', {
-                labels: ivaLabels,
-                datasets: [{ label: 'IVA', data: ivaValues, backgroundColor: ivaColor, borderRadius: 4 }]
-            }, horizontalBarOptions); // <-- Opciones horizontales
 
             // --- 3. Gráfico Acumulado (LÍNEA - usa lineChartOptions) ---
             const maxAcumuladoValue = parseFloat(maxAcumuladoInput.value);
@@ -453,7 +449,6 @@
         // --- EVENT LISTENERS Y INICIALIZACIÓN (sin cambios) ---
         filterButton.addEventListener('click', filterData);
         maxNetoInput.addEventListener('input', () => filterData());
-        maxIvaInput.addEventListener('input', () => filterData());
         maxAcumuladoInput.addEventListener('input', () => filterData());
         document.getElementById('categoryFilter').addEventListener('change', filterData);
 
